@@ -45,7 +45,7 @@ public class HttpRequest extends HttpHeader {
 
 
     public void parse(byte[] bytes) {
-        //System.out.println("parsing...");
+        System.out.println("parsing...");
         if (bytes.length == 0)  return;  // todo: throw
 
         String data = new String(bytes);
@@ -71,11 +71,19 @@ public class HttpRequest extends HttpHeader {
         method = 0;  // todo
         version = 0;  // todo
 
-        szPath = null;  // todo
-        lsPath = null;  // todo
+        PStr path_split = Util.split('?', szRequest);
 
-        szQuery = null;  // todo
-        lsQuery = null;  // todo
+        szPath = path_split.key;
+        lsPath = Util.explode('/', szPath);
+
+        szQuery = path_split.value;
+        if (!szQuery.isEmpty()) {
+            String[] explode_query = Util.explode('&', szQuery);
+            lsQuery = new ArrayList<>();
+            for (String q : explode_query) {
+                lsQuery.add(Util.split('=', q));
+            }
+        }
 
 
         // ---------------- parse remaining lines ---------------- //
@@ -92,9 +100,9 @@ public class HttpRequest extends HttpHeader {
             options.add(option);
         }
 
-        //System.out.println("----------------------------------------------------------------");
-        //for (PStr option : options) { System.out.println("[" + option.key + "] : [" + option.value + "]"); }
-        //System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        for (PStr option : options) { System.out.println("[" + option.key + "] : [" + option.value + "]"); }
+        System.out.println("----------------------------------------------------------------");
 
     }
 

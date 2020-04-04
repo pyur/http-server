@@ -12,11 +12,21 @@ public class Session implements Runnable {
 
     private Http http;
 
+    OutputStream os;
+
+
+    Callback callback;
+
+    interface Callback {
+        int send(byte[] bytes);
+    }
+
 
 
     public Session(Socket client){
         this.client = client;
         http = new Http(this);
+        http.setStateServer();
     }
 
 
@@ -31,75 +41,75 @@ public class Session implements Runnable {
             //ByteArrayOutputStream os = new ByteArrayOutputStream();
             //OutputStream os = new ByteArrayOutputStream();
             InputStream is = client.getInputStream();
-            OutputStream os = client.getOutputStream();
+            os = client.getOutputStream();
 
             //ByteArrayOutputStream input_data = new ByteArrayOutputStream();
 
 
             //while (!client.isClosed()) {
-                //String entry = in.readUTF();
-                //System.out.println("[" + entry + "]");
+            //String entry = in.readUTF();
+            //System.out.println("[" + entry + "]");
 
-                //out.writeUTF("200 OK");
-                //out.flush();
+            //out.writeUTF("200 OK");
+            //out.flush();
 
-                byte[] buf = new byte[8192];
-                int received_size;
+            byte[] buf = new byte[8192];
+            int received_size;
 
-                for (;;) {
-                    received_size = is.read(buf);
+            for (;;) {
+                received_size = is.read(buf);
 
-                    if (received_size == -1) {
-                        // connection failed
-                        break;
-                    }
+                if (received_size == -1) {
+                    // connection failed
+                    break;
+                }
 
-                    else if (received_size == 0) {
-                        // remote host closed connection
-                        System.out.println("received_size is 0");
-                        //break;
-                        continue;
-                    }
+                else if (received_size == 0) {
+                    // remote host closed connection
+                    System.out.println("received_size is 0");
+                    //break;
+                    continue;
+                }
 
-                    System.out.println("received " + received_size + " bytes.");
-                    //input_data.write(buf, 0, len);
+                System.out.println("received " + received_size + " bytes.");
+                //input_data.write(buf, 0, len);
 
-                    //String str = new String(buf);
-                    //System.out.println(str);
-
-
-                    //String answer = "HTTP/1.1 200 OK\r\nContent-length: 16\r\n\r\nHello from Java!";
-                    //os.write(answer.getBytes());
-                    //os.flush();
-
-                    //System.out.println("answer sent.");
-
-                    http.append(buf, received_size);
+                //String str = new String(buf);
+                //System.out.println(str);
 
 
-                    int result = http.processStream();
+                //String answer = "HTTP/1.1 200 OK\r\nContent-length: 16\r\n\r\nHello from Java!";
+                //os.write(answer.getBytes());
+                //os.flush();
 
-                    //todo: what about process payload RIGHT after header?
+                //System.out.println("answer sent.");
 
-                    if (result < 0) {
-                        // set: unexpected protocol error
-                        break;
-                    }
+                http.append(buf, received_size);
 
-                    else if (result > 0) {
-                        System.out.println("Force close stream. Protocol signalled, that all payload is received.");
-                        //return_code = SESSION_LISTEN_OK;
-                        break;
-                    }
 
-                }  // for
+                int result = http.processStream();
+                //System.out.println("return from processStream()");
 
-                //if (input_data.size() > 0) {
-                //    //answer = os.toString();
-                //    System.out.println("[" + input_data.toString() + "]");
-                //}
+                if (result < 0) {
+                    System.out.println("unexpected protocol error");
+                    // set: unexpected protocol error
+                    break;
+                }
 
-                //break;
+                else if (result > 0) {
+                    System.out.println("Force close stream. Protocol signalled, that all payload is received.");
+                    //return_code = SESSION_LISTEN_OK;
+                    break;
+                }
+
+            }  // for
+
+            //if (input_data.size() > 0) {
+            //    //answer = os.toString();
+            //    System.out.println("[" + input_data.toString() + "]");
+            //}
+
+            //break;
             //}
 
             System.out.println("Client disconnected.");
@@ -115,8 +125,16 @@ public class Session implements Runnable {
 
 
 
-    public void send() {
+    public int send(byte[] bytes) {
+        System.out.println("16");
+        System.out.println(new String(bytes));
 
+        try {
+            os.write(bytes);
+            os.flush();
+        } catch (Exception e) { e.printStackTrace(); return -1; }
+
+        return 0;
     }
 
 

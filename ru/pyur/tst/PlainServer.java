@@ -25,7 +25,7 @@ public class PlainServer {
         try {
             ServerSocket server = new ServerSocket(80);
 
-            while (true) {
+            for(;;) {
                 System.out.println("waiting...");
                 Socket client = server.accept();  // thread locking
                 //System.out.println("Connection accepted.");
