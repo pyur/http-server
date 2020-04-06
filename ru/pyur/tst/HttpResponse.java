@@ -8,11 +8,9 @@ public class HttpResponse extends HttpHeader {
     private String szVersion;
     private int version;  // todo
 
-    private int code;
-    private String szDesc;
+    public int code;
+    public String szDesc;
 
-
-    public ArrayList<PStr> options;
 
     private ArrayList<Cookie> set_cookie;
 
@@ -42,7 +40,7 @@ public class HttpResponse extends HttpHeader {
 
         String[] list = Util.explode("\r\n", data);
 
-        //System.out.println("----------------------------------------------------------------");
+        //System.out.println("---- list ------------------------------------------------------");
         //for (String str : list) { System.out.println("[" + str + "]"); }
         //System.out.println("----------------------------------------------------------------");
 

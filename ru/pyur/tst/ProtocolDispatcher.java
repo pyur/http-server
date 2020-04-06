@@ -30,7 +30,7 @@ public class ProtocolDispatcher {
 
     private byte[] raw_header;
 
-//    private HttpRequest http_request;
+    private HttpRequest http_request;
 //    private HttpResponse http_response;
 
 /*
@@ -95,6 +95,13 @@ public class ProtocolDispatcher {
     }
 
 
+    private CallbackSession callback_session;
+
+    public interface CallbackSession {
+        String onReceived(HttpRequest http_request, byte[] payload);
+    }
+
+
 
 
 
@@ -111,18 +118,28 @@ public class ProtocolDispatcher {
     }
 
 
-    // CreateServer
-    public void setStateServer(CallbackServer callback_server, CallbackHttpPayload callback_payload) {
+    public void setStateServer(CallbackServer cs, CallbackHttpPayload cp) {
         state = HTTP_STATE_SERVER;
-        if (callback_server == null)  this.callback_server = defaultDispatchServer;
-        if (callback_payload == null)  this.callback_http_payload = defaultDispatchHttpServerPayload;
+
+        callback_server = (cs != null) ? cs : defaultDispatchServer;
+        callback_http_payload = (cp != null) ? cp : defaultDispatchHttpServerPayload;
     }
 
 
-    public void setStateHttpClient(CallbackHttpClient callback_http_client, CallbackHttpPayload callback_payload) {
+    public void setStateServerSession(CallbackSession css) {
+        state = HTTP_STATE_SERVER;
+
+        callback_server = defaultDispatchServer;
+        callback_http_payload = null;
+        callback_session = css;
+    }
+
+
+    public void setStateHttpClient(CallbackHttpClient chc, CallbackHttpPayload cp) {
         state = HTTP_STATE_HTTP_CLIENT;
-        if (callback_http_client == null)  this.callback_http_client = defaultDispatchHttpClient;
-        if (callback_payload == null)  this.callback_http_payload = defaultDispatchHttpClientPayload;
+
+        callback_http_client = (chc != null) ? chc : defaultDispatchHttpClient;
+        callback_http_payload = (cp != null) ? cp : defaultDispatchHttpClientPayload;
     }
 
 
@@ -158,7 +175,7 @@ public class ProtocolDispatcher {
             // -- mode server. process request -- //
             // http server, websocket server, cast server
             if (state == HTTP_STATE_SERVER) {
-                HttpRequest http_request = new HttpRequest();
+                http_request = new HttpRequest();
                 try {
                     http_request.parse(raw_header);
                 } catch (Exception e) {
@@ -241,7 +258,21 @@ public class ProtocolDispatcher {
             if (result < 0) return -1;  // failed
             if (result == 0) return 0;  // in progress
 
-            result = callback_http_payload.payloadReceived(payload.toByteArray());
+            result = 0;
+            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload.toByteArray());
+
+            if (callback_session != null) {
+                String feedback = callback_session.onReceived(http_request, payload.toByteArray());
+
+                HttpResponse response = new HttpResponse();
+                response.setConnectionClose();
+
+                //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
+
+                response.appendPayload(feedback);
+
+                Http_Send(response.stringify());
+            }
 
             if (result < 0)  return -1;  // failed
 
@@ -347,12 +378,16 @@ public class ProtocolDispatcher {
         }
 
 
-        // -- copy header from stream, and remove it from stream -- //
+        // -- copy header from stream -- //
+
         raw_header = Arrays.copyOfRange(bytes, 0, header_size);
 
-        System.out.println("----------------------------------------------------------------");
+        System.out.println("---- raw header ------------------------------------------------");
         System.out.println(new String(raw_header));
         System.out.println("----------------------------------------------------------------");
+
+
+        // -- cut header from stream-- //
 
         stream = new ByteArrayOutputStream();
         int offset = header_size + 4;
@@ -362,16 +397,6 @@ public class ProtocolDispatcher {
             stream.write(trail);
         } catch (Exception e) { e.printStackTrace(); }
 
-
-        // ---------------- split first line and options ---------------- //
-
-      //  http->lsLines = String_ExplodeStr("\r\n", szHeader);
-      //
-      //  size_t lines_count = StringList_Size(http->lsLines);
-      //  if (!lines_count) {
-      //      DebugError("Invalid header. 0 lines.");
-      //      return -5;
-      //  }
 
         return 1;  // header found
     }
@@ -485,8 +510,7 @@ public class ProtocolDispatcher {
 
             // ---------------- Audio Cast ---------------- //
 
-            //opt = Pair_ListFindByKey(rq->options, "icy-metadata");
-            opt = PStr.PairList_FindByKey(http_request.options, "Icy-MetaData");
+            opt = PStr.PairList_FindByKey(http_request.options, "Icy-MetaData");  // "icy-metadata"
             if (opt != null) {
     //todo            int metadata = atoi(opt->value);
     //todo            DebugIVerbose_(http, "found \"icy-metadata: #\". use mode \"audio cast\". ");  di(metadata);  dcd();
@@ -534,7 +558,7 @@ public class ProtocolDispatcher {
             //}
 
 
-        return 1;
+            return 1;
         }
     };
 
@@ -568,22 +592,15 @@ public class ProtocolDispatcher {
         @Override
         public int responseReceived(HttpResponse http_response) {
 
-//    private int Http_ProcessResponse() {
+        // ---------------- prepare payload receiver ---------------- //
 
-        //http->response = HttpResponse_Parse(http->lsLines);
-        //if (!http->response)  return -1;
-
-
-        // ---------------- Setting up payload receiver ---------------- //
-
-        //HttpResponse rs = http->response;
         PStr opt;
 
         opt = PStr.PairList_FindByKey(http_response.options, "Transfer-Encoding");  // chunked, compress, deflate, gzip, identity
         // Several values can be listed, separated by a comma
         if (opt != null) {
             //DebugIInfo(http, "used \"Transfer-Encoding\".");
-            // lame compare. must explode value with ','
+            // lame compare. todo: explode value with ','
             if (opt.value.equals("chunked")) {
                 //ds(" chunked");
                 isChunked = true;
@@ -716,7 +733,9 @@ public class ProtocolDispatcher {
 
 
 
+    // -------------------------------------------------------------------------------------- //
     // -------------------------------- Receive http payload -------------------------------- //
+    // -------------------------------------------------------------------------------------- //
 
     private int receiveHttpPayload() {
 
@@ -728,7 +747,7 @@ public class ProtocolDispatcher {
             try { payload.write(stream.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
 
             //r Expandable_Truncate(http->stream);
-            stream = new ByteArrayOutputStream();
+            stream.reset();
 
 //!            DebugCy_("compare: size (");  di(http->payload->size); ds(") >= ("); di(http->contentLength); ds(")");
 
@@ -775,27 +794,35 @@ public class ProtocolDispatcher {
 
 
 //!                DebugCy_("stream->size: ");  di(http->stream->size);  ds(", chunk size: ");  di(http->chunkSize);
-/* !!!todo!!!
-                if (http->stream->size >= http->chunkSize) {
+
+                //r if (http->stream->size >= http->chunkSize) {
+                if (stream.size() >= chunkSize) {
                     //DebugWarn("equals or more. copy to payload.");
-                    Expandable_Append(http->payload, http->stream->data, http->chunkSize - 2);  // excluding trailing "\r\n"
+                    byte[] stream_bytes = stream.toByteArray();
 
-                    Expandable_Shift(http->stream, http->chunkSize);
+                    //r Expandable_Append(http->payload, http->stream->data, http->chunkSize - 2);  // excluding trailing "\r\n"
+                    try { payload.write(stream_bytes, 0, (chunkSize - 2) ); } catch (Exception e) { e.printStackTrace(); }
 
-                    if (http->chunkSize == 2) {
-                        DebugWarn("remainings readed. flushing.");
-                        http->chunkSize = 0;  // redundant
+                    //r Expandable_Shift(http->stream, http->chunkSize);
+                    stream.reset();
+                    try {
+                        stream.write(Arrays.copyOfRange(stream_bytes, chunkSize, stream_bytes.length));
+                    } catch (Exception e) { e.printStackTrace(); }
+
+                    if (chunkSize == 2) {
+                        System.out.println("remainings readed. flushing.");
+                        chunkSize = 0;  // redundant
                         return 1;
                     }
 
                     //DebugWarning("chunk move. size reset.");
-                    http->chunkSize = 0;
+                    chunkSize = 0;
                 }
 
                 else {
                     break;
                 }
-*/
+
             }  // for
 
         }
@@ -874,13 +901,24 @@ public class ProtocolDispatcher {
 
 
 
-
+    // --------------------------------------------------------------------------------------
 
     public int Http_Send(byte[] bytes) {
         // ---- redirect call to transport ---- //
         transport_callback.send(bytes);
         return 0;
     }
+
+
+
+
+//    // --------------------------------------------------------------------------------------
+//
+//    public void onConnected() {
+//        if (state == HTTP_STATE_HTTP_CLIENT) {
+//
+//        }
+//    }
 
 
 }

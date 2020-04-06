@@ -14,18 +14,43 @@ public class TransportTcp extends Transport implements Runnable {
     private OutputStream os;
 
 
+    public TransportTcp() {}
 
 
-    public TransportTcp(Socket client){
+    //public TransportTcp(Socket client, Transport.TransportCallback tc, ProtocolDispatcher.CallbackServer pd_cs, ProtocolDispatcher.CallbackHttpPayload pd_chp) {
+    public TransportTcp(Socket client, Session session) {
         this.client = client;
         protocolDispatcher = new ProtocolDispatcher(transport_callback);
-        protocolDispatcher.setStateServer(null, null);
+        protocolDispatcher.setStateServerSession(session.getProtocolCallback());
+
+        tr_callback = session.getTransportCallback();
+    }
+
+
+
+    public void createClient(String host, Transport.TransportCallback tc, ProtocolDispatcher.CallbackHttpClient pd_chc, ProtocolDispatcher.CallbackHttpPayload pd_chp) {
+        tr_callback = tc;
+
+        protocolDispatcher = new ProtocolDispatcher(transport_callback);
+        protocolDispatcher.setStateHttpClient(pd_chc, pd_chp);
+
+        try {
+            client = new Socket(host, 80);
+        } catch (Exception e) { e.printStackTrace(); return; }
+
+        listen();
     }
 
 
 
     @Override
     public void run() {
+        listen();
+    }
+
+
+
+    public void listen() {
 
         try {
             //DataOutputStream out = new DataOutputStream(client.getOutputStream());
@@ -36,8 +61,14 @@ public class TransportTcp extends Transport implements Runnable {
             os = client.getOutputStream();
 
 
-            byte[] buf = new byte[8192];
+            byte[] buf = new byte[8192];  // in C 16384
             int received_size;
+
+            if (tr_callback != null) {
+                byte[] bytes = tr_callback.onConnected();
+                if (bytes != null)  Send(bytes);
+            }
+
 
             for (;;) {
                 received_size = is.read(buf);
@@ -93,16 +124,24 @@ public class TransportTcp extends Transport implements Runnable {
     private Callback transport_callback = new Callback() {
         @Override
         public int send(byte[] bytes) {
-            System.out.println(new String(bytes));
-
-            try {
-                os.write(bytes);
-                os.flush();
-            } catch (Exception e) { e.printStackTrace(); return -1; }
-
-            return 0;
+            return Send(bytes);
         }
     };
+
+
+
+    public int Send(byte[] bytes) {
+        System.out.println("---- Send ------------------------------------------------------");
+        System.out.println(new String(bytes));
+        System.out.println("----------------------------------------------------------------");
+
+        try {
+            os.write(bytes);
+            os.flush();
+        } catch (Exception e) { e.printStackTrace(); return -1; }
+
+        return 0;
+    }
 
 
 

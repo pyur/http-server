@@ -1,44 +1,50 @@
 package ru.pyur.tst;
 
-
-//import static sun.misc.Version.println;
-//import static java.lang.System.out;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+public class ServerTcp {
 
-// https://habr.com/ru/post/330676/
+    private ExecutorService service;
 
-public class PlainServer {
-
-    private static ExecutorService service;
+    private int port;
 
 
-    public static void main(String[] args) {
+    public ServerTcp(int port) {
+        this.port = port;
+    }
+
+
+
+    public void run() {
         service = Executors.newFixedThreadPool(16);
 
         System.out.println("Server started.");
 
         try {
-            ServerSocket server = new ServerSocket(80);
+            ServerSocket server = new ServerSocket(port);
 
             for(;;) {
                 System.out.println("waiting...");
                 Socket client = server.accept();  // thread locking
                 //System.out.println("Connection accepted.");
 
-                //System.out.println("starting thread...");
-                service.execute(new TransportTcp(client));
-                //System.out.println("starting thread done.");
+                Session session = new Session();
+                service.execute(new TransportTcp(client, session));
             }
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         service.shutdown();
     }
+
+
+
+
 
 }
