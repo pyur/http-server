@@ -21,7 +21,7 @@ public class HttpResponse extends HttpHeader {
     // ---- payload ---- //
 
     //String szPayload;
-    private ByteArrayOutputStream exPayload;
+    private ByteArrayOutputStream payload;
     //Blob szBinaryPayload;
     //size_t BinaryPayloadSize;
 
@@ -29,15 +29,14 @@ public class HttpResponse extends HttpHeader {
 
     public HttpResponse() {
         options = new ArrayList<>();
-        exPayload = new ByteArrayOutputStream();
+        payload = new ByteArrayOutputStream();
     }
 
-    public HttpResponse(byte[] data) { parse(data); }
 
 
-    public void parse(byte[] bytes) {
-        //System.out.println("parsing...");
-        if (bytes.length == 0)  return;  // todo: throw
+    public void parse(byte[] bytes) throws Exception {
+        //System.out.println("HttpResponse. parse()");
+        if (bytes.length == 0)  throw new Exception("header zero length");
 
         String data = new String(bytes);
 
@@ -47,25 +46,19 @@ public class HttpResponse extends HttpHeader {
         //for (String str : list) { System.out.println("[" + str + "]"); }
         //System.out.println("----------------------------------------------------------------");
 
-        if (list[0].isEmpty()) {
-            // todo: Throw exception
-            return;
-        }
+        if (list[0].isEmpty())  throw new Exception("first line empty");
 
 
         PStr response1 = Util.split(' ', list[0]);
 
-        if (response1.value.isEmpty()) {
-            // todo: Throw exception
-            return;
-        }
+        if (response1.value.isEmpty())  throw new Exception("first line has no spaces");
 
         //System.out.println("----------------------------------------------------------------");
         //for (String str : request) { System.out.println("[" + str + "]"); }
         //System.out.println("----------------------------------------------------------------");
 
         szVersion = response1.key;
-        //version = Integer.parseInt(response[0]);
+//todo  version = Integer.parseInt(response[0]);
 
         PStr response2 = Util.split(' ', response1.value);
 
@@ -73,31 +66,22 @@ public class HttpResponse extends HttpHeader {
         szDesc = response2.value;
 
 
-        // ---------------- parse remaining lines ---------------- //
+        // ---------------- parse options ---------------- //
 
-        options = new ArrayList<>();
-
-        for (int i = 1; i < list.length; i++) {
-            PStr option = Util.split(':', list[i]);
-            option.key = option.key.trim();
-            option.value = option.value.trim();
-
-            //todo: lower-case keys. maybe not pair, but special struct
-
-            options.add(option);
-        }
+        parseOptions(list);
 
         //System.out.println("----------------------------------------------------------------");
         //for (PStr option : options) { System.out.println("[" + option.key + "] : [" + option.value + "]"); }
         //System.out.println("----------------------------------------------------------------");
 
 
-        // ---------------- Parse Cookie(s) ---------------- //
+        // todo ---------------- Parse Cookie(s) ---------------- //
 
         //'Set-Cookie'
         //rs->cookies = Http_ParseCookies(rs->options);
 
     }
+
 
 
     public void setConnectionClose() {
@@ -109,36 +93,35 @@ public class HttpResponse extends HttpHeader {
 
     public void appendPayload(String str) {
         byte[] bytes = str.getBytes();
-        try { exPayload.write(bytes); } catch (Exception e) { e.printStackTrace(); }
+        try { payload.write(bytes); } catch (Exception e) { e.printStackTrace(); }
     }
 
 
 
     public byte[] stringify() {
-        //r Expandable exResponse = Expandable_Create();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-
+        StringBuilder sb = new StringBuilder();
 
         // ---------------- first line ---------------- //
 
         //r Expandable_AppendString(exResponse, szHttpVersion[rs->version]);
-        try { os.write("HTTP/1.1".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append("HTTP/1.1");
         // if '0', try raw.
 
         //r Expandable_AppendString(exResponse, " ");
-        try { os.write(" ".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append(" ");
 
         //r Expandable_AppendString(exResponse, String_FromInt(rs->code));
-        try { os.write("200".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append("200");
 
         //r Expandable_AppendString(exResponse, " ");
-        try { os.write(" ".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append(" ");
 
         //r Expandable_AppendString(exResponse, rs->szDesc);
-        try { os.write("OK".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append("OK");
 
         //r Expandable_AppendString(exResponse, "\r\n");
-        try { os.write("\r\n".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append("\r\n");
 
 
         // ---------------- options ---------------- //
@@ -149,24 +132,26 @@ public class HttpResponse extends HttpHeader {
             //for (Ui idx = 0; rs->options[idx]; idx++) {
             for (PStr opt : options) {
                 //r szFlat = Pair_Join(rs->options[idx], ": ");
-                try { os.write((opt.key + ": " + opt.value).getBytes()); } catch (Exception e) { e.printStackTrace(); }
+                sb.append(opt.key);
+                sb.append(": ");
+                sb.append(opt.value);
 
                 //r Expandable_AppendString(exResponse, szFlat);
                 //r String_Destroy(szFlat);
                 //r Expandable_AppendString(exResponse, "\r\n");
-                try { os.write("\r\n".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+                sb.append("\r\n");
             }
         }
 
 
 
-        if (exPayload != null && exPayload.size() > 0) {
+        if (payload != null && payload.size() > 0) {
             //r Expandable_AppendString(exResponse, "Content-Length: ");
             //r Expandable_AppendString(exResponse, String_FromInt(strlen(rs->szPayload)));
             //r Expandable_AppendString(exResponse, "\r\n");
-            try { os.write("Content-Length: ".getBytes()); } catch (Exception e) { e.printStackTrace(); }
-            try { os.write((""+exPayload.size()).getBytes()  ); } catch (Exception e) { e.printStackTrace(); }
-            try { os.write("\r\n".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+            sb.append("Content-Length: ");
+            sb.append(payload.size());
+            sb.append("\r\n");
         }
 
         //else if (other types of payload) {}
@@ -178,14 +163,17 @@ public class HttpResponse extends HttpHeader {
         // ---------------- header end ---------------- //
 
         //r Expandable_AppendString(exResponse, "\r\n");
-        try { os.write("\r\n".getBytes()); } catch (Exception e) { e.printStackTrace(); }
+        sb.append("\r\n");
+
+        try { os.write(sb.toString().getBytes()); } catch (Exception e) { e.printStackTrace(); }
+
 
 
         // ---------------- payload ---------------- //
 
-        if (exPayload != null && exPayload.size() > 0) {
+        if (payload != null && payload.size() > 0) {
             //r Expandable_AppendString(exResponse, rs->szPayload);
-            try { os.write(exPayload.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
+            try { os.write(payload.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
         }
 
 

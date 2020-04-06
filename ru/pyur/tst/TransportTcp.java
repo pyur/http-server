@@ -5,35 +5,27 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 
-// todo: Transport
-public class Session implements Runnable {
+public class TransportTcp extends Transport implements Runnable {
 
     private Socket client;
 
-    private Http http;
+    private ProtocolDispatcher protocolDispatcher;
 
-    OutputStream os;
-
-
-    Callback callback;
-
-    interface Callback {
-        int send(byte[] bytes);
-    }
+    private OutputStream os;
 
 
 
-    public Session(Socket client){
+
+    public TransportTcp(Socket client){
         this.client = client;
-        http = new Http(this);
-        http.setStateServer();
+        protocolDispatcher = new ProtocolDispatcher(transport_callback);
+        protocolDispatcher.setStateServer(null, null);
     }
 
 
 
     @Override
     public void run() {
-        //System.out.println("client thread started.");
 
         try {
             //DataOutputStream out = new DataOutputStream(client.getOutputStream());
@@ -43,15 +35,6 @@ public class Session implements Runnable {
             InputStream is = client.getInputStream();
             os = client.getOutputStream();
 
-            //ByteArrayOutputStream input_data = new ByteArrayOutputStream();
-
-
-            //while (!client.isClosed()) {
-            //String entry = in.readUTF();
-            //System.out.println("[" + entry + "]");
-
-            //out.writeUTF("200 OK");
-            //out.flush();
 
             byte[] buf = new byte[8192];
             int received_size;
@@ -65,30 +48,20 @@ public class Session implements Runnable {
                 }
 
                 else if (received_size == 0) {
-                    // remote host closed connection
+                    // remote host closed connection ?
                     System.out.println("received_size is 0");
                     //break;
                     continue;
                 }
 
                 System.out.println("received " + received_size + " bytes.");
-                //input_data.write(buf, 0, len);
-
-                //String str = new String(buf);
-                //System.out.println(str);
+                //System.out.println(new String(buf));
 
 
-                //String answer = "HTTP/1.1 200 OK\r\nContent-length: 16\r\n\r\nHello from Java!";
-                //os.write(answer.getBytes());
-                //os.flush();
-
-                //System.out.println("answer sent.");
-
-                http.append(buf, received_size);
+                protocolDispatcher.append(buf, received_size);
 
 
-                int result = http.processStream();
-                //System.out.println("return from processStream()");
+                int result = protocolDispatcher.parseStream();
 
                 if (result < 0) {
                     System.out.println("unexpected protocol error");
@@ -104,18 +77,10 @@ public class Session implements Runnable {
 
             }  // for
 
-            //if (input_data.size() > 0) {
-            //    //answer = os.toString();
-            //    System.out.println("[" + input_data.toString() + "]");
-            //}
-
-            //break;
-            //}
-
             System.out.println("Client disconnected.");
 
             is.close();
-            //os.close();
+            os.close();
 
             client.close();
         } catch (Exception e) { e.printStackTrace(); }
@@ -125,17 +90,20 @@ public class Session implements Runnable {
 
 
 
-    public int send(byte[] bytes) {
-        System.out.println("16");
-        System.out.println(new String(bytes));
+    private Callback transport_callback = new Callback() {
+        @Override
+        public int send(byte[] bytes) {
+            System.out.println(new String(bytes));
 
-        try {
-            os.write(bytes);
-            os.flush();
-        } catch (Exception e) { e.printStackTrace(); return -1; }
+            try {
+                os.write(bytes);
+                os.flush();
+            } catch (Exception e) { e.printStackTrace(); return -1; }
 
-        return 0;
-    }
+            return 0;
+        }
+    };
+
 
 
 }

@@ -31,7 +31,7 @@ public class PlainServer {
                 //System.out.println("Connection accepted.");
 
                 //System.out.println("starting thread...");
-                service.execute(new Session(client));
+                service.execute(new TransportTcp(client));
                 //System.out.println("starting thread done.");
             }
 
