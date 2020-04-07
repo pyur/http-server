@@ -16,6 +16,12 @@ public class Main {
 
     public static void main(String[] args) {
 
+        // -- Register JDBC driver
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+        } catch (Exception e) { e.printStackTrace(); }
+
+
         //TestClient client = new TestClient();
         //client.run();
 
