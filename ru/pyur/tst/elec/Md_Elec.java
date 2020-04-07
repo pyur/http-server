@@ -2,6 +2,11 @@ package ru.pyur.tst.elec;
 
 import ru.pyur.tst.Module;
 import ru.pyur.tst.Session;
+import ru.pyur.tst.tags.Div;
+import ru.pyur.tst.tags.Table;
+import ru.pyur.tst.tags.Td;
+import ru.pyur.tst.tags.Tr;
+
 import java.sql.*;
 
 
@@ -18,8 +23,24 @@ public class Md_Elec extends Module {
 
 
     public void prepare() {
-        b("Hello from Md_Elec!");
+        b("<!DOCTYPE html>\r\n<html><head>");
+        b("<title>");
+        b("Заголовок");
+        b("</title>");
+        b("<meta charset=\"UTF-8\">");
+        b("</head><body>");
 
+        //b("Hello from Md_Elec!");
+
+        Div div = new Div();
+        div.put("Электричество");
+        div.width(200);
+        div.height(50);
+        div.border("1px solid #f99");
+        b(div);
+
+
+        Table table = new Table();
 
         Connection conn = null;
         Statement stmt = null;
@@ -28,6 +49,7 @@ public class Md_Elec extends Module {
             // -- Open a connection
             System.out.println("Connecting to a selected database...");
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            //todo: from DataSource
             System.out.println("Connected database successfully...");
 
             // -- Execute a query
@@ -45,7 +67,21 @@ public class Md_Elec extends Module {
                 String dtx = rs.getString(5);
                 int idx = rs.getInt(6);
 
-                System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
+                //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
+                Tr tr = new Tr();
+                table.append(tr);
+
+                tr.append(new Td(id));
+
+                tr.append(new Td(name));
+
+                tr.append(new Td(cat));
+
+                tr.append(new Td(login));
+
+                tr.append(new Td(dtx));
+
+                tr.append(new Td(idx));
             }
 
         } catch (SQLException se) {
@@ -70,9 +106,14 @@ public class Md_Elec extends Module {
                 se.printStackTrace();
             }//end finally try
         }//end try
+
+        b(table.render());
+
+
         System.out.println("Goodbye!");
 
 
+        b("</body></html>");
     }
 
 
