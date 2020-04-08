@@ -156,6 +156,19 @@ public class Session {
             md = new ru.pyur.tst.water.Md_Water(session);
         }
 
+        else if (module.equals("db")) {
+
+            if (action.isEmpty()) {
+                md = new ru.pyur.tst.dbedit.Md_Dbedit(session);
+            }
+            else if (action.equals("aaa")) {
+                md = new ru.pyur.tst.dbedit.Md_Dbedit(session);
+            }
+            else if (action.equals("bbb")) {
+                md = new ru.pyur.tst.dbedit.Md_Dbedit(session);
+            }
+        }
+
 
         if (md != null) {
 

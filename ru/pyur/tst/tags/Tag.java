@@ -11,6 +11,7 @@ public class Tag {
     protected String tag;
 
     protected boolean closing = true;
+    // false for td, tr
     protected boolean self_closing = false;
     // img, input, br, hr
     // iframe
