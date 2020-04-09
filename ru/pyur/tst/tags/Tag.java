@@ -1,6 +1,7 @@
 package ru.pyur.tst.tags;
 
 import ru.pyur.tst.PStr;
+import ru.pyur.tst.Util;
 
 import java.util.ArrayList;
 
@@ -21,12 +22,14 @@ public class Tag {
 
     //protected boolean clo = false;
 
+    protected boolean hasPre = false;
     protected boolean hasNested = false;
 
 
     protected String id;
     protected String name;
-    protected String clas;
+    //protected String clas;
+    protected ArrayList<String> classes = new ArrayList<>();
 
     protected ArrayList<PStr> style;
 
@@ -59,31 +62,37 @@ public class Tag {
 
 
 
-    public String render_nested() { return null; }
+    public String renderPre() { return null; }
+
+    public String renderNested() { return null; }
 
 
 
     public String render() {
         StringBuilder t = new StringBuilder();
 
+        if (hasPre) {
+            t.append(renderPre());
+        }
+
         t.append("<");
         t.append(tag);
 
         if (id != null) {
-            t.append("id=\"");
+            t.append(" id=\"");
             t.append(id);
             t.append("\"");
         }
 
         if (name != null) {
-            t.append("name=\"");
+            t.append(" name=\"");
             t.append(name);
             t.append("\"");
         }
 
-        if (clas != null) {
-            t.append("class=\"");
-            t.append(clas);
+        if (classes.size() != 0) {
+            t.append(" class=\"");
+            t.append(Util.implode(" ", classes));
             t.append("\"");
         }
 
@@ -119,7 +128,7 @@ public class Tag {
 
 
         if (hasNested) {
-            t.append(render_nested());
+            t.append(renderNested());
         }
 
         //if ...

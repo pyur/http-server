@@ -88,4 +88,19 @@ public class Util {
 
 
 
+    public static String implode(String separator, ArrayList<String> strings) {
+        StringBuilder sb = new StringBuilder();
+
+        boolean first = true;
+        for (String string: strings) {
+            if (!first) sb.append(separator);
+            sb.append(string);
+            if (first) first = false;
+        }
+
+        return sb.toString();
+    }
+
+
+
 }

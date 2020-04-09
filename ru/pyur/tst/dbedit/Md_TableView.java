@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static ru.pyur.tst.tags.Table.TABLE_COLUMN_ALIGN_LEFT;
+
 
 public class Md_TableView extends Module {
 
@@ -17,6 +19,7 @@ public class Md_TableView extends Module {
 
     public Md_TableView(Session session) {
         this.session = session;
+        parseSession();
     }
 
 
@@ -25,37 +28,65 @@ public class Md_TableView extends Module {
 
         headerBegin();
 
-        b("Базы данных");
-
-
-//        String table_name = getQuery("tbl");
-//        if (table_name == null)  throw new Exception("tbl absent");
+        b("Колонки таблицы");
 
         Table table = new Table();
 
+        table.addColumn("Имя", 150);
+        table.addColumn("Тип", 200);
+        table.addColumn("NULL", 50);
+        table.addColumn("Key", 60);
+        table.addColumn("Default", 180);
+        table.addColumn("Extra", 250);
+
+
         try {
+            String db_name = getQuery("db");
+            if (db_name == null)  throw new Exception("db absent");
+
+            String table_name = getQuery("tbl");
+            if (table_name == null)  throw new Exception("table absent");
+
             Statement stmt = m_conn.createStatement();
 
-            String sql = "SHOW DATABASES";
+            String query_1 = "USE `" + db_name + "`";
 
-            ResultSet rs = stmt.executeQuery(sql);
+            stmt.executeQuery(query_1);
+
+
+            // ----
+
+            String query = "SHOW COLUMNS FROM `" + table_name + "`";
+
+            ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()) {
-                String db_name = rs.getString(1);
-                //String tmp = rs.getString(2);
+                String column_name = rs.getString(1);
+                String data_type = rs.getString(2);
+                String c3 = rs.getString(3);
+                String c4 = rs.getString(4);
+                String c5 = rs.getString(5);
+                String c6 = rs.getString(6);
 
-                //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
                 Tr tr = new Tr();
-                table.append(tr);
+                table.addTr(tr);
 
-                tr.append(new Td(db_name));
+                tr.addTd(new Td(column_name));
 
-                //tr.append(new Td(tmp));
+                tr.addTd(new Td(data_type));
+
+                tr.addTd(new Td(c3));
+                tr.addTd(new Td(c4));
+                tr.addTd(new Td(c5));
+                tr.addTd(new Td(c6));
             }
 
         } catch (SQLException se) {
-            //Handle errors for JDBC
             se.printStackTrace();
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
         b(table.render());

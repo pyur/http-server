@@ -31,34 +31,30 @@ public class Md_TableList extends Module {
         Table table = new Table();
 
         try {
-            Statement stmt = m_conn.createStatement();
-
             String db_name = getQuery("db");
             if (db_name == null)  throw new Exception("db absent");
 
-            String sql1 = "USE `" + db_name + "`";
+            Statement stmt = m_conn.createStatement();
+
+            String query_1 = "USE `" + db_name + "`";
             //query('SET CHARACTER SET utf8');
 
-            stmt.executeQuery(sql1);
+            stmt.executeQuery(query_1);
 
 
             // ----
 
-            String sql = "SHOW TABLES";
+            String query = "SHOW TABLES";
 
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()) {
                 String table_name = rs.getString(1);
-                //String tmp = rs.getString(2);
 
-                //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
                 Tr tr = new Tr();
-                table.append(tr);
+                table.addTr(tr);
 
-                tr.append(new Td(table_name));
-
-                //tr.append(new Td(tmp));
+                tr.addTd(new Td(table_name));
             }
 
         } catch (SQLException se) {

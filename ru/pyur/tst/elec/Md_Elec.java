@@ -69,19 +69,19 @@ public class Md_Elec extends Module {
 
                 //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
                 Tr tr = new Tr();
-                table.append(tr);
+                table.addTr(tr);
 
-                tr.append(new Td(id));
+                tr.addTd(new Td(id));
 
-                tr.append(new Td(name));
+                tr.addTd(new Td(name));
 
-                tr.append(new Td(cat));
+                tr.addTd(new Td(cat));
 
-                tr.append(new Td(login));
+                tr.addTd(new Td(login));
 
-                tr.append(new Td(dtx));
+                tr.addTd(new Td(dtx));
 
-                tr.append(new Td(idx));
+                tr.addTd(new Td(idx));
             }
 
         } catch (SQLException se) {

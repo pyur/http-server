@@ -25,26 +25,26 @@ public class Md_DbList extends Module {
 
         b("Базы данных");
 
+
         Table table = new Table();
+
+        //table.addCol("Таблица");
+
 
         try {
             Statement stmt = m_conn.createStatement();
 
-            String sql = "SHOW DATABASES";
+            String query = "SHOW DATABASES";
 
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()) {
                 String db_name = rs.getString(1);
-                //String tmp = rs.getString(2);
 
-                //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
                 Tr tr = new Tr();
-                table.append(tr);
+                table.addTr(tr);
 
-                tr.append(new Td(db_name));
-
-                //tr.append(new Td(tmp));
+                tr.addTd(new Td(db_name));
             }
 
         } catch (SQLException se) {

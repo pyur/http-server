@@ -15,12 +15,12 @@ public class Tr extends Tag {
     }
 
 
-    public void append(Td td) {
+    public void addTd(Td td) {
         tds.add(td);
     }
 
 
-    public String render_nested() {
+    public String renderNested() {
         StringBuilder tds_str = new StringBuilder();
 
         for (Td td : tds) {
