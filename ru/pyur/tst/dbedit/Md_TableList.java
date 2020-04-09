@@ -2,6 +2,7 @@ package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.Module;
 import ru.pyur.tst.Session;
+import ru.pyur.tst.tags.A;
 import ru.pyur.tst.tags.Table;
 import ru.pyur.tst.tags.Td;
 import ru.pyur.tst.tags.Tr;
@@ -28,7 +29,11 @@ public class Md_TableList extends Module {
 
         b("Таблицы базы данных");
 
+
         Table table = new Table();
+
+        table.addColumn("Имя", 200);
+
 
         try {
             String db_name = getQuery("db");
@@ -52,9 +57,16 @@ public class Md_TableList extends Module {
                 String table_name = rs.getString(1);
 
                 Tr tr = new Tr();
-                table.addTr(tr);
+                table.add(tr);
 
-                tr.addTd(new Td(table_name));
+                Td td_db_name = new Td();
+
+                A link = new A();
+                link.setLink("/" + getModule() + "/tb/?db=" + db_name + "&tbl=" + table_name);
+                link.put(table_name);
+
+                td_db_name.add(link);
+                tr.add(td_db_name);
             }
 
         } catch (SQLException se) {
@@ -66,8 +78,7 @@ public class Md_TableList extends Module {
             e.printStackTrace();
         }
 
-        b(table.render());
-
+        b(table);
 
 
         headerEnd();

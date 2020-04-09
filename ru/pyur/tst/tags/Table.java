@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Table extends Tag {
 
-    private ArrayList<Tr> trs = new ArrayList<>();
+//    private ArrayList<Tr> trs = new ArrayList<>();
 
 
     private boolean hasHeader = false;
@@ -43,14 +43,14 @@ public class Table extends Tag {
 
 
     public Table() {
-        tag = "table";
-        hasNested = true;
+        tag_name = "table";
+        //hasNested = true;
     }
 
 
-    public void addTr(Tr tr) {
-        trs.add(tr);
-    }
+//    public void addTr(Tr tr) {
+//        trs.add(tr);
+//    }
 
 
 
@@ -104,23 +104,23 @@ public class Table extends Tag {
     }
 
 
-
+    @Override
     public String renderNested() {
         StringBuilder trs_str = new StringBuilder();
 
         if (columns.size() != 0) {
             Tr head_tr = new Tr();
             for (TableColumn tc : columns) {
-                head_tr.addTd(new Td(tc.description));
+                head_tr.add(new Td(tc.description));
             }
 
             trs_str.append(head_tr.render());
         }
 
 
-        for (Tr tr : trs) {
-            trs_str.append(tr.render());
-        }
+//        for (Tr tr : trs) {
+//            trs_str.append(tr.render());
+//        }
 
         return trs_str.toString();
     }

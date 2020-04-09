@@ -12,7 +12,7 @@ public class Session {
     private byte[] request_payload;
 
     private String prefix;
-    private String module;
+    public String module;
     public String action;
 
 

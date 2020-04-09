@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.tags.Div;
+import ru.pyur.tst.tags.Tag;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -50,8 +51,11 @@ public class Module {
 
 
     // ---- tags ---- //
-    protected void b(Div div) {
-        body.append(div.render());
+    //protected void b(Div div) {
+    //    body.append(div.render());
+    //}
+    protected void b(Tag tag) {
+        body.append(tag.render());
     }
 
 
@@ -95,6 +99,17 @@ public class Module {
                 "table.lst tr:nth-child(odd) {background-color: #eee;}\n" +
                 "table.lst td {text-align: left; padding: 0 0 0 2px;}\n");
 
+        b("a\t{\n" +
+                "\tcolor:#006600;\n" +
+                "\ttext-decoration:none;\n" +
+                "\t}\n");
+
+        b("a:hover {text-decoration: none;}");
+
+        b("a:focus {outline: none;}");
+
+        b("a.k\t{color: #000;}");
+
         b("</style>");
 
         b("</head><body>");
@@ -137,6 +152,10 @@ public class Module {
         lsQuery = session.getQuery();
     }
 
+
+    protected String getModule() { return session.module; }
+
+    protected String getAction() { return session.action; }
 
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data

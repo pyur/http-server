@@ -18,7 +18,7 @@ public class Td extends Tag {
 
 
     private void common_constructor() {
-        tag = "td";
+        tag_name = "td";
         closing = false;
     }
 

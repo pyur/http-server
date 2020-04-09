@@ -7,9 +7,12 @@ import java.util.ArrayList;
 
 public class Tag {
 
-    protected StringBuilder text;
+    protected StringBuilder text = new StringBuilder();
 
-    protected String tag;
+    private ArrayList<Tag> tags = new ArrayList<>();
+
+
+    protected String tag_name;
 
     protected boolean closing = true;
     // false for td, tr
@@ -23,20 +26,22 @@ public class Tag {
     //protected boolean clo = false;
 
     protected boolean hasPre = false;
-    protected boolean hasNested = false;
+    //protected boolean hasNested = false;
 
 
     protected String id;
     protected String name;
-    //protected String clas;
+
+    protected ArrayList<PStr> attributes = new ArrayList<>();
+
     protected ArrayList<String> classes = new ArrayList<>();
 
-    protected ArrayList<PStr> style;
+    protected ArrayList<PStr> styles = new ArrayList<>();
 
-    protected String width;
-    protected String height;
+    //protected String width;
+    //protected String height;
 
-    protected String border;
+    //protected String border;
 
 
 
@@ -45,20 +50,30 @@ public class Tag {
 
     public Tag() {
         //System.out.println("tag constructor");
-        text = new StringBuilder();
-        style = new ArrayList<>();
     }
 
 
-    public void put(String str) { text.append(str); }
+    public void put(String str) {
+        text.append(str);
+    }
 
 
-    public void width(int v) { width = v + "px"; }
+    public void add(Tag tag) {
+        tags.add(tag);
+    }
 
-    public void height(int v) { height = v + "px"; }
 
-    public void border(String v) { border = v; }
 
+    public void width(int v) { styles.add(new PStr("width", v + "px")); }
+
+    public void height(int v) { styles.add(new PStr("height", v + "px")); }
+
+    public void border(String v) { styles.add(new PStr("border", v)); }
+
+
+    public void addAttribute(String name, String value) {
+        attributes.add(new PStr(name, value));
+    }
 
 
 
@@ -76,7 +91,7 @@ public class Tag {
         }
 
         t.append("<");
-        t.append(tag);
+        t.append(tag_name);
 
         if (id != null) {
             t.append(" id=\"");
@@ -98,19 +113,19 @@ public class Tag {
 
         // -------- style -------- //
 
-        if (width != null)  style.add(new PStr("width", width));
-        if (height != null)  style.add(new PStr("height", height));
+        //if (width != null)  styles.add(new PStr("width", width));
+        //if (height != null)  styles.add(new PStr("height", height));
 
-        if (border != null)  style.add(new PStr("border", border));
+        //if (border != null)  styles.add(new PStr("border", border));
 
 
         // ---- implode ---- //
 
-        if (style.size() != 0) {
+        if (styles.size() != 0) {
             StringBuilder style_a = new StringBuilder();
             boolean first = true;
 
-            for (PStr st : style) {
+            for (PStr st : styles) {
                 if (!first) { style_a.append("; "); }
                 style_a.append(st.key);
                 style_a.append(": ");
@@ -123,21 +138,40 @@ public class Tag {
             t.append("\"");
         }
 
+
+        // ---- attributes ---- //
+
+        for (PStr attribute : attributes) {
+            t.append(" ");
+            t.append(attribute.key);
+            if (attribute.value != null) {
+                t.append("=\"");
+                t.append(attribute.value);
+                t.append("\"");
+            }
+        }
+
+
         if (self_closing) { t.append(" /"); }
         t.append(">");
 
 
-        if (hasNested) {
-            t.append(renderNested());
+        //if (hasNested) {
+        String nested = renderNested();
+        if (nested != null)  t.append(nested);
+        //}
+
+        for (Tag tag : tags) {
+            t.append(tag.render());
         }
 
-        //if ...
+
         t.append(text.toString());
 
 
         if (closing) {
             t.append("</");
-            t.append(tag);
+            t.append(tag_name);
             t.append(">");
         }
 
