@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
+import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
+
 
 public class Md_TableView extends Module {
 
@@ -38,10 +41,10 @@ public class Md_TableView extends Module {
 
 
         try {
-            String db_name = getQuery("db");
+            String db_name = getQuery(DBEDIT_PARAM_DB);
             if (db_name == null)  throw new Exception("db absent");
 
-            String table_name = getQuery("tbl");
+            String table_name = getQuery(DBEDIT_PARAM_TABLE);
             if (table_name == null)  throw new Exception("table absent");
 
             Statement stmt = m_conn.createStatement();

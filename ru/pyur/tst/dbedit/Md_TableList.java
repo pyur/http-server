@@ -11,6 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static ru.pyur.tst.dbedit.Info.DBEDIT_ACTION_TABLE;
+import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
+import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
+
 
 public class Md_TableList extends Module {
 
@@ -36,7 +40,7 @@ public class Md_TableList extends Module {
 
 
         try {
-            String db_name = getQuery("db");
+            String db_name = getQuery(DBEDIT_PARAM_DB);
             if (db_name == null)  throw new Exception("db absent");
 
             Statement stmt = m_conn.createStatement();
@@ -62,7 +66,7 @@ public class Md_TableList extends Module {
                 Td td_db_name = new Td();
 
                 A link = new A();
-                link.setLink("/" + getModule() + "/tb/?db=" + db_name + "&tbl=" + table_name);
+                link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_TABLE + "/?" + DBEDIT_PARAM_DB + "=" + db_name + "&" + DBEDIT_PARAM_TABLE + "=" + table_name);
                 link.put(table_name);
 
                 td_db_name.add(link);

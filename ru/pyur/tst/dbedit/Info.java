@@ -11,6 +11,12 @@ public class Info extends ModuleInfo {
     //private static final int ICON = R.mipmap.elec;
     //private static final Fragment UI = "Fm_Elec";
 
+    public static final String DBEDIT_ACTION_DB = "db";
+    public static final String DBEDIT_ACTION_TABLE = "table";
+
+    public static final String DBEDIT_PARAM_DB = "db";
+    public static final String DBEDIT_PARAM_TABLE = "table";
+
 
     public Info(Session session) {
         //System.out.println("Info(Session)");
@@ -30,11 +36,11 @@ public class Info extends ModuleInfo {
             md = new Md_DbList(session);
         }
 
-        else if (action.equals("db")) {
+        else if (action.equals(DBEDIT_ACTION_DB)) {
             md = new Md_TableList(session);
         }
 
-        else if (action.equals("tb")) {
+        else if (action.equals(DBEDIT_ACTION_TABLE)) {
             md = new Md_TableView(session);
         }
 

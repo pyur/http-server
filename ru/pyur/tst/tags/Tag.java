@@ -7,7 +7,8 @@ import java.util.ArrayList;
 
 public class Tag {
 
-    protected StringBuilder text = new StringBuilder();
+    //protected StringBuilder text = new StringBuilder();
+    protected String plainText;
 
     private ArrayList<Tag> tags = new ArrayList<>();
 
@@ -54,7 +55,8 @@ public class Tag {
 
 
     public void put(String str) {
-        text.append(str);
+        //text.append(str);
+        tags.add(new PlainText(str));
     }
 
 
@@ -84,6 +86,8 @@ public class Tag {
 
 
     public String render() {
+        if (plainText != null)  return plainText;
+
         StringBuilder t = new StringBuilder();
 
         if (hasPre) {
@@ -166,7 +170,7 @@ public class Tag {
         }
 
 
-        t.append(text.toString());
+//        t.append(text.toString());
 
 
         if (closing) {

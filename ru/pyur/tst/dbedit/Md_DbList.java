@@ -9,6 +9,9 @@ import ru.pyur.tst.tags.Tr;
 
 import java.sql.*;
 
+import static ru.pyur.tst.dbedit.Info.DBEDIT_ACTION_DB;
+import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
+
 
 public class Md_DbList extends Module {
 
@@ -48,7 +51,8 @@ public class Md_DbList extends Module {
                 Td td_db_name = new Td();
 
                 A link = new A();
-                link.setLink("/" + getModule() + "/db/?db=" + db_name);
+                //todo: 'Link' composer class
+                link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_DB + "/?" + DBEDIT_PARAM_DB + "=" + db_name);
                 link.put(db_name);
 
                 td_db_name.add(link);

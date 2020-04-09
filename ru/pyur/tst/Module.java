@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.tags.Div;
+import ru.pyur.tst.tags.PlainText;
 import ru.pyur.tst.tags.Tag;
 
 import java.sql.Connection;
@@ -15,7 +16,9 @@ public class Module {
     private ArrayList<PStr> lsQuery;
 
 
-    private StringBuilder body;
+    //private StringBuilder body;
+    private ArrayList<Tag> body = new ArrayList<>();
+
 
 
     // ---- temporary ---- //
@@ -27,9 +30,9 @@ public class Module {
     protected Connection m_conn;
 
 
-    public Module() {
-        body = new StringBuilder();
-    }
+    //public Module() {
+    //    body = new StringBuilder();
+    //}
 
 
     //public Module(Session session) {
@@ -41,27 +44,34 @@ public class Module {
 
 
     // ---- string, int ---- //
-    protected void b(String s) {
-        body.append(s);
+    protected void b(String text) {
+        //body.append(s);
+        body.add(new PlainText(text));
     }
 
-    protected void b(int i) {
-        body.append(i);
+    protected void b(int number) {
+        //body.append(i);
+        body.add(new PlainText("" + number));
     }
 
 
     // ---- tags ---- //
-    //protected void b(Div div) {
-    //    body.append(div.render());
-    //}
     protected void b(Tag tag) {
-        body.append(tag.render());
+        //body.append(tag.render());
+        body.add(tag);
     }
 
 
     public String render() {
         //System.out.println(body.toString());
-        return body.toString();
+        //return body.toString();
+        StringBuilder t = new StringBuilder();
+
+        for (Tag tag : body) {
+            t.append(tag.render());
+        }
+
+        return t.toString();
     }
 
 
