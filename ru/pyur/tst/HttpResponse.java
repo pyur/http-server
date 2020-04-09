@@ -89,7 +89,14 @@ public class HttpResponse extends HttpHeader {
 
 
 
+    public void appendPayload(byte[] bytes) {
+        if (bytes == null)  return;
+        try { payload.write(bytes); } catch (Exception e) { e.printStackTrace(); }
+    }
+
+
     public void appendPayload(String str) {
+        if (str == null)  return;
         byte[] bytes = str.getBytes();
         try { payload.write(bytes); } catch (Exception e) { e.printStackTrace(); }
     }

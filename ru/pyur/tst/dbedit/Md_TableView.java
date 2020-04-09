@@ -6,14 +6,16 @@ import ru.pyur.tst.tags.Table;
 import ru.pyur.tst.tags.Td;
 import ru.pyur.tst.tags.Tr;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
-public class Md_Dbedit extends Module {
+public class Md_TableView extends Module {
 
 
 
-    public Md_Dbedit(Session session) {
+    public Md_TableView(Session session) {
         this.session = session;
     }
 
@@ -24,6 +26,10 @@ public class Md_Dbedit extends Module {
         headerBegin();
 
         b("Базы данных");
+
+
+//        String table_name = getQuery("tbl");
+//        if (table_name == null)  throw new Exception("tbl absent");
 
         Table table = new Table();
 

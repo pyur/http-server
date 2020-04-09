@@ -1,6 +1,9 @@
 package ru.pyur.tst;
 
 
+import java.io.FileInputStream;
+import java.util.ArrayList;
+
 public class Session {
 
     private Session session;
@@ -10,7 +13,7 @@ public class Session {
 
     private String prefix;
     private String module;
-    private String action;
+    public String action;
 
 
 
@@ -62,7 +65,7 @@ public class Session {
 
     private ProtocolDispatcher.CallbackSession cb_session = new ProtocolDispatcher.CallbackSession() {
         @Override
-        public String onReceived(HttpRequest http_request, byte[] bytes) {
+        public byte[] onReceived(HttpRequest http_request, byte[] bytes) {
 //            System.out.println("----------- Request -----------");
 //            System.out.println("[" + http_request.szMethod + "] [" + http_request.szLocation + "] [" + http_request.szVersion + "]");
 //
@@ -85,7 +88,7 @@ public class Session {
 
     // --------------------------------------------------------------------------------
 
-    private String dispatch() {
+    private byte[] dispatch() {
 
         boolean isPrefixed = false;
 
@@ -123,6 +126,23 @@ public class Session {
                 module = request_header.lsPath[1];
                 action = request_header.lsPath[2];
             }
+
+            // /favicon.ico
+            if (request_header.lsPath.length == 2) {
+                if (request_header.lsPath[1].equals("favicon.ico")) {
+                    //System.out.println("must return favicon");
+                    byte[] bytes = null;
+
+                    try {
+                        //System.out.println("user dir: " + System.getProperty("user.dir"));
+                        FileInputStream fis = new FileInputStream("favicon.ico");
+                        bytes = new byte[fis.available()];
+                        int read_length = fis.read(bytes);
+                    } catch (Exception e) { e.printStackTrace(); }
+
+                    return bytes;
+                }
+            }
         }
 
         else {
@@ -157,31 +177,25 @@ public class Session {
         }
 
         else if (module.equals("db")) {
-
-            if (action.isEmpty()) {
-                md = new ru.pyur.tst.dbedit.Md_Dbedit(session);
-            }
-            else if (action.equals("aaa")) {
-                md = new ru.pyur.tst.dbedit.Md_Dbedit(session);
-            }
-            else if (action.equals("bbb")) {
-                md = new ru.pyur.tst.dbedit.Md_Dbedit(session);
-            }
+            md = new ru.pyur.tst.dbedit.Info(session).dispatch();
         }
 
 
         if (md != null) {
-
             md.prepare();
-            return md.render();
+            return md.render().getBytes();
         }
 
 
-        return "";
+        return null;
     }
 
 
 
+
+    public ArrayList<PStr> getQuery() {
+        return request_header.getQuery();
+    }
 
 
 

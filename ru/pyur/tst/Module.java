@@ -5,10 +5,14 @@ import ru.pyur.tst.tags.Div;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class Module {
 
     protected Session session;
+
+    private ArrayList<PStr> lsQuery;
+
 
     private StringBuilder body;
 
@@ -83,7 +87,8 @@ public class Module {
 
         b("td {\n" +
                 "\tborder: 1px solid #ccc;\n" +
-                "\tpadding: 0;\n" +
+                "\ttext-align: left;\n" +
+                "\tpadding: 0 0 0 2px;\n" +
                 "\t}\n");
 
         b("table.lst tr:first-child td {font-weight: bold; background-color: #ddd; text-align: center; padding: 0;}\n" +
@@ -124,4 +129,24 @@ public class Module {
             } catch (Exception e) { e.printStackTrace(); }
         }
     }
+
+
+
+
+    protected void parseSession() {
+        lsQuery = session.getQuery();
+    }
+
+
+
+    // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
+    protected String getQuery(String key) {
+        for (PStr pair : lsQuery) {
+            if (pair.key.equals(key))  return pair.value;
+        }
+
+        return null;
+    }
+
+
 }

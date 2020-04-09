@@ -27,7 +27,7 @@ public class ServerTcp {
             ServerSocket server = new ServerSocket(port);
 
             for(;;) {
-                System.out.println("waiting...");
+                //System.out.println("waiting...");
                 Socket client = server.accept();  // thread locking
                 //System.out.println("Connection accepted.");
 

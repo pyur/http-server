@@ -351,4 +351,13 @@ public class HttpRequest extends HttpHeader {
     }
 
 
+
+
+    // ---------------- getters, setters ------------------------------------------------
+
+    public ArrayList<PStr> getQuery() {
+        return lsQuery;
+    }
+
+
 }

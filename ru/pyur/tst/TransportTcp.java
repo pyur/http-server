@@ -131,9 +131,9 @@ public class TransportTcp extends Transport implements Runnable {
 
 
     public int Send(byte[] bytes) {
-        System.out.println("---- Send ------------------------------------------------------");
-        System.out.println(new String(bytes));
-        System.out.println("----------------------------------------------------------------");
+        //System.out.println("---- Send ------------------------------------------------------");
+        //System.out.println(new String(bytes));
+        //System.out.println("----------------------------------------------------------------");
 
         try {
             os.write(bytes);

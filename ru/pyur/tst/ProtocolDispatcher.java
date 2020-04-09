@@ -98,7 +98,7 @@ public class ProtocolDispatcher {
     private CallbackSession callback_session;
 
     public interface CallbackSession {
-        String onReceived(HttpRequest http_request, byte[] payload);
+        byte[] onReceived(HttpRequest http_request, byte[] payload);
     }
 
 
@@ -262,7 +262,7 @@ public class ProtocolDispatcher {
             if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload.toByteArray());
 
             if (callback_session != null) {
-                String feedback = callback_session.onReceived(http_request, payload.toByteArray());
+                byte[] feedback = callback_session.onReceived(http_request, payload.toByteArray());
 
                 HttpResponse response = new HttpResponse();
                 response.setConnectionClose();
@@ -382,9 +382,9 @@ public class ProtocolDispatcher {
 
         raw_header = Arrays.copyOfRange(bytes, 0, header_size);
 
-        System.out.println("---- raw header ------------------------------------------------");
-        System.out.println(new String(raw_header));
-        System.out.println("----------------------------------------------------------------");
+        //System.out.println("---- raw header ------------------------------------------------");
+        //System.out.println(new String(raw_header));
+        //System.out.println("----------------------------------------------------------------");
 
 
         // -- cut header from stream-- //
