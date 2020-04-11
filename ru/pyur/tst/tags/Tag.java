@@ -85,7 +85,8 @@ public class Tag {
 
 
 
-    public String render() {
+    @Override
+    public String toString() {
         if (plainText != null)  return plainText;
 
         StringBuilder t = new StringBuilder();
@@ -166,7 +167,7 @@ public class Tag {
         //}
 
         for (Tag tag : tags) {
-            t.append(tag.render());
+            t.append(tag.toString());
         }
 
 

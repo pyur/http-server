@@ -31,6 +31,7 @@ public class Md_TableView extends Module {
 
 
         Table table = new Table();
+        b(table);
 
         table.addColumn("Имя", 150);
         table.addColumn("Тип", 200);
@@ -89,7 +90,6 @@ public class Md_TableView extends Module {
             e.printStackTrace();
         }
 
-        b(table);
 
 
         //Div outer_div = new Div();

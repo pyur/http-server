@@ -2,10 +2,7 @@ package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.Module;
 import ru.pyur.tst.Session;
-import ru.pyur.tst.tags.A;
-import ru.pyur.tst.tags.Table;
-import ru.pyur.tst.tags.Td;
-import ru.pyur.tst.tags.Tr;
+import ru.pyur.tst.tags.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -66,7 +63,16 @@ public class Md_TableList extends Module {
                 Td td_db_name = new Td();
 
                 A link = new A();
-                link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_TABLE + "/?" + DBEDIT_PARAM_DB + "=" + db_name + "&" + DBEDIT_PARAM_TABLE + "=" + table_name);
+
+                Url href = new Url();
+                href.setModule(getModule());
+                href.setAction(DBEDIT_ACTION_TABLE);
+                href.addParameter(DBEDIT_PARAM_DB, db_name);
+                href.addParameter(DBEDIT_PARAM_TABLE, table_name);
+
+                //link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_TABLE + "/?" + DBEDIT_PARAM_DB + "=" + db_name + "&" + DBEDIT_PARAM_TABLE + "=" + table_name);
+                link.setHref(href);
+
                 link.put(table_name);
 
                 td_db_name.add(link);

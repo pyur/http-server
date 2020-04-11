@@ -107,7 +107,7 @@ public class Md_Elec extends Module {
             }//end finally try
         }//end try
 
-        b(table.render());
+        b(table.toString());
 
 
         System.out.println("Goodbye!");

@@ -114,7 +114,7 @@ public class Table extends Tag {
                 head_tr.add(new Td(tc.description));
             }
 
-            trs_str.append(head_tr.render());
+            trs_str.append(head_tr.toString());
         }
 
 

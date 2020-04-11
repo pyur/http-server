@@ -1,12 +1,10 @@
 package ru.pyur.tst;
 
-import ru.pyur.tst.tags.Div;
 import ru.pyur.tst.tags.PlainText;
 import ru.pyur.tst.tags.Tag;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Module {
@@ -68,7 +66,7 @@ public class Module {
         StringBuilder t = new StringBuilder();
 
         for (Tag tag : body) {
-            t.append(tag.render());
+            t.append(tag.toString());
         }
 
         return t.toString();

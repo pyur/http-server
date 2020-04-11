@@ -11,10 +11,17 @@ public class A extends Tag {
 
 
 
-
+    //todo: remove
     public void setLink(String link) {
         //maybe check attribute for presence
         addAttribute("href", link);
+    }
+
+
+
+    public void setHref(Url href) {
+        //maybe check attribute for presence
+        addAttribute("href", href.toString());
     }
 
 
