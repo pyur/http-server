@@ -13,6 +13,7 @@ public class Info extends ModuleInfo {
 
     public static final String DBEDIT_ACTION_DB = "db";
     public static final String DBEDIT_ACTION_TABLE = "table";
+    public static final String DBEDIT_ACTION_TABLE_EDIT = "table_edit";
 
     public static final String DBEDIT_PARAM_DB = "db";
     public static final String DBEDIT_PARAM_TABLE = "table";

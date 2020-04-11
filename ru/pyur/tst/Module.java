@@ -7,21 +7,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
-public class Module {
+
+public abstract class Module {
 
     protected Session session;
 
     private ArrayList<PStr> lsQuery;
 
 
-    //private StringBuilder body;
     private ArrayList<Tag> body = new ArrayList<>();
 
 
 
     // ---- temporary ---- //
 
-    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/skdev";
+    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1";
 
@@ -41,28 +41,39 @@ public class Module {
     protected void prepare() {}
 
 
+    public void prepareHtml() {
+        connectToDb();
+
+        headerBegin();
+
+        prepare();
+
+        headerEnd();
+
+        closeDb();
+    }
+
+
+
     // ---- string, int ---- //
     protected void b(String text) {
-        //body.append(s);
         body.add(new PlainText(text));
     }
 
     protected void b(int number) {
-        //body.append(i);
         body.add(new PlainText("" + number));
     }
 
 
     // ---- tags ---- //
     protected void b(Tag tag) {
-        //body.append(tag.render());
         body.add(tag);
     }
 
 
-    public String render() {
-        //System.out.println(body.toString());
-        //return body.toString();
+
+    @Override
+    public String toString() {
         StringBuilder t = new StringBuilder();
 
         for (Tag tag : body) {
@@ -82,7 +93,7 @@ public class Module {
         b("</title>");
         b("<meta charset=\"UTF-8\">");
 
-        b("<style>");
+        b("\n<style>\n");
 
         b("body {\n" +
                 "\tfont-family: 'Roboto', 'Tahoma', 'Arial', sans-serif;\n" +
@@ -112,13 +123,24 @@ public class Module {
                 "\ttext-decoration:none;\n" +
                 "\t}\n");
 
-        b("a:hover {text-decoration: none;}");
+        b("a:hover {text-decoration: none;}\n");
 
-        b("a:focus {outline: none;}");
+        b("a:focus {outline: none;}\n");
 
-        b("a.k\t{color: #000;}");
+        b("a.k\t{color: #000;}\n");
 
-        b("</style>");
+        b("a.s\t{\n" +
+                "\tdisplay: inline-block;\n" +
+                "\twidth: 14px;\n" +
+                "\theight: 14px;\n" +
+                "\tmargin: 0 2px 0 0;\n" +
+                "\tvertical-align: bottom;\n" +
+                "\tcursor: pointer;\n" +
+                "\tborder: 1px solid red;\n" +  // temporary
+                //"\t/*background-image: url('/c/s.png');*/\n" +
+                "\t}\n");
+
+        b("</style>\n");
 
         b("</head><body>");
     }
@@ -134,15 +156,16 @@ public class Module {
 
         try {
             // -- Open a connection
-            System.out.println("Connecting to a selected database...");
+            //System.out.println("Connecting to a selected database...");
             m_conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            //todo: from DataSource
-            System.out.println("Connected database successfully...");
+            //todo: use 'DataSource' class
+            //System.out.println("Connected database successfully...");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
 
 
     protected void closeDb() {

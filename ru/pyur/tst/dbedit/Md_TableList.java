@@ -23,15 +23,15 @@ public class Md_TableList extends Module {
     }
 
 
-    public void prepare() {
-        connectToDb();
 
-        headerBegin();
+    @Override
+    public void prepare() {
 
         b("Таблицы базы данных");
 
 
         Table table = new Table();
+        b(table);
 
         table.addColumn("Имя", 200);
 
@@ -88,12 +88,8 @@ public class Md_TableList extends Module {
             e.printStackTrace();
         }
 
-        b(table);
 
 
-        headerEnd();
-
-        closeDb();
     }
 
 

@@ -5,9 +5,8 @@ import ru.pyur.tst.Util;
 
 import java.util.ArrayList;
 
-public class Tag {
+public abstract class Tag {
 
-    //protected StringBuilder text = new StringBuilder();
     protected String plainText;
 
     private ArrayList<Tag> tags = new ArrayList<>();
@@ -39,23 +38,15 @@ public class Tag {
 
     protected ArrayList<PStr> styles = new ArrayList<>();
 
-    //protected String width;
-    //protected String height;
-
-    //protected String border;
 
 
 
-
-
-
-    public Tag() {
+    //public Tag() {
         //System.out.println("tag constructor");
-    }
+    //}
 
 
     public void put(String str) {
-        //text.append(str);
         tags.add(new PlainText(str));
     }
 
@@ -64,6 +55,10 @@ public class Tag {
         tags.add(tag);
     }
 
+
+    public void addClass(String class_name) {
+        classes.add(class_name);
+    }
 
 
     public void width(int v) { styles.add(new PStr("width", v + "px")); }
@@ -83,11 +78,16 @@ public class Tag {
 
     public String renderNested() { return null; }
 
+    public String renderNestedPost() { return null; }
+
 
 
     @Override
     public String toString() {
-        if (plainText != null)  return plainText;
+        if (tag_name == null) {
+            if (plainText == null)  return "[NULL]";
+            return plainText;
+        }
 
         StringBuilder t = new StringBuilder();
 
@@ -166,12 +166,15 @@ public class Tag {
         if (nested != null)  t.append(nested);
         //}
 
+
         for (Tag tag : tags) {
             t.append(tag.toString());
         }
 
 
-//        t.append(text.toString());
+        String nested_post = renderNestedPost();
+        if (nested_post != null)  t.append(nested_post);
+
 
 
         if (closing) {

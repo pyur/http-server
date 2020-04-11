@@ -19,15 +19,14 @@ public class Md_DbList extends Module {
 
 
 
+    @Override
     public void prepare() {
-        connectToDb();
-
-        headerBegin();
 
         b("Базы данных");
 
 
         Table table = new Table();
+        b(table);
 
         table.addColumn("Имя", 200);
 
@@ -68,13 +67,6 @@ public class Md_DbList extends Module {
             se.printStackTrace();
         }
 
-        b(table);
-
-
-
-        headerEnd();
-
-        closeDb();
     }
 
 

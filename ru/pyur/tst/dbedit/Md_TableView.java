@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static ru.pyur.tst.dbedit.Info.DBEDIT_ACTION_TABLE_EDIT;
 import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
 import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
 
@@ -22,10 +23,8 @@ public class Md_TableView extends Module {
 
 
 
+    @Override
     public void prepare() {
-        connectToDb();
-
-        headerBegin();
 
         b("Колонки таблицы");
 
@@ -39,6 +38,12 @@ public class Md_TableView extends Module {
         table.addColumn("Key", 60);
         table.addColumn("Default", 180);
         table.addColumn("Extra", 250);
+
+        table.addAction("icon");  // edit
+        table.addAction("act2");  // some action 2
+        table.addAction("act3");  // some action 3
+        //table.addAction("act4");  // some action 4
+
 
 
         try {
@@ -80,6 +85,30 @@ public class Md_TableView extends Module {
                 tr.add(new Td(keys));
                 tr.add(new Td(default_value));
                 tr.add(new Td(extra));
+
+                Url url = new Url();
+                url.setModule(getModule());
+                url.setAction(DBEDIT_ACTION_TABLE_EDIT);
+                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
+                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
+                url.addParameter("col", column_name);
+                tr.addAction(url);
+
+                url = new Url();
+                url.setModule(getModule());
+                url.setAction("act2");
+                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
+                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
+                url.addParameter("col", column_name);
+                tr.addAction(url);
+
+                url = new Url();
+                url.setModule(getModule());
+                url.setAction("act3");
+                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
+                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
+                url.addParameter("col", column_name);
+                tr.addAction(url);
             }
 
         } catch (SQLException se) {
@@ -113,9 +142,6 @@ public class Md_TableView extends Module {
 //        b(outer_div);
 
 
-        headerEnd();
-
-        closeDb();
     }
 
 

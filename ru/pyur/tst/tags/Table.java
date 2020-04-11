@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 public class Table extends Tag {
 
-//    private ArrayList<Tr> trs = new ArrayList<>();
-
-
     private boolean hasHeader = false;
 
     private ArrayList<TableColumn> columns = new ArrayList<>();
@@ -29,14 +26,22 @@ public class Table extends Tag {
     }
 
 
+    boolean hasActions = false;
+
+    private ArrayList<ActionButton> actions = new ArrayList<>();
 
     private class ActionButton {
         public String icon;
         public String description;
-        public String location;
+        //public String location;
 
-        public ActionButton() {
+        public ActionButton(String icon) {
+            this(icon, "");
+        }
 
+        public ActionButton(String icon, String description) {
+            this.icon = icon;
+            this.description = description;
         }
     }
 
@@ -44,22 +49,11 @@ public class Table extends Tag {
 
     public Table() {
         tag_name = "table";
-        //hasNested = true;
     }
-
-
-//    public void addTr(Tr tr) {
-//        trs.add(tr);
-//    }
-
 
 
 
     public void addColumn(String description, int width) {
-        if (!hasPre) {
-            hasPre = true;
-            classes.add("lst");
-        }
         addColumn(description, width, TABLE_COLUMN_ALIGN_DEFAULT);
     }
 
@@ -67,62 +61,168 @@ public class Table extends Tag {
 
     public void addColumn(String description, int width, int align) {
         if (description != null) { hasHeader = true; }
+
+        if (!hasPre) {
+            hasPre = true;
+            classes.add("lst");
+        }
+
         columns.add(new TableColumn(description, width, align));
     }
 
 
 
-
-    public String renderPre() {
-        if (columns.size() == 0) return "";
-
-        StringBuilder pre = new StringBuilder();
-
-        pre.append("\r\n<style>\r\n");
-
-        int i = 1;
-        for (TableColumn tc : columns) {
-            pre.append("table.lst td:nth-child(");
-            //todo: exclude optional head row
-            pre.append(i);
-            pre.append(") {");
-
-            pre.append("width: ");
-            pre.append(tc.width);
-            pre.append("px;");
-
-            if (tc.align == TABLE_COLUMN_ALIGN_LEFT) { pre.append("text-align: left; padding: 0 0 0 2px;"); }
-            else if (tc.align == TABLE_COLUMN_ALIGN_CENTER) { pre.append("text-align: center; padding: 0;"); }
-            else if (tc.align == TABLE_COLUMN_ALIGN_RIGHT) { pre.append("text-align: right; padding: 0 2px 0 0;"); }
-            pre.append("}\r\n");
-            i++;
+    public void addAction(String icon) {
+        if (!hasActions) {
+            hasActions = true;
         }
 
-        pre.append("</style>\r\n");
-
-        return pre.toString();
+        actions.add(new ActionButton("icon"));
     }
+
+
+
+    @Override
+    public String renderPre() {
+        if (actions.size() != 0) {
+            String actions_desc = null;
+            if (hasHeader) {
+                switch(actions.size()) {
+                    case 1:
+                        actions_desc = "Д";
+                        break;
+                    case 2:
+                        actions_desc = "Д.";
+                        break;
+                    case 3:
+                        actions_desc = "Дейст";
+                        break;
+                    case 4:
+                        actions_desc = "Действ";
+                        break;
+                    default:
+                        actions_desc = "Действия";
+                        break;
+                }
+            }
+            addColumn(actions_desc, actions.size() * 18);
+        }
+
+
+        StringBuilder sb = new StringBuilder();
+
+        if (columns.size() != 0) {
+            sb.append("\r\n<style>\r\n");
+
+            int i = 1;
+            for (TableColumn tc : columns) {
+                sb.append("table.lst td:nth-child(");
+                //todo: exclude optional head row. tr:nth-child(n+1)
+                sb.append(i);
+                sb.append(") {");
+
+                sb.append("width: ");
+                sb.append(tc.width);
+                sb.append("px;");
+
+                if (tc.align == TABLE_COLUMN_ALIGN_LEFT) {
+                    sb.append("text-align: left; padding: 0 0 0 2px;");
+                } else if (tc.align == TABLE_COLUMN_ALIGN_CENTER) {
+                    sb.append("text-align: center; padding: 0;");
+                } else if (tc.align == TABLE_COLUMN_ALIGN_RIGHT) {
+                    sb.append("text-align: right; padding: 0 2px 0 0;");
+                }
+
+                sb.append("}\r\n");
+                i++;
+            }
+
+            if (actions.size() != 0) {
+                //table.lst td:nth-child(7) > a:nth-child(1) {background-position: -288px -64px;}
+
+                int j = 1;
+                for (ActionButton but : actions) {
+                    sb.append("table.lst td:nth-child(");
+                    sb.append(columns.size());
+                    sb.append(") > a:nth-child(");
+                    sb.append(j);
+                    sb.append(")");
+
+                    sb.append(" {background-position: ");
+                    sb.append(0);
+                    sb.append("px ");
+                    sb.append(0);
+                    sb.append("px;");
+
+                    switch (j) {
+                        case 1:
+                            sb.append(" border: 1px solid blue;");
+                            break;
+
+                        case 2:
+                            sb.append(" border: 1px solid magenta;");
+                            break;
+
+                        case 3:
+                            sb.append(" border: 1px solid cyan;");
+                            break;
+                    }
+
+                    sb.append("}\r\n");
+                    j++;
+                }
+            }
+
+            sb.append("</style>\r\n");
+        }
+
+
+//        if (actions.size() != 0) {
+//            pre.append("\r\n<style>\r\n");
+//            //a.i0 {background-position: -288px -64px;}
+//            //<a class="i0 s" href="/elec/ele/?elc=1"></a>
+//
+//            int i = 0;
+//            for (ActionButton but : actions) {
+//                pre.append("a.i");
+//                pre.append(i);
+//
+//                pre.append(" {background-position: ");
+//                pre.append(0);
+//                pre.append("px ");
+//                pre.append(0);
+//                pre.append("px;");
+//
+//                pre.append("}\r\n");
+//                i++;
+//            }
+//
+//            pre.append("</style>\r\n");
+//        }
+
+
+        return sb.toString();
+    }
+
 
 
     @Override
     public String renderNested() {
-        StringBuilder trs_str = new StringBuilder();
+        if (!hasHeader)  return "";
+
+        StringBuilder sb = new StringBuilder();
 
         if (columns.size() != 0) {
             Tr head_tr = new Tr();
             for (TableColumn tc : columns) {
+                //System.out.println(tc.description);
                 head_tr.add(new Td(tc.description));
             }
 
-            trs_str.append(head_tr.toString());
+            sb.append(head_tr.toString());
         }
 
-
-//        for (Tr tr : trs) {
-//            trs_str.append(tr.render());
-//        }
-
-        return trs_str.toString();
+        return sb.toString();
     }
 
 

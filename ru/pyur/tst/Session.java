@@ -1,8 +1,8 @@
 package ru.pyur.tst;
 
-
 import java.io.FileInputStream;
 import java.util.ArrayList;
+
 
 public class Session {
 
@@ -11,7 +11,7 @@ public class Session {
     private HttpRequest request_header;
     private byte[] request_payload;
 
-    private String prefix;
+    private String prefix;  // a - api, i - image, e - embed, etc
     public String module;
     public String action;
 
@@ -182,8 +182,8 @@ public class Session {
 
 
         if (md != null) {
-            md.prepare();
-            return md.render().getBytes();
+            md.prepareHtml();
+            return md.toString().getBytes();
         }
 
 
