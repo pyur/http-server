@@ -180,6 +180,10 @@ public class Session {
             md = new ru.pyur.tst.dbedit.Info(session).dispatch();
         }
 
+        else if (module.equals("res")) {
+            md = new ru.pyur.tst.resources.Info(session).dispatch();
+        }
+
 
         if (md != null) {
             md.prepareHtml();

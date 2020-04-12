@@ -21,6 +21,10 @@ public class Main {
             Class.forName("org.mariadb.jdbc.Driver");
         } catch (Exception e) { e.printStackTrace(); }
 
+        try {
+//            Class.forName("org.sqlite.jdbc.Driver");
+        } catch (Exception e) { e.printStackTrace(); }
+
 
         //TestClient client = new TestClient();
         //client.run();

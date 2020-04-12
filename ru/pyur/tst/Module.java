@@ -142,6 +142,14 @@ public abstract class Module {
 
         b("</style>\n");
 
+
+//        b("<script>\n");
+//        b("var style = document.createElement(\"STYLE\");\n");
+//        b("style.innerHTML = 'a {border: 2px dashed cyan;}'\n");
+//        b("document.head.appendChild(style);\n");
+//        b("</script>\n");
+
+
         b("</head><body>");
     }
 
