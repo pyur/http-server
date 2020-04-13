@@ -18,13 +18,13 @@ public class Md_TableList extends Module {
 
 
     public Md_TableList(Session session) {
-        setSession(session);
+        initHtml(session);
     }
 
 
 
     @Override
-    public void prepare() {
+    public void makeContent() {
 
         b("Таблицы базы данных");
 
@@ -88,10 +88,7 @@ public class Md_TableList extends Module {
         }
 
 
-
     }
-
-
 
 
 

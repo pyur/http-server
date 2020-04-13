@@ -82,6 +82,12 @@ public class HttpResponse extends HttpHeader {
 
 
 
+    public void addOption(PStr option) {
+        options.add(option);
+    }
+
+
+
     public void setConnectionClose() {
         PStr opt = new PStr("Connection", "close");
         options.add(opt);

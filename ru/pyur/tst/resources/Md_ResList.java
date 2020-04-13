@@ -4,36 +4,34 @@ import ru.pyur.tst.Module;
 import ru.pyur.tst.Session;
 import ru.pyur.tst.tags.*;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 
 public class Md_ResList extends Module {
 
     public Md_ResList(Session session) {
-        setSession(session);
+        initHtml(session);
     }
 
 
 
     @Override
-    public void prepare() {
+    public void makeContent() {
+
+        Connection conn;
 
         final String DB_URL = "jdbc:sqlite:config.db";
-        //final String DB_USER = "root";
-        //final String DB_PASSWORD = "1";
 
         try {
-            m_conn = DriverManager.getConnection(DB_URL);
+            conn = DriverManager.getConnection(DB_URL);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
 
 
 
-        b("Таблицы базы данных");
+        b("?");
 
         Table table = new Table();
         b(table);
@@ -45,7 +43,7 @@ public class Md_ResList extends Module {
 //            String db_name = getQuery(DBEDIT_PARAM_DB);
 //            if (db_name == null)  throw new Exception("db absent");
 
-            Statement stmt = m_conn.createStatement();
+            Statement stmt = conn.createStatement();
 
 //            String query_1 = "USE `" + db_name + "`";
 //            //query('SET CHARACTER SET utf8');

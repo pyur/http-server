@@ -6,11 +6,12 @@ import ru.pyur.tst.Session;
 public class Md_Water extends Module {
 
     public Md_Water(Session session) {
-        this.session = session;
+        initHtml(session);
     }
 
 
-    public void prepare() {
+
+    public void makeContent() {
         b("Hello from Md_Water!");
     }
 

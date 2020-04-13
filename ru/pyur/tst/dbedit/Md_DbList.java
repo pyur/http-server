@@ -12,15 +12,14 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
 
 public class Md_DbList extends Module {
 
-
     public Md_DbList(Session session) {
-        this.session = session;
+        initHtml(session);
     }
 
 
 
     @Override
-    public void prepare() {
+    public void makeContent() {
 
         b("Базы данных");
 
@@ -68,9 +67,6 @@ public class Md_DbList extends Module {
         }
 
     }
-
-
-
 
 
 }

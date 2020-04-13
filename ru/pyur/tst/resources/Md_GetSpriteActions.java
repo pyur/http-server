@@ -11,16 +11,13 @@ import java.util.Base64;
 public class Md_GetSpriteActions extends Module {
 
     public Md_GetSpriteActions(Session session) {
-        setSession(session);
-        //setType(MODULE_TYPE_BINARY);
-        setType(MODULE_TYPE_JSON);
+        initJson(session);
     }
 
 
 
     @Override
-    //public void prepareBin() {
-    public void prepareJsonData() {
+    public void makeContent() {
 
         appendJson("ts", "999");
 

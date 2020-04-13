@@ -17,13 +17,13 @@ public class Md_TableView extends Module {
 
 
     public Md_TableView(Session session) {
-        setSession(session);
+        initHtml(session);
     }
 
 
 
     @Override
-    public void prepare() {
+    public void makeContent() {
 
         b("Колонки таблицы");
 
@@ -118,33 +118,6 @@ public class Md_TableView extends Module {
             e.printStackTrace();
         }
 
-
-
-        //Div outer_div = new Div();
-//        A outer_div = new A();
-//
-//        outer_div.setLink("/aaa/bbb/");
-//
-//        Div inner_div_1 = new Div();
-//        inner_div_1.put("first");
-//
-//        Div inner_div_2 = new Div();
-//        inner_div_2.put("second");
-//
-//        Div inner_div_3 = new Div();
-//        inner_div_3.put("third");
-//
-//        outer_div.addTag(inner_div_1);
-//        outer_div.addTag(inner_div_2);
-//        outer_div.addTag(inner_div_3);
-//
-//        b(outer_div);
-
-
     }
-
-
-
-
 
 }

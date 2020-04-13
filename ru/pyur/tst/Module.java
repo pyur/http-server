@@ -17,22 +17,36 @@ public abstract class Module {
 
     private ArrayList<PStr> lsQuery;
 
+    //https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+    private ArrayList<PStr> outOptions = new ArrayList<>();
+
 
     public static final int MODULE_TYPE_HTML = 0;
-    public static final int MODULE_TYPE_BINARY = 1;
-    public static final int MODULE_TYPE_JSON = 2;
+    public static final int MODULE_TYPE_JSON = 1;
+    public static final int MODULE_TYPE_BINARY = 2;
+    public static final int MODULE_TYPE_IMAGE_PNG = 3;
+    public static final int MODULE_TYPE_IMAGE_JPG = 4;
+    //public static final int MODULE_TYPE_AUDIO_MP3 = ;
+    //public static final int MODULE_TYPE_VIDEO_MP4 = ;
 
-    private int module_type = MODULE_TYPE_HTML;
 
+    private int module_type;
+
+    // ---------------- Html ---------------- //
+    private ArrayList<Tag> head = new ArrayList<>();
     private ArrayList<Tag> body = new ArrayList<>();
+    private String title;
 
-    private ByteArrayOutputStream binary_data = new ByteArrayOutputStream();
-
+    // ---------------- Json ---------------- //
     private StringBuilder json_temp = new StringBuilder();
     private boolean json_temp_first = true;
 
+    // ---------------- Binary, Image ---------------- //
+    private ByteArrayOutputStream binary_data = new ByteArrayOutputStream();
 
-    // ---- temporary ---- //
+
+
+    // ---- Database ---- //
 
     private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
     private static final String DB_USER = "root";
@@ -41,34 +55,96 @@ public abstract class Module {
     protected Connection m_conn;
 
 
-    //public Module() {
-    //    body = new StringBuilder();
-    //}
 
-
-    //public Module(Session session) {
-    //    this.session = session;
-    //}
-
-
-    protected void prepare() {}
-
-
-    public void prepareHtml() {
-        connectToDb();
-
-        headerBegin();
-
-        prepare();
-
-        headerEnd();
-
-        closeDb();
+    private void initCommon(Session session) {
+        this.session = session;
+        lsQuery = session.getQuery();
     }
 
 
 
-    // ---- string, int ---- //
+    protected abstract void makeContent();
+
+
+
+    protected String getModule() { return session.module; }
+
+    protected String getAction() { return session.action; }
+
+
+    // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
+    protected String getQuery(String key) {
+        for (PStr pair : lsQuery) {
+            if (pair.key.equals(key))  return pair.value;
+        }
+
+        return null;
+    }
+
+
+//x    public int getType() { return module_type; }
+//x    protected void setType(int type) { module_type = type; }
+
+
+
+    public byte[] getContents() {
+
+        switch (module_type) {
+            case MODULE_TYPE_HTML:
+                return makeHtml();
+                //break;
+
+            case MODULE_TYPE_JSON:
+                return makeJson();
+                //break;
+
+            case MODULE_TYPE_BINARY:
+                return makeBinary();
+                //break;
+
+            case MODULE_TYPE_IMAGE_PNG:
+                //return makeImagePng();
+                break;
+
+            case MODULE_TYPE_IMAGE_JPG:
+                //return makeImageJpg();
+                break;
+        }
+
+        return null;
+    }
+
+
+
+    public ArrayList<PStr> getOptions() {
+        return outOptions;
+    }
+
+
+    protected void addOption(String name, String value) {
+        outOptions.add(new PStr(name, value));
+    }
+
+
+    private void setContentType(String value) {
+        outOptions.add(new PStr("Content-Type", value));
+    }
+
+
+
+
+    // -------------------------------- Html -------------------------------- //
+
+    protected void initHtml(Session session) {
+        initCommon(session);
+        module_type = MODULE_TYPE_HTML;
+        setContentType("text/html; charset=utf-8");
+        //setContentType("text/plain");
+    }
+
+
+
+    // ---- string, int, tags ---- //
     protected void b(String text) {
         body.add(new PlainText(text));
     }
@@ -77,97 +153,81 @@ public abstract class Module {
         body.add(new PlainText("" + number));
     }
 
-
-    // ---- tags ---- //
     protected void b(Tag tag) {
         body.add(tag);
     }
 
 
+    // ---- string, int, tags ---- //
+    protected void h(String text) {
+        head.add(new PlainText(text));
+    }
 
-    @Override
-    public String toString() {
-        StringBuilder t = new StringBuilder();
+    protected void h(int number) {
+        head.add(new PlainText("" + number));
+    }
 
-        for (Tag tag : body) {
-            t.append(tag.toString());
-        }
-
-        return t.toString();
+    protected void h(Tag tag) {
+        head.add(tag);
     }
 
 
+
+    private byte[] makeHtml() {
+        connectToDb();
+
+        makeContent();
+
+        makeHtmlHeader();
+
+        //makeHtmlFooter();
+
+        closeDb();
+
+
+        StringBuilder html = new StringBuilder();
+
+        for (Tag tag : head) {
+            html.append(tag.toString());
+        }
+
+        for (Tag tag : body) {
+            html.append(tag.toString());
+        }
+
+        html.append("</body></html>");
+
+        return html.toString().getBytes();
+    }
+
     // ---- temporary ---- //
 
-    protected void headerBegin() {
+    protected void makeHtmlHeader() {
         b("<!DOCTYPE html>\r\n<html><head>");
-        b("<title>");
-        b("Заголовок");
-        b("</title>");
+        if (title != null) {
+            b("<title>");
+            b(title);
+            b("</title>");
+        }
         b("<meta charset=\"UTF-8\">");
 
-        b("\n<style>\n");
+        b("\r\n<style>\r\n");
 
-        b("body {\n" +
-                "\tfont-family: 'Roboto', 'Tahoma', 'Arial', sans-serif;\n" +
-                "\tfont-size: 6pt;\n" +
-                "\tbackground-color: #FFF;\n" +
-                "\t}\n");
+        File style_file = new File("inline_style.css");
+        try {
+            FileInputStream fis = new FileInputStream(style_file);
+            byte[] style = new byte[fis.available()];
+            int readed = fis.read(style);
+            b(new String(style));
+        } catch (Exception e) { e.printStackTrace(); }
 
-        b("table {\n" +
-                "\tfont-size: 12pt;\n" +
-                "\ttext-align: center;\n" +
-                "\tborder-collapse: collapse;\n" +
-                "\tborder-spacing: 0;\n" +
-                "\t}\n");
-
-        b("td {\n" +
-                "\tborder: 1px solid #ccc;\n" +
-                "\ttext-align: left;\n" +
-                "\tpadding: 0 0 0 2px;\n" +
-                "\t}\n");
-
-        b("table.lst tr:first-child td {font-weight: bold; background-color: #ddd; text-align: center; padding: 0;}\n" +
-                "table.lst tr:nth-child(odd) {background-color: #eee;}\n"
-                //"table.lst td {text-align: left; padding: 0 0 0 2px; vertical-align: top; height: 30px;}\n"
-        );
-
-        b("a\t{\n" +
-                "\tcolor:#006600;\n" +
-                "\ttext-decoration:none;\n" +
-                "\t}\n");
-
-        b("a:hover {text-decoration: none;}\n");
-
-        b("a:focus {outline: none;}\n");
-
-        b("a.k\t{color: #000;}\n");
-
-        b("a.s\t{\n" +
-                "\tdisplay: inline-block;\n" +
-                "\twidth: 16px;\n" +
-                "\theight: 16px;\n" +
-                "\tmargin: 0 2px 0 0;\n" +
-                "\tvertical-align: bottom;\n" +
-                "\tcursor: pointer;\n" +
-                //"\tborder: 1px solid red;\n" +  // temporary
-                //"\t/*background-image: url('/c/s.png');*/\n" +
-                "\t}\n");
-
-        b("</style>\n");
+        b("\r\n</style>\r\n");
 
 
-//        b("<script>\n");
-//        b("var style = document.createElement(\"STYLE\");\n");
-//        b("style.innerHTML = 'a {border: 2px dashed cyan;}'\n");
-//        b("document.head.appendChild(style);\n");
-//        b("</script>\n");
-
-
-        b("\n<script>\n");
+        b("\r\n<script>\r\n");
         b("var tsSpriteActions = ");
-        b(100);
-        b(";\n");
+        b(100);  // todo!!!
+        b(";\r\n");
 
         File script_file = new File("inline_script.js");
         try {
@@ -176,15 +236,11 @@ public abstract class Module {
             int readed = fis.read(script);
             b(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
-        b("\n</script>\n");
+
+        b("\r\n</script>\r\n");
 
 
         b("</head><body>");
-    }
-
-
-    protected void headerEnd() {
-        b("</body></html>");
     }
 
 
@@ -216,76 +272,19 @@ public abstract class Module {
 
 
 
-    protected void setSession(Session session) {
-        this.session = session;
-        lsQuery = session.getQuery();
+    // -------------------------------- Json -------------------------------- //
+
+    protected void initJson(Session session) {
+        initCommon(session);
+        module_type = MODULE_TYPE_JSON;
+        setContentType("application/json");
+        //setContentType("application/javascript");  // for JSON-P
     }
 
 
-    //protected void parseSession() {
-    //    lsQuery = session.getQuery();
-    //}
+    public byte[] makeJson() {
+        makeContent();
 
-
-    protected String getModule() { return session.module; }
-
-    protected String getAction() { return session.action; }
-
-
-    // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-    protected String getQuery(String key) {
-        for (PStr pair : lsQuery) {
-            if (pair.key.equals(key))  return pair.value;
-        }
-
-        return null;
-    }
-
-
-
-
-    // -------------------------------- binary -------------------------------- //
-
-    public int getType() {
-        return module_type;
-    }
-
-
-    protected void setType(int type) {
-        module_type = type;
-    }
-
-
-
-    protected void prepareBin() {}
-
-    public void prepareBinary() {
-        prepareBin();
-    }
-
-
-    public byte[] getBinary() {
-        return binary_data.toByteArray();
-    }
-
-
-    protected void appendBinary(byte[] bytes) {
-        binary_data.write(bytes, 0, bytes.length);
-    }
-
-
-
-
-    // -------------------------------- json -------------------------------- //
-
-    protected void prepareJsonData() {}
-
-    public void prepareJson() {
-        prepareJsonData();
-    }
-
-
-    public byte[] getJson() {
         //todo: json inflater
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -309,6 +308,28 @@ public abstract class Module {
 
         if (json_temp_first)  json_temp_first = false;
     }
+
+
+
+
+    // -------------------------------- binary -------------------------------- //
+
+    protected void initBinary(Session session) {
+        initCommon(session);
+        module_type = MODULE_TYPE_BINARY;
+        setContentType("application/octet-stream");
+    }
+
+
+    public byte[] makeBinary() {
+        return binary_data.toByteArray();
+    }
+
+
+    protected void appendBinary(byte[] bytes) {
+        binary_data.write(bytes, 0, bytes.length);
+    }
+
 
 
 }

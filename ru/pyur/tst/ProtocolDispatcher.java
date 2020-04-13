@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -98,7 +99,8 @@ public class ProtocolDispatcher {
     private CallbackSession callback_session;
 
     public interface CallbackSession {
-        byte[] onReceived(HttpRequest http_request, byte[] payload);
+        //byte[] onReceived(HttpRequest http_request, byte[] payload);
+        DispatchedData onReceived(HttpRequest http_request, byte[] payload);
     }
 
 
@@ -262,14 +264,21 @@ public class ProtocolDispatcher {
             if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload.toByteArray());
 
             if (callback_session != null) {
-                byte[] feedback = callback_session.onReceived(http_request, payload.toByteArray());
+                DispatchedData feedback = callback_session.onReceived(http_request, payload.toByteArray());
 
                 HttpResponse response = new HttpResponse();
                 response.setConnectionClose();
+                if (feedback.options.size() > 0) {
+                    for (PStr option : feedback.options) {
+                        response.addOption(option);
+                    }
+                }
 
                 //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
 
-                response.appendPayload(feedback);
+                if (feedback.payload != null) {
+                    response.appendPayload(feedback.payload);
+                }
 
                 Http_Send(response.stringify());
             }

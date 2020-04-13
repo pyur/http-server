@@ -3,10 +3,6 @@ package ru.pyur.tst;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
-import static ru.pyur.tst.Module.MODULE_TYPE_BINARY;
-import static ru.pyur.tst.Module.MODULE_TYPE_HTML;
-import static ru.pyur.tst.Module.MODULE_TYPE_JSON;
-
 
 public class Session {
 
@@ -69,7 +65,7 @@ public class Session {
 
     private ProtocolDispatcher.CallbackSession cb_session = new ProtocolDispatcher.CallbackSession() {
         @Override
-        public byte[] onReceived(HttpRequest http_request, byte[] bytes) {
+        public DispatchedData onReceived(HttpRequest http_request, byte[] bytes) {
 //            System.out.println("----------- Request -----------");
 //            System.out.println("[" + http_request.szMethod + "] [" + http_request.szLocation + "] [" + http_request.szVersion + "]");
 //
@@ -92,7 +88,7 @@ public class Session {
 
     // --------------------------------------------------------------------------------
 
-    private byte[] dispatch() {
+    private DispatchedData dispatch() {
 
         boolean isPrefixed = false;
 
@@ -144,7 +140,7 @@ public class Session {
                         int read_length = fis.read(bytes);
                     } catch (Exception e) { e.printStackTrace(); }
 
-                    return bytes;
+                    return new DispatchedData(bytes);
                 }
             }
         }
@@ -190,25 +186,7 @@ public class Session {
 
 
         if (md != null) {
-            int type = md.getType();
-            byte[] bytes = null;
-            switch (type) {
-                case MODULE_TYPE_HTML:
-                    md.prepareHtml();
-                    bytes = md.toString().getBytes();
-                    break;
-
-                case MODULE_TYPE_BINARY:
-                    md.prepareBinary();
-                    bytes = md.getBinary();
-                    break;
-
-                case MODULE_TYPE_JSON:
-                    md.prepareJson();
-                    bytes = md.getJson();
-                    break;
-            }
-            return bytes;
+            return new DispatchedData(md.getContents(), md.getOptions());
         }
 
 

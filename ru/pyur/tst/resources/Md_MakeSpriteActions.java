@@ -4,34 +4,19 @@ import ru.pyur.tst.Module;
 import ru.pyur.tst.Session;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.*;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 
 
 public class Md_MakeSpriteActions extends Module {
 
-    public Md_MakeSpriteActions(Session session) { setSession(session); }
+    public Md_MakeSpriteActions(Session session) { initHtml(session); }
 
 
 
     @Override
-    public void prepare() {
-
-//        final String DB_URL = "jdbc:sqlite:config.db";
-//
-//        Connection conn;
-//
-//        try {
-//            conn = DriverManager.getConnection(DB_URL);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
-
+    public void makeContent() {
 
         b("Генерация спрайта...");
 
@@ -115,12 +100,22 @@ public class Md_MakeSpriteActions extends Module {
 
         // -------- insert in db -------- //
 
+//        final String DB_URL = "jdbc:sqlite:config.db";
+//
+//        Connection conn;
+//
+//        try {
+//            conn = DriverManager.getConnection(DB_URL);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+
         for (File file : files_2) {
 
         }
 
 
-        //b("Failed");
         b("OK");
     }
 
