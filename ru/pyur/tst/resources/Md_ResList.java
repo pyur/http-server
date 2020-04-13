@@ -13,8 +13,7 @@ import java.sql.Statement;
 public class Md_ResList extends Module {
 
     public Md_ResList(Session session) {
-        this.session = session;
-        parseSession();
+        setSession(session);
     }
 
 

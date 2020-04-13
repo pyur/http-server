@@ -154,19 +154,19 @@ public class Table extends Tag {
                     sb.append(0);
                     sb.append("px;");
 
-                    switch (j) {
-                        case 1:
-                            sb.append(" border: 1px solid blue;");
-                            break;
-
-                        case 2:
-                            sb.append(" border: 1px solid magenta;");
-                            break;
-
-                        case 3:
-                            sb.append(" border: 1px solid cyan;");
-                            break;
-                    }
+//                    switch (j) {
+//                        case 1:
+//                            sb.append(" border: 1px solid blue;");
+//                            break;
+//
+//                        case 2:
+//                            sb.append(" border: 1px solid magenta;");
+//                            break;
+//
+//                        case 3:
+//                            sb.append(" border: 1px solid cyan;");
+//                            break;
+//                    }
 
                     sb.append("}\r\n");
                     j++;

@@ -17,8 +17,7 @@ public class Md_TableView extends Module {
 
 
     public Md_TableView(Session session) {
-        this.session = session;
-        parseSession();
+        setSession(session);
     }
 
 
@@ -33,7 +32,7 @@ public class Md_TableView extends Module {
         b(table);
 
         table.addColumn("Имя", 150);
-        table.addColumn("Тип", 200);
+        table.addColumn("Тип", 50);  // 200
         table.addColumn("NULL", 50);
         table.addColumn("Key", 60);
         table.addColumn("Default", 180);

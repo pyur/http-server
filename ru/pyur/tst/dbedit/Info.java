@@ -21,8 +21,7 @@ public class Info extends ModuleInfo {
 
     public Info(Session session) {
         //System.out.println("Info(Session)");
-        this.session = session;
-        parseSession();
+        setSession(session);
     }
 
 

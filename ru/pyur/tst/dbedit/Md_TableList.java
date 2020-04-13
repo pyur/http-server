@@ -18,8 +18,7 @@ public class Md_TableList extends Module {
 
 
     public Md_TableList(Session session) {
-        this.session = session;
-        parseSession();
+        setSession(session);
     }
 
 

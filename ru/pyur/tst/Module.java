@@ -3,6 +3,9 @@ package ru.pyur.tst;
 import ru.pyur.tst.tags.PlainText;
 import ru.pyur.tst.tags.Tag;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -15,8 +18,18 @@ public abstract class Module {
     private ArrayList<PStr> lsQuery;
 
 
+    public static final int MODULE_TYPE_HTML = 0;
+    public static final int MODULE_TYPE_BINARY = 1;
+    public static final int MODULE_TYPE_JSON = 2;
+
+    private int module_type = MODULE_TYPE_HTML;
+
     private ArrayList<Tag> body = new ArrayList<>();
 
+    private ByteArrayOutputStream binary_data = new ByteArrayOutputStream();
+
+    private StringBuilder json_temp = new StringBuilder();
+    private boolean json_temp_first = true;
 
 
     // ---- temporary ---- //
@@ -115,8 +128,9 @@ public abstract class Module {
                 "\t}\n");
 
         b("table.lst tr:first-child td {font-weight: bold; background-color: #ddd; text-align: center; padding: 0;}\n" +
-                "table.lst tr:nth-child(odd) {background-color: #eee;}\n" +
-                "table.lst td {text-align: left; padding: 0 0 0 2px;}\n");
+                "table.lst tr:nth-child(odd) {background-color: #eee;}\n"
+                //"table.lst td {text-align: left; padding: 0 0 0 2px; vertical-align: top; height: 30px;}\n"
+        );
 
         b("a\t{\n" +
                 "\tcolor:#006600;\n" +
@@ -131,12 +145,12 @@ public abstract class Module {
 
         b("a.s\t{\n" +
                 "\tdisplay: inline-block;\n" +
-                "\twidth: 14px;\n" +
-                "\theight: 14px;\n" +
+                "\twidth: 16px;\n" +
+                "\theight: 16px;\n" +
                 "\tmargin: 0 2px 0 0;\n" +
                 "\tvertical-align: bottom;\n" +
                 "\tcursor: pointer;\n" +
-                "\tborder: 1px solid red;\n" +  // temporary
+                //"\tborder: 1px solid red;\n" +  // temporary
                 //"\t/*background-image: url('/c/s.png');*/\n" +
                 "\t}\n");
 
@@ -148,6 +162,21 @@ public abstract class Module {
 //        b("style.innerHTML = 'a {border: 2px dashed cyan;}'\n");
 //        b("document.head.appendChild(style);\n");
 //        b("</script>\n");
+
+
+        b("\n<script>\n");
+        b("var tsSpriteActions = ");
+        b(100);
+        b(";\n");
+
+        File script_file = new File("inline_script.js");
+        try {
+            FileInputStream fis = new FileInputStream(script_file);
+            byte[] script = new byte[fis.available()];
+            int readed = fis.read(script);
+            b(new String(script));
+        } catch (Exception e) { e.printStackTrace(); }
+        b("\n</script>\n");
 
 
         b("</head><body>");
@@ -187,9 +216,15 @@ public abstract class Module {
 
 
 
-    protected void parseSession() {
+    protected void setSession(Session session) {
+        this.session = session;
         lsQuery = session.getQuery();
     }
+
+
+    //protected void parseSession() {
+    //    lsQuery = session.getQuery();
+    //}
 
 
     protected String getModule() { return session.module; }
@@ -204,6 +239,75 @@ public abstract class Module {
         }
 
         return null;
+    }
+
+
+
+
+    // -------------------------------- binary -------------------------------- //
+
+    public int getType() {
+        return module_type;
+    }
+
+
+    protected void setType(int type) {
+        module_type = type;
+    }
+
+
+
+    protected void prepareBin() {}
+
+    public void prepareBinary() {
+        prepareBin();
+    }
+
+
+    public byte[] getBinary() {
+        return binary_data.toByteArray();
+    }
+
+
+    protected void appendBinary(byte[] bytes) {
+        binary_data.write(bytes, 0, bytes.length);
+    }
+
+
+
+
+    // -------------------------------- json -------------------------------- //
+
+    protected void prepareJsonData() {}
+
+    public void prepareJson() {
+        prepareJsonData();
+    }
+
+
+    public byte[] getJson() {
+        //todo: json inflater
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(json_temp);
+        sb.append("}");
+        return sb.toString().getBytes();
+    }
+
+
+    protected void appendJson(String key, String value) {
+        //todo: json.append
+        if (!json_temp_first)  json_temp.append(", ");
+
+        json_temp.append("\"");
+        json_temp.append(key);
+        json_temp.append("\"");
+        json_temp.append(": ");
+        json_temp.append("\"");
+        json_temp.append(value);
+        json_temp.append("\"");
+
+        if (json_temp_first)  json_temp_first = false;
     }
 
 

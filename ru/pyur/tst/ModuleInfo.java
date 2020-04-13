@@ -26,7 +26,8 @@ public abstract class ModuleInfo {
     //    //this.session = session;
     //}
 
-    protected void parseSession() {
+    protected void setSession(Session session) {
+        this.session = session;
         action = session.action;
         lsQuery = session.getQuery();
     }

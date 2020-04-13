@@ -3,6 +3,10 @@ package ru.pyur.tst;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
+import static ru.pyur.tst.Module.MODULE_TYPE_BINARY;
+import static ru.pyur.tst.Module.MODULE_TYPE_HTML;
+import static ru.pyur.tst.Module.MODULE_TYPE_JSON;
+
 
 public class Session {
 
@@ -186,8 +190,25 @@ public class Session {
 
 
         if (md != null) {
-            md.prepareHtml();
-            return md.toString().getBytes();
+            int type = md.getType();
+            byte[] bytes = null;
+            switch (type) {
+                case MODULE_TYPE_HTML:
+                    md.prepareHtml();
+                    bytes = md.toString().getBytes();
+                    break;
+
+                case MODULE_TYPE_BINARY:
+                    md.prepareBinary();
+                    bytes = md.getBinary();
+                    break;
+
+                case MODULE_TYPE_JSON:
+                    md.prepareJson();
+                    bytes = md.getJson();
+                    break;
+            }
+            return bytes;
         }
 
 

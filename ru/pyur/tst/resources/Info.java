@@ -9,15 +9,15 @@ public class Info extends ModuleInfo {
 
     private static final String NAME = "res";
 
-    public static final String RESOURCES_ACTION_GEN = "gen";
+    public static final String RESOURCES_ACTION_GENERATE_SPRITE_ACTION = "gsa";
+    public static final String RESOURCES_ACTION_GET_SPRITE_ACTION = "sa";
 
     public static final String RESOURCES_PARAM_t = "t";
 
 
     public Info(Session session) {
         //System.out.println("Info(Session)");
-        this.session = session;
-        parseSession();
+        setSession(session);
     }
 
 
@@ -31,13 +31,13 @@ public class Info extends ModuleInfo {
             md = new Md_ResList(session);
         }
 
-//        else if (action.equals(DBEDIT_ACTION_DB)) {
-//            md = new Md_TableList(session);
-//        }
+        else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_ACTION)) {
+            md = new Md_MakeSpriteActions(session);
+        }
 
-//        else if (action.equals(DBEDIT_ACTION_TABLE)) {
-//            md = new Md_TableView(session);
-//        }
+        else if (action.equals(RESOURCES_ACTION_GET_SPRITE_ACTION)) {
+            md = new Md_GetSpriteActions(session);
+        }
 
 
         return md;
