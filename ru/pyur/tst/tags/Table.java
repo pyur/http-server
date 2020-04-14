@@ -1,5 +1,7 @@
 package ru.pyur.tst.tags;
 
+import ru.pyur.tst.Coordinate;
+
 import java.util.ArrayList;
 
 public class Table extends Tag {
@@ -77,7 +79,7 @@ public class Table extends Tag {
             hasActions = true;
         }
 
-        actions.add(new ActionButton("icon"));
+        actions.add(new ActionButton(icon));
     }
 
 
@@ -148,11 +150,27 @@ public class Table extends Tag {
                     sb.append(j);
                     sb.append(")");
 
+                    Coordinate icon_coord = getActionCoord(but.icon);
+
                     sb.append(" {background-position: ");
-                    sb.append(0);
-                    sb.append("px ");
-                    sb.append(0);
-                    sb.append("px;");
+
+                    if (icon_coord.x == 0) {
+                        sb.append(0);
+                    } else {
+                        sb.append("-");
+                        sb.append(icon_coord.x);
+                        sb.append("px ");
+                    }
+
+                    if (icon_coord.y == 0) {
+                        sb.append(0);
+                    } else {
+                        sb.append("-");
+                        sb.append(icon_coord.y);
+                        sb.append("px ");
+                    }
+
+                    sb.append(";");
 
 //                    switch (j) {
 //                        case 1:

@@ -34,7 +34,7 @@ public class Md_Elec extends Module {
 
 
         try {
-            Statement stmt = m_conn.createStatement();
+            Statement stmt = getDb();
 
             String sql = "SELECT `id`, `name`, `cat`, `login`, `dtx`, `idx` FROM `user`";
 

@@ -18,20 +18,7 @@ public class Md_ResList extends Module {
     @Override
     public void makeContent() {
 
-        Connection conn;
-
-        final String DB_URL = "jdbc:sqlite:config.db";
-
-        try {
-            conn = DriverManager.getConnection(DB_URL);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-
-
-        b("?");
+        b("Список таблиц конфига");
 
         Table table = new Table();
         b(table);
@@ -43,7 +30,7 @@ public class Md_ResList extends Module {
 //            String db_name = getQuery(DBEDIT_PARAM_DB);
 //            if (db_name == null)  throw new Exception("db absent");
 
-            Statement stmt = conn.createStatement();
+            Statement stmt = getConfig();
 
 //            String query_1 = "USE `" + db_name + "`";
 //            //query('SET CHARACTER SET utf8');

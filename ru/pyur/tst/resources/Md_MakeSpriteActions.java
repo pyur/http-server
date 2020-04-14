@@ -2,14 +2,20 @@ package ru.pyur.tst.resources;
 
 import ru.pyur.tst.Module;
 import ru.pyur.tst.Session;
+import ru.pyur.tst.Util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 
 public class Md_MakeSpriteActions extends Module {
+
+    private static final String CONFIG_ACTION_ICON_UPD = "action_icon_upd";
+
 
     public Md_MakeSpriteActions(Session session) { initHtml(session); }
 
@@ -98,21 +104,58 @@ public class Md_MakeSpriteActions extends Module {
         } catch (Exception e) { e.printStackTrace(); }
 
 
-        // -------- insert in db -------- //
 
-//        final String DB_URL = "jdbc:sqlite:config.db";
-//
-//        Connection conn;
-//
-//        try {
-//            conn = DriverManager.getConnection(DB_URL);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
+        // ---------------- insert into db ---------------- //
 
+        Statement stmt = getConfig();
+
+        String query = "DELETE FROM `action_icon`";
+
+        try {
+            int delete_result = stmt.executeUpdate(query);
+            //System.out.println("delete result: " + delete_result);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        int pos = 0;
         for (File file : files_2) {
+            String name_ext = file.getName();
+            String name = Util.stripExtension(name_ext);
+            //todo: filter name. or use frameworked abstract db layer, with embedded filter abilities
+//            PreparedStatement ps = m_conn.prepareStatement("SELECT `desc` FROM `item` WHERE `id` = ?");
+//            ps.setString(1, "10");
+//            ResultSet rs = ps.executeQuery();
+//            int result = ps.updateQuery();
 
+
+            query = "INSERT INTO `action_icon` (`name`, `position`) VALUES ('" + name + "', " + pos + ")";
+
+            try {
+                int insert_result = stmt.executeUpdate(query);
+                //System.out.println("insert result: " + insert_result);
+            } catch (Exception e) { e.printStackTrace(); }
+
+            pos++;
+        }
+
+
+        long timestamp_ms = System.currentTimeMillis();
+        //System.out.println("System.currentTimeMillis(): " + timestamp_ms);
+        int timestamp = (int)(timestamp_ms / 1000);
+        //System.out.println("timestamp: " + timestamp);
+
+        query = "UPDATE `config` SET `value` = " + timestamp + " WHERE `key` = '" + CONFIG_ACTION_ICON_UPD + "'";
+
+        int update_result = 0;
+        try {
+            update_result = stmt.executeUpdate(query);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        if (update_result == 0) {
+            query = "INSERT INTO `config` (`key`, `value`) VALUES ('" + CONFIG_ACTION_ICON_UPD + "', " + timestamp + ")";
+            try {
+                int insert_result = stmt.executeUpdate(query);
+                //System.out.println("config insert result: " + insert_result);
+            } catch (Exception e) { e.printStackTrace(); }
         }
 
 

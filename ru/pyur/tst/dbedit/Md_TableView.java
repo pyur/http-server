@@ -38,21 +38,21 @@ public class Md_TableView extends Module {
         table.addColumn("Default", 180);
         table.addColumn("Extra", 250);
 
-        table.addAction("icon");  // edit
-        table.addAction("act2");  // some action 2
-        table.addAction("act3");  // some action 3
-        //table.addAction("act4");  // some action 4
+        table.addAction("pencil-button");  // edit
+        table.addAction("rainbow");  // some action 2
+        table.addAction("holly");  // some action 3
+        //table.addAction("wheel");  // some action 4
 
 
 
         try {
             String db_name = getQuery(DBEDIT_PARAM_DB);
-            if (db_name == null)  throw new Exception("db absent");
+            //if (db_name == null)  throw new Exception("db absent");
 
             String table_name = getQuery(DBEDIT_PARAM_TABLE);
-            if (table_name == null)  throw new Exception("table absent");
+            //if (table_name == null)  throw new Exception("table absent");
 
-            Statement stmt = m_conn.createStatement();
+            Statement stmt = getDb();
 
             String query_1 = "USE `" + db_name + "`";
 

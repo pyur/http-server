@@ -37,9 +37,9 @@ public class Md_TableList extends Module {
 
         try {
             String db_name = getQuery(DBEDIT_PARAM_DB);
-            if (db_name == null)  throw new Exception("db absent");
+            //if (db_name == null)  throw new Exception("db absent");
 
-            Statement stmt = m_conn.createStatement();
+            Statement stmt = getDb();
 
             String query_1 = "USE `" + db_name + "`";
             //query('SET CHARACTER SET utf8');

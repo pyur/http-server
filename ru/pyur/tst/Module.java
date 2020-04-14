@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 
@@ -46,13 +48,23 @@ public abstract class Module {
 
 
 
-    // ---- Database ---- //
+    // ---------------- Database ---------------- //
 
     private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1";
 
-    protected Connection m_conn;
+    private Connection m_connection;
+
+
+
+    // -------- Config -------- //
+
+    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
+
+    private Connection m_config;
+
+
 
 
 
@@ -73,34 +85,33 @@ public abstract class Module {
 
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-    protected String getQuery(String key) {
+    protected String getQuery(String key) throws Exception {
         for (PStr pair : lsQuery) {
             if (pair.key.equals(key))  return pair.value;
         }
 
-        return null;
+        throw new Exception("parameter \'" + key + "\' absent.");
+        //return null;
     }
 
-
-//x    public int getType() { return module_type; }
-//x    protected void setType(int type) { module_type = type; }
 
 
 
     public byte[] getContents() {
+        byte[] content = null;
 
         switch (module_type) {
             case MODULE_TYPE_HTML:
-                return makeHtml();
-                //break;
+                content = makeHtml();
+                break;
 
             case MODULE_TYPE_JSON:
-                return makeJson();
-                //break;
+                content = makeJson();
+                break;
 
             case MODULE_TYPE_BINARY:
-                return makeBinary();
-                //break;
+                content = makeBinary();
+                break;
 
             case MODULE_TYPE_IMAGE_PNG:
                 //return makeImagePng();
@@ -111,7 +122,10 @@ public abstract class Module {
                 break;
         }
 
-        return null;
+        closeDb();
+        closeConfig();
+
+        return content;
     }
 
 
@@ -174,15 +188,10 @@ public abstract class Module {
 
 
     private byte[] makeHtml() {
-        connectToDb();
 
         makeContent();
 
         makeHtmlHeader();
-
-        //makeHtmlFooter();
-
-        closeDb();
 
 
         StringBuilder html = new StringBuilder();
@@ -203,70 +212,44 @@ public abstract class Module {
     // ---- temporary ---- //
 
     protected void makeHtmlHeader() {
-        b("<!DOCTYPE html>\r\n<html><head>");
+        h("<!DOCTYPE html>\r\n<html><head>");
         if (title != null) {
-            b("<title>");
-            b(title);
-            b("</title>");
+            h("<title>");
+            h(title);
+            h("</title>");
         }
-        b("<meta charset=\"UTF-8\">");
+        h("<meta charset=\"UTF-8\">");
 
-        b("\r\n<style>\r\n");
+        h("\r\n<style>\r\n");
 
         File style_file = new File("inline_style.css");
         try {
             FileInputStream fis = new FileInputStream(style_file);
             byte[] style = new byte[fis.available()];
             int readed = fis.read(style);
-            b(new String(style));
+            h(new String(style));
         } catch (Exception e) { e.printStackTrace(); }
 
-        b("\r\n</style>\r\n");
+        h("\r\n</style>\r\n");
 
 
-        b("\r\n<script>\r\n");
-        b("var tsSpriteActions = ");
-        b(100);  // todo!!!
-        b(";\r\n");
+        h("\r\n<script>\r\n");
+        h("var tsSpriteActions = ");
+        h(100);  // todo!!!
+        h(";\r\n");
 
         File script_file = new File("inline_script.js");
         try {
             FileInputStream fis = new FileInputStream(script_file);
             byte[] script = new byte[fis.available()];
             int readed = fis.read(script);
-            b(new String(script));
+            h(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
 
-        b("\r\n</script>\r\n");
+        h("\r\n</script>\r\n");
 
 
-        b("</head><body>");
-    }
-
-
-
-    protected void connectToDb() {
-
-        try {
-            // -- Open a connection
-            //System.out.println("Connecting to a selected database...");
-            m_conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            //todo: use 'DataSource' class
-            //System.out.println("Connected database successfully...");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
-    protected void closeDb() {
-        if (m_conn != null) {
-            try {
-                m_conn.close();
-            } catch (Exception e) { e.printStackTrace(); }
-        }
+        h("</head><body>");
     }
 
 
@@ -312,7 +295,7 @@ public abstract class Module {
 
 
 
-    // -------------------------------- binary -------------------------------- //
+    // -------------------------------- Binary -------------------------------- //
 
     protected void initBinary(Session session) {
         initCommon(session);
@@ -329,6 +312,96 @@ public abstract class Module {
     protected void appendBinary(byte[] bytes) {
         binary_data.write(bytes, 0, bytes.length);
     }
+
+
+
+
+
+
+
+
+
+    // -------------------------------------------------------------------------- //
+    // -------------------------------- Database -------------------------------- //
+    // -------------------------------------------------------------------------- //
+
+    private void closeDb() {
+        if (m_connection != null) {
+            try {
+                m_connection.close();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+
+
+    protected Statement getDb() {
+        if (m_connection == null) {
+            try {
+                m_connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                //todo: use 'DataSource' class
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Statement stmt = null;
+
+        try {
+            stmt = m_connection.createStatement();
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return stmt;
+    }
+
+
+
+
+    // -------------------------------- Config -------------------------------- //
+
+    private void closeConfig() {
+        if (m_config != null) {
+            try {
+                m_config.close();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+
+
+    protected Statement getConfig() {
+        if (m_config == null) {
+            try {
+                m_config = DriverManager.getConnection(CONFIG_URL);
+                //todo: use 'DataSource' class
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Statement stmt = null;
+
+        try {
+            stmt = m_config.createStatement();
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return stmt;
+    }
+
+
+
+    protected ResultSet runQuery(Statement stmt, String query) {
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(query);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return rs;
+    }
+
+
+
+
 
 
 

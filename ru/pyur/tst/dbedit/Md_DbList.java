@@ -31,7 +31,7 @@ public class Md_DbList extends Module {
 
 
         try {
-            Statement stmt = m_conn.createStatement();
+            Statement stmt = getDb();
 
             String query = "SHOW DATABASES";
 
