@@ -30,7 +30,8 @@ public class Md_ResList extends Module {
 //            String db_name = getQuery(DBEDIT_PARAM_DB);
 //            if (db_name == null)  throw new Exception("db absent");
 
-            Statement stmt = getConfig();
+            getConfigDb();
+            Statement stmt = getConfigStatement();
 
 //            String query_1 = "USE `" + db_name + "`";
 //            //query('SET CHARACTER SET utf8');

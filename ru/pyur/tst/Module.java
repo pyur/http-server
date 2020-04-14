@@ -1,16 +1,15 @@
 package ru.pyur.tst;
 
-import ru.pyur.tst.tags.PlainText;
-import ru.pyur.tst.tags.Tag;
+import ru.pyur.tst.tags.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+
+import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
+import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
 public abstract class Module {
@@ -54,7 +53,7 @@ public abstract class Module {
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1";
 
-    private Connection m_connection;
+    protected Connection m_connection;
 
 
 
@@ -62,7 +61,7 @@ public abstract class Module {
 
     private static final String CONFIG_URL = "jdbc:sqlite:config.db";
 
-    private Connection m_config;
+    protected Connection m_config;
 
 
 
@@ -189,6 +188,8 @@ public abstract class Module {
 
     private byte[] makeHtml() {
 
+        makeModulesBar();
+
         makeContent();
 
         makeHtmlHeader();
@@ -209,9 +210,10 @@ public abstract class Module {
         return html.toString().getBytes();
     }
 
-    // ---- temporary ---- //
 
-    protected void makeHtmlHeader() {
+
+
+    private void makeHtmlHeader() {
         h("<!DOCTYPE html>\r\n<html><head>");
         if (title != null) {
             h("<title>");
@@ -233,9 +235,43 @@ public abstract class Module {
         h("\r\n</style>\r\n");
 
 
+        // --- todo fold
+        getConfigDb();
+        Statement stmt = getConfigStatement();
+
+        int tsSpriteActions = 0;
+
+        String query = "SELECT `value` FROM `config` WHERE `key` = '" + CONFIG_ACTION_ICON_UPD + "'";
+
+        try {
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                tsSpriteActions = rs.getInt(1);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+
+
+        int tsSpriteModules = 0;
+
+        query = "SELECT `value` FROM `config` WHERE `key` = '" + CONFIG_MODULE_ICON_UPD + "'";
+
+        try {
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                tsSpriteModules = rs.getInt(1);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        // ----
+
+
         h("\r\n<script>\r\n");
         h("var tsSpriteActions = ");
-        h(100);  // todo!!!
+        h(tsSpriteActions);
+        h(";\r\n");
+        h("var tsSpriteModules = ");
+        h(tsSpriteModules);
         h(";\r\n");
 
         File script_file = new File("inline_script.js");
@@ -250,6 +286,95 @@ public abstract class Module {
 
 
         h("</head><body>");
+    }
+
+
+
+
+    private void makeModulesBar() {
+        Div div_modules_bar = new Div();
+        b(div_modules_bar);
+        div_modules_bar.addClass("modules_bar");
+
+        // ---- todo: menu = auth->get_menu()
+        ModuleBar module_bar = new ModuleBar();
+
+        for (ModuleBarItem mbi : module_bar.getModules()) {
+            A mod = new A();
+            div_modules_bar.add(mod);
+            Url link = new Url();
+            link.setModule(mbi.name);
+            mod.setHref(link);
+
+            Div div_icon = new Div();
+            mod.add(div_icon);
+            int x = ((mbi.id - 1) % 32) * 32;
+            int y = ((mbi.id - 1) / 32) * 32;
+
+            div_icon.addStyle("background-position", ((x == 0) ? "0" : "-" + x + "px") + " " + ((y == 0) ? "0" : "-" + y + "px") );
+            div_icon.setUnselectable();
+
+
+            Div div_desc = new Div();
+            mod.add(div_desc);
+            String desc = mbi.descb.isEmpty() ? mbi.desc : mbi.descb;
+            div_desc.put(desc);
+        }
+
+    }
+
+
+    private class ModuleBarItem {
+        public int id;
+        public String name;
+        public String perm;
+        public String desc;
+        public String descb;
+        public int pos;
+        public int noauth;
+        public int auth;
+
+        public ModuleBarItem(int id, String name, String perm, String desc, String descb, int pos, int noauth, int auth) {
+            this.id = id;
+            this.name = name;
+            this.perm = perm;
+            this.desc = desc;
+            this.descb = descb;
+            this.pos = pos;
+            this.noauth = noauth;
+            this.auth = auth;
+        }
+    }
+
+
+    private class ModuleBar {
+        public ArrayList<ModuleBarItem> modules = new ArrayList<>();
+
+        public ModuleBar() {
+            getConfigDb();
+            Statement stmt = getConfigStatement();
+
+            String query = "SELECT `id`, `name`, `perm`, `desc`, `descb`, `pos`, `noauth`, `auth` FROM `module` ORDER BY `pos`, `desc`";
+
+            try {
+                ResultSet rs = stmt.executeQuery(query);
+
+                while (rs.next()) {
+                    int id = rs.getInt(1);
+                    String name = rs.getString(2);
+                    String perm = rs.getString(3);
+                    String desc = rs.getString(4);
+                    String descb = rs.getString(5);
+                    int pos = rs.getInt(6);
+                    int noauth = rs.getInt(7);
+                    int auth = rs.getInt(8);
+
+                    modules.add(new ModuleBarItem(id, name, perm, desc, descb, pos, noauth, auth));
+                }
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
+        public ArrayList<ModuleBarItem> getModules() { return modules; }
     }
 
 
@@ -359,6 +484,19 @@ public abstract class Module {
 
     // -------------------------------- Config -------------------------------- //
 
+    protected void getConfigDb() {
+        if (m_config == null) {
+            try {
+                m_config = DriverManager.getConnection(CONFIG_URL);
+                //todo: use 'DataSource' class
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
     private void closeConfig() {
         if (m_config != null) {
             try {
@@ -369,16 +507,7 @@ public abstract class Module {
 
 
 
-    protected Statement getConfig() {
-        if (m_config == null) {
-            try {
-                m_config = DriverManager.getConnection(CONFIG_URL);
-                //todo: use 'DataSource' class
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+    protected Statement getConfigStatement() {
         Statement stmt = null;
 
         try {
@@ -386,6 +515,18 @@ public abstract class Module {
         } catch (Exception e) { e.printStackTrace(); }
 
         return stmt;
+    }
+
+
+
+    protected PreparedStatement getConfigStatement(String query) {
+        PreparedStatement ps = null;
+
+        try {
+            ps = m_config.prepareStatement(query);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return ps;
     }
 
 

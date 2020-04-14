@@ -7,18 +7,29 @@ import ru.pyur.tst.Util;
 import javax.imageio.ImageIO;
 import java.awt.image.*;
 import java.io.File;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 
-public class Md_MakeSpriteActions extends Module {
+public class Md_MakeSpriteModules extends Module {
 
-    public static final String CONFIG_ACTION_ICON_UPD = "action_icon_upd";
+    public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-    public Md_MakeSpriteActions(Session session) { initHtml(session); }
+    public Md_MakeSpriteModules(Session session) { initHtml(session); }
 
+
+    private class ModuleDesc {
+        public int id;
+        public String name;
+
+        public ModuleDesc(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
 
 
     @Override
@@ -27,36 +38,54 @@ public class Md_MakeSpriteActions extends Module {
         b("Генерация спрайта...");
 
 
-        File directory = new File("./resources/action_icon/");
+        // ---- get list of installed modules ---- //
 
-        File[] files = directory.listFiles();
+        getConfigDb();
+        Statement stmt = getConfigStatement();
 
-        if (files == null) {
-            //System.out.println("directory.files == null");
-            b("Failed. directory not exists.");
-            return;
-        }
+        String query = "SELECT `id`, `name` FROM `module`";
 
+        ArrayList<ModuleDesc> modules = new ArrayList<>();
 
-        ArrayList<File> files_2 = new ArrayList<>();
+        try {
+            ResultSet rs = stmt.executeQuery(query);
 
-        for (File file : files) {
-            //System.out.println(file.getName());
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
 
-            //if (file.isDirectory()) {}
-
-            if (file.isFile()) {
-                if (file.getName().matches(".+\\.png")) {
-                    files_2.add(file);
-                }
+                modules.add(new ModuleDesc(id, name));
             }
-        }
+        } catch (Exception e) { e.printStackTrace(); }
+
+
+
+//        File directory = new File("./resources/module_icon/");
+
+//        File[] files = directory.listFiles();
+
+//        if (files == null) {
+//            //System.out.println("directory.files == null");
+//            b("Failed. directory not exists.");
+//            return;
+//        }
+
+
+//        ArrayList<File> files_2 = new ArrayList<>();
+//
+//        for (File file : files) {
+//            if (file.isFile()) {
+//                if (file.getName().matches(".+\\.png")) {
+//                    files_2.add(file);
+//                }
+//            }
+//        }
 
 
         // -------- make sprite -------- //
 
         int sprite_width = 1024;
-        int sprite_height = ((files_2.size() / 64) + 1) * 16;  // 64 icons of 16x16 per 1024 line
+        int sprite_height = ((modules.size() / 32) + 1) * 32;  // 32 icons of 32x32 per 1024 line
         int[] sprite_matrix = new int[sprite_width * sprite_height];
         DataBufferInt sprite_buffer = new DataBufferInt(sprite_matrix, sprite_matrix.length);
 
@@ -69,8 +98,12 @@ public class Md_MakeSpriteActions extends Module {
         //WritableRaster sprite = Raster.createWritableRaster(sppsm, new Point(0,0));
         WritableRaster sprite = Raster.createPackedRaster(sprite_buffer, sprite_width, sprite_height, sprite_width, bandMasks, null);
 
-        int i = 0;
-        for (File file : files_2) {
+//x        int i = 0;
+        //for (File file : files_2) {
+        for (ModuleDesc md : modules) {
+            File file = new File("./resources/module_icon/" + md.name + ".png");
+            if (!file.exists())  continue;
+
             BufferedImage img;
             try {
                 img = ImageIO.read(file);
@@ -80,7 +113,7 @@ public class Md_MakeSpriteActions extends Module {
                 return;
             }
 
-            if (img.getWidth() != 16 || img.getHeight() != 16) {
+            if (img.getWidth() != 32 || img.getHeight() != 32) {
                 b("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
                 return;
             }
@@ -88,29 +121,29 @@ public class Md_MakeSpriteActions extends Module {
             Raster raster = img.getData();
             //WritableRaster sprite = raster.createCompatibleWritableRaster(1024, 16);
 
-            int y = (i / 64) * 16;
-            int x = (i % 64) * 16;
+            int y = ((md.id-1) / 32) * 32;
+            int x = ((md.id-1) % 32) * 32;
             sprite.setRect(x, y, raster);
 
-            i++;
+//x            i++;
         }
 
         ColorModel cm = ColorModel.getRGBdefault();
         BufferedImage image = new BufferedImage(cm, sprite, cm.isAlphaPremultiplied(), null);
 
         try {
-            File output_file = new File("sprite_actions.png");
+            File output_file = new File("sprite_modules.png");
             ImageIO.write(image, "png", output_file);
         } catch (Exception e) { e.printStackTrace(); }
 
 
 
         // ---------------- insert into db ---------------- //
-
+/*
         getConfigDb();
         Statement stmt = getConfigStatement();
 
-        String query = "DELETE FROM `action_icon`";
+        String query = "DELETE FROM `module_icon`";
 
         try {
             int delete_result = stmt.executeUpdate(query);
@@ -121,41 +154,40 @@ public class Md_MakeSpriteActions extends Module {
         for (File file : files_2) {
             String name_ext = file.getName();
             String name = Util.stripExtension(name_ext);
-            //todo: filter name. or use frameworked abstract db layer, with embedded filter abilities
-//            PreparedStatement ps = m_conn.prepareStatement("SELECT `desc` FROM `item` WHERE `id` = ?");
-//            ps.setString(1, "10");
-//            ResultSet rs = ps.executeQuery();
-//            int result = ps.updateQuery();
 
-
-            query = "INSERT INTO `action_icon` (`name`, `position`) VALUES ('" + name + "', " + pos + ")";
+            query = "INSERT INTO `module_icon` (`name`, `position`) VALUES (?, ?)";
 
             try {
-                int insert_result = stmt.executeUpdate(query);
+                PreparedStatement ps = getConfigStatement(query);
+                ps.setString(1, name);
+                ps.setInt(2, pos);
+                int insert_result = ps.executeUpdate();
                 //System.out.println("insert result: " + insert_result);
             } catch (Exception e) { e.printStackTrace(); }
 
             pos++;
         }
-
+*/
 
         long timestamp_ms = System.currentTimeMillis();
-        //System.out.println("System.currentTimeMillis(): " + timestamp_ms);
         int timestamp = (int)(timestamp_ms / 1000);
-        //System.out.println("timestamp: " + timestamp);
 
-        query = "UPDATE `config` SET `value` = " + timestamp + " WHERE `key` = '" + CONFIG_ACTION_ICON_UPD + "'";
+        query = "UPDATE `config` SET `value` = ? WHERE `key` = '" + CONFIG_MODULE_ICON_UPD + "'";
 
         int update_result = 0;
         try {
-            update_result = stmt.executeUpdate(query);
+            PreparedStatement ps = getConfigStatement(query);
+            ps.setInt(1, timestamp);
+            //ps.setString(2, CONFIG_MODULE_ICON_UPD);
+            update_result = ps.executeUpdate();
         } catch (Exception e) { e.printStackTrace(); }
 
         if (update_result == 0) {
-            query = "INSERT INTO `config` (`key`, `value`) VALUES ('" + CONFIG_ACTION_ICON_UPD + "', " + timestamp + ")";
+            query = "INSERT INTO `config` (`key`, `value`) VALUES ('" + CONFIG_MODULE_ICON_UPD + "', ?)";
             try {
-                int insert_result = stmt.executeUpdate(query);
-                //System.out.println("config insert result: " + insert_result);
+                PreparedStatement ps = getConfigStatement(query);
+                ps.setInt(1, timestamp);
+                int insert_result = ps.executeUpdate();
             } catch (Exception e) { e.printStackTrace(); }
         }
 

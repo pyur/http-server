@@ -66,7 +66,8 @@ public class Table extends Tag {
 
         if (!hasPre) {
             hasPre = true;
-            classes.add("lst");
+            //classes.add("lst");
+            addClass("lst");
         }
 
         columns.add(new TableColumn(description, width, align));

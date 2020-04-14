@@ -38,11 +38,11 @@ public abstract class Tag {
     protected String id;
     protected String name;
 
-    protected ArrayList<PStr> attributes = new ArrayList<>();
+    private ArrayList<PStr> attributes = new ArrayList<>();
 
-    protected ArrayList<String> classes = new ArrayList<>();
+    private ArrayList<String> classes = new ArrayList<>();
 
-    protected ArrayList<PStr> styles = new ArrayList<>();
+    private ArrayList<PStr> styles = new ArrayList<>();
 
 
 
@@ -90,6 +90,8 @@ public abstract class Tag {
         classes.add(class_name);
     }
 
+    public void addStyle(String name, String value) { styles.add(new PStr(name, value)); }
+
 
     public void width(int v) { styles.add(new PStr("width", v + "px")); }
 
@@ -102,6 +104,8 @@ public abstract class Tag {
         attributes.add(new PStr(name, value));
     }
 
+
+    public void setUnselectable() { attributes.add(new PStr("unselectable", "on")); }
 
 
     public String renderPre() { return null; }
@@ -255,7 +259,7 @@ public abstract class Tag {
             Statement st = m_config.createStatement();
             ResultSet rs = st.executeQuery(query);
 
-            while(rs.next()) {
+            while (rs.next()) {
                 String icon_name = rs.getString(1);
                 int icon_pos = rs.getInt(2);
                 int y = (icon_pos / 64) * 16;
