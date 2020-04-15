@@ -13,6 +13,7 @@ public class Info extends ModuleInfo {
     public static final String RESOURCES_ACTION_GET_SPRITE_ACTION = "sa";
     public static final String RESOURCES_ACTION_GENERATE_SPRITE_MODULE = "gsm";
     public static final String RESOURCES_ACTION_GET_SPRITE_MODULE = "sm";
+    public static final String RESOURCES_ACTION_GENERATE_SPRITE_MODULE_2 = "gsm2";
 
     public static final String RESOURCES_PARAM_t = "t";
 
@@ -47,6 +48,10 @@ public class Info extends ModuleInfo {
 
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_MODULE)) {
             md = new Md_GetSpriteModules(session);
+        }
+
+        else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_MODULE_2)) {
+            md = new Md_MakeSpriteModules2(session);
         }
 
 
