@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
 
+import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
+
 
 public class Md_GetSpriteActions extends Module {
 
@@ -19,7 +21,9 @@ public class Md_GetSpriteActions extends Module {
     @Override
     public void makeContent() {
 
-        appendJson("ts", "999");
+        String ts = configGet(CONFIG_ACTION_ICON_UPD);
+
+        appendJson("ts", ts);
 
         File sprite_file = new File("sprite_actions.png");
 

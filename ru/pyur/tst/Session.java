@@ -184,6 +184,10 @@ public class Session {
             md = new ru.pyur.tst.resources.Info(session).dispatch();
         }
 
+        //else if (module.equals("ext")) {
+        //    new ru.pyur.tst.extsample.ExtMod();
+        //}
+
 
         if (md != null) {
             return new DispatchedData(md.getContents(), md.getOptions());

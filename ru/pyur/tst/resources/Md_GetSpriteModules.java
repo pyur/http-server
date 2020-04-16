@@ -22,23 +22,10 @@ public class Md_GetSpriteModules extends Module {
 
     @Override
     public void makeContent() {
-        int ts = 0;
 
-        getConfigDb();
-        Statement stmt = getConfigStatement();
+        String ts = configGet(CONFIG_MODULE_ICON_UPD);
 
-        String query = "SELECT `value` FROM `config` WHERE `key` = '" + CONFIG_MODULE_ICON_UPD + "'";
-
-        try {
-            ResultSet rs = stmt.executeQuery(query);
-
-            if (rs.next()) {
-                ts = rs.getInt(1);
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-
-
-        appendJson("ts", "" + ts);
+        appendJson("ts", ts);
 
 
         // ---------------- 1x size ---------------- //

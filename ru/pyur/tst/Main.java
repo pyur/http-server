@@ -1,15 +1,6 @@
 package ru.pyur.tst;
 
 
-//import static sun.misc.Version.println;
-//import static java.lang.System.out;
-
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-
 // https://habr.com/ru/post/330676/
 
 public class Main {
@@ -21,9 +12,9 @@ public class Main {
             Class.forName("org.mariadb.jdbc.Driver");
         } catch (Exception e) { e.printStackTrace(); }
 
-        try {
+//        try {
 //            Class.forName("org.sqlite.jdbc.Driver");
-        } catch (Exception e) { e.printStackTrace(); }
+//        } catch (Exception e) { e.printStackTrace(); }
 
 
         //TestClient client = new TestClient();

@@ -268,17 +268,23 @@ public class ProtocolDispatcher {
 
                 HttpResponse response = new HttpResponse();
                 response.setConnectionClose();
-                if (feedback.options.size() > 0) {
-                    for (PStr option : feedback.options) {
-                        response.addOption(option);
+
+                if (feedback != null) {
+                    if (feedback.options.size() > 0) {
+                        for (PStr option : feedback.options) {
+                            response.addOption(option);
+                        }
+                    }
+
+                    //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
+
+                    if (feedback.payload != null) {
+                        response.appendPayload(feedback.payload);
                     }
                 }
-
-                //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
-
-                if (feedback.payload != null) {
-                    response.appendPayload(feedback.payload);
-                }
+                //else {
+                    //...
+                //}
 
                 Http_Send(response.stringify());
             }

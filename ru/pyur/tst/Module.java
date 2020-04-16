@@ -19,7 +19,7 @@ public abstract class Module {
     private ArrayList<PStr> lsQuery;
 
     //https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-    private ArrayList<PStr> outOptions = new ArrayList<>();
+    private ArrayList<PStr> out_options = new ArrayList<>();
 
 
     public static final int MODULE_TYPE_HTML = 0;
@@ -64,6 +64,28 @@ public abstract class Module {
     protected Connection m_config;
 
 
+
+    // -------- Sprite -------- //
+
+    public static final int SPRITE_ACTION_WIDTH = 1024;
+    public static final int SPRITE_ACTION_COUNT = 64;
+    public static final int SPRITE_ACTION_ICON_SIZE = 16;
+
+    public static final int SPRITE_MODULE_WIDTH = 1024;
+    public static final int SPRITE_MODULE_COUNT = 32;
+    public static final int SPRITE_MODULE_ICON_SIZE = 32;
+
+    public static final int SPRITE_MODULE2_WIDTH = 1024;
+    public static final int SPRITE_MODULE2_COUNT = 16;
+    public static final int SPRITE_MODULE2_ICON_SIZE = 64;
+
+
+
+//    public Module() {}
+//    public Module(Session session) {
+//        //initHtml(session);
+//        initCommon(session);
+//    }
 
 
 
@@ -130,17 +152,17 @@ public abstract class Module {
 
 
     public ArrayList<PStr> getOptions() {
-        return outOptions;
+        return out_options;
     }
 
 
     protected void addOption(String name, String value) {
-        outOptions.add(new PStr(name, value));
+        out_options.add(new PStr(name, value));
     }
 
 
     private void setContentType(String value) {
-        outOptions.add(new PStr("Content-Type", value));
+        out_options.add(new PStr("Content-Type", value));
     }
 
 
@@ -149,6 +171,7 @@ public abstract class Module {
     // -------------------------------- Html -------------------------------- //
 
     protected void initHtml(Session session) {
+//z    protected void initHtml() {
         initCommon(session);
         module_type = MODULE_TYPE_HTML;
         setContentType("text/html; charset=utf-8");
@@ -235,35 +258,8 @@ public abstract class Module {
         h("\r\n</style>\r\n");
 
 
-        // --- todo fold
-        getConfigDb();
-        Statement stmt = getConfigStatement();
-
-        int tsSpriteActions = 0;
-
-        String query = "SELECT `value` FROM `config` WHERE `key` = '" + CONFIG_ACTION_ICON_UPD + "'";
-
-        try {
-            ResultSet rs = stmt.executeQuery(query);
-
-            if (rs.next()) {
-                tsSpriteActions = rs.getInt(1);
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-
-
-        int tsSpriteModules = 0;
-
-        query = "SELECT `value` FROM `config` WHERE `key` = '" + CONFIG_MODULE_ICON_UPD + "'";
-
-        try {
-            ResultSet rs = stmt.executeQuery(query);
-
-            if (rs.next()) {
-                tsSpriteModules = rs.getInt(1);
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-        // ----
+        int tsSpriteActions = configGeti(CONFIG_ACTION_ICON_UPD);
+        int tsSpriteModules = configGeti(CONFIG_MODULE_ICON_UPD);
 
 
         h("\r\n<script>\r\n");
@@ -308,8 +304,8 @@ public abstract class Module {
 
             Div div_icon = new Div();
             mod.add(div_icon);
-            int x = ((mbi.id - 1) % 32) * 32;
-            int y = ((mbi.id - 1) / 32) * 32;
+            int x = ((mbi.id - 1) % SPRITE_MODULE_COUNT) * SPRITE_MODULE_ICON_SIZE;
+            int y = ((mbi.id - 1) / SPRITE_MODULE_COUNT) * SPRITE_MODULE_ICON_SIZE;
 
             div_icon.addStyle("background-position", ((x == 0) ? "0" : "-" + x + "px") + " " + ((y == 0) ? "0" : "-" + y + "px") );
             div_icon.setUnselectable();
@@ -542,7 +538,79 @@ public abstract class Module {
 
 
 
+    protected void configSet(String key, int value) { configSet(key, "" + value); }
 
+
+    protected void configSet(String key, String value) {
+        String query = "UPDATE `config` SET `value` = ? WHERE `key` = ?";
+
+        int update_result = 0;
+        try {
+            PreparedStatement ps = getConfigStatement(query);
+            ps.setString(1, value);
+            ps.setString(2, key);
+            update_result = ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+
+        if (update_result == 0) {
+            query = "INSERT INTO `config` (`key`, `value`) VALUES (?, ?)";
+            try {
+                PreparedStatement ps = getConfigStatement(query);
+                ps.setString(1, key);
+                ps.setString(2, value);
+                int insert_result = ps.executeUpdate();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+
+
+    protected int configGeti(String key) {
+        //String value = configGet(key);
+        //return Integer.parseInt(value);
+
+        getConfigDb();
+
+        int value = 0;
+
+        String query = "SELECT `value` FROM `config` WHERE `key` = ?";
+
+        try {
+            PreparedStatement ps = getConfigStatement(query);
+            ps.setString(1, key);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                value = rs.getInt(1);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return value;
+    }
+
+
+
+    protected String configGet(String key) {
+        getConfigDb();
+
+        String value = "";
+
+        String query = "SELECT `value` FROM `config` WHERE `key` = ?";
+
+        try {
+            PreparedStatement ps = getConfigStatement(query);
+            ps.setString(1, key);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                value = rs.getString(1);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return value;
+    }
 
 
 
