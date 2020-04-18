@@ -19,7 +19,7 @@ public abstract class Module {
     private ArrayList<PStr> lsQuery;
 
     //https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-    private ArrayList<PStr> out_options = new ArrayList<>();
+    private ArrayList<PStr> response_options = new ArrayList<>();
 
 
     public static final int MODULE_TYPE_HTML = 0;
@@ -152,17 +152,17 @@ public abstract class Module {
 
 
     public ArrayList<PStr> getOptions() {
-        return out_options;
+        return response_options;
     }
 
 
     protected void addOption(String name, String value) {
-        out_options.add(new PStr(name, value));
+        response_options.add(new PStr(name, value));
     }
 
 
     private void setContentType(String value) {
-        out_options.add(new PStr("Content-Type", value));
+        response_options.add(new PStr("Content-Type", value));
     }
 
 

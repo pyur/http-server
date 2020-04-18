@@ -1,7 +1,12 @@
 package ru.pyur.tst;
 
+import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
+
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 
 public class Session {
@@ -10,6 +15,7 @@ public class Session {
 
     private HttpRequest request_header;
     private byte[] request_payload;
+    private String host;  // option "Host" in http header
 
     private String prefix;  // a - api, i - image, e - embed, etc
     public String module;
@@ -89,6 +95,27 @@ public class Session {
     // --------------------------------------------------------------------------------
 
     private DispatchedData dispatch() {
+
+        // ---------------- dispatch Host ---------------- //
+
+        //ArrayList<PStr> options = request_header.getOptions();
+        //host = null;
+        //if (request_header.hasOption("Host")) {
+    //    host = request_header.getOption("Host");
+        //}
+
+
+        //if (host == null) {
+            // default
+        //}
+
+        //else if (host == "mydomain.com") {
+            // mydomain.com
+        //}
+
+
+
+        // ---------------- dispatch URI ---------------- //
 
         boolean isPrefixed = false;
 
@@ -190,7 +217,28 @@ public class Session {
 
 
         if (md != null) {
-            return new DispatchedData(md.getContents(), md.getOptions());
+            byte[] contents = md.getContents();
+            byte[] compressed_contents = null;
+
+            ArrayList<PStr> response_options = md.getOptions();
+/*
+            // compression
+            //if (header has "Accept-Encoding: gzip, deflate, br") {
+
+            try {
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                GZIPOutputStream gos = new GZIPOutputStream(os);
+                gos.write(contents);
+                gos.close();
+                compressed_contents = os.toByteArray();
+            } catch (Exception e) { e.printStackTrace(); }
+
+            if (compressed_contents != null) {
+                contents = compressed_contents;
+                response_options.add(new PStr("Content-Encoding", "gzip"));
+            }
+*/
+            return new DispatchedData(contents, response_options);
         }
 
 

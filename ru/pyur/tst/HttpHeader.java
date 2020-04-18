@@ -23,4 +23,42 @@ public abstract class HttpHeader {
     }
 
 
+
+    public ArrayList<PStr> getOptions() {
+        return options;
+    }
+
+
+
+    public boolean hasOption(String name) {
+        return getOption(name) != null;
+    }
+
+
+
+    public String getOption(String name) {  // throw Exception
+        String name_low = name.toLowerCase();
+
+        for (PStr opt : options) {
+            if (opt.key.toLowerCase().equals(name_low)) {
+                return opt.value;
+            }
+        }
+
+        //throw("option missing.");
+        return null;
+    }
+
+
+
+    public String[] getOptionSplit(String name) {
+        String value = getOption(name);
+        if (value == null)  return null;
+
+        String[] values = Util.explode(',', value);
+
+        return values;
+    }
+
+
 }

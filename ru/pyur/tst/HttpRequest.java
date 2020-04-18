@@ -3,6 +3,7 @@ package ru.pyur.tst;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+
 public class HttpRequest extends HttpHeader {
 
     public String szMethod;
