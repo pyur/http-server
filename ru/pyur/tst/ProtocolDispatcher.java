@@ -1,14 +1,14 @@
 package ru.pyur.tst;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.Arrays;
 
 
 public class ProtocolDispatcher {
 
-    private ByteArrayOutputStream stream;
-    private ByteArrayOutputStream payload;
+//r    private ByteArrayOutputStream stream;
+//r    private ByteArrayOutputStream request_payload;
 
 
     private int state;
@@ -25,14 +25,14 @@ public class ProtocolDispatcher {
     private final int HTTP_STATE_CAST_CLIENT = 8;
 
 
-    private boolean isHeaderReceived;
+//x    private boolean isHeaderReceived;
 
-    private final int RECV_HEADER_LIMIT = 8192;  // in C 16384
+//    private final int RECV_HEADER_LIMIT = 8192;  // in C 16384
 
-    private byte[] raw_header;
+//    private byte[] raw_header;
 
     private HttpRequest http_request;
-//    private HttpResponse http_response;
+    private HttpResponse http_response;
 
 /*
     HTTP_METHOD_Unknown = 0,
@@ -55,9 +55,9 @@ public class ProtocolDispatcher {
 
     private String ws_key;
 
-    private boolean isChunked = false;
+//    private boolean isChunked = false;
     private int content_length = 0;
-    private int chunkSize = 0;
+//    private int chunkSize = 0;
 
     private boolean isDeflated = false;
     private boolean isGzipped = false;
@@ -109,15 +109,13 @@ public class ProtocolDispatcher {
 
     public ProtocolDispatcher(Transport.Callback transport_callback) {
         this.transport_callback = transport_callback;
-        stream = new ByteArrayOutputStream();
-        //stream = new DataOutputStream();
-        //stream = new FilterOutputStream();
-        //stream = new BufferedOutputStream();
+//r        stream = new ByteArrayOutputStream();
 
-        payload = new ByteArrayOutputStream();
+//r        request_payload = new ByteArrayOutputStream();
 
-        isHeaderReceived = false;
+//x        isHeaderReceived = false;
     }
+
 
 
     public void setStateServer(CallbackServer cs, CallbackHttpPayload cp) {
@@ -126,6 +124,7 @@ public class ProtocolDispatcher {
         callback_server = (cs != null) ? cs : defaultDispatchServer;
         callback_http_payload = (cp != null) ? cp : defaultDispatchHttpServerPayload;
     }
+
 
 
     public void setStateServerSession(CallbackSession css) {
@@ -137,6 +136,7 @@ public class ProtocolDispatcher {
     }
 
 
+
     public void setStateHttpClient(CallbackHttpClient chc, CallbackHttpPayload cp) {
         state = HTTP_STATE_HTTP_CLIENT;
 
@@ -146,11 +146,11 @@ public class ProtocolDispatcher {
 
 
 
-    public void append(byte[] data, int size) {
-        try {
-            stream.write(data, 0, size);
-        } catch (Exception e) { e.printStackTrace(); }
-    }
+//    public void append(byte[] data, int size) {
+//        try {
+//            stream.write(data, 0, size);
+//        } catch (Exception e) { e.printStackTrace(); }
+//    }
 
 
 
@@ -159,94 +159,149 @@ public class ProtocolDispatcher {
     // -------------------------------- 1. Parse stream -------------------------------- //
     // --------------------------------------------------------------------------------- //
 
+    public void processData(InputStream is) throws Exception {
+        int result;
+
+        if (state == HTTP_STATE_HTTP_SERVER) {
+            byte[] payload = new byte[0];
+
+            if (http_request.hasOption("Content-Length")) {
+                String payload_length_s = http_request.getOption("Content-Length");
+                int payload_length = Integer.parseInt(payload_length_s);
+
+                int readed = 0;
+                payload = new byte[payload_length];
+
+                for(;;) {
+                    if (readed >= payload_length)  break;
+                    int readed1 = is.read(payload, readed, payload_length - readed);
+                    if (readed1 == -1)  break;
+                    readed += readed1;
+                }
+            }
+
+            else if (http_request.hasOption("Transfer-Encoding")) {
+                String[] transfer_encoding = http_request.getOptionSplit("Transfer-Encoding");
+                if (Util.inArray(transfer_encoding, "chunked")) {
+                    ChunkedPayloadInputStream payload_is = new ChunkedPayloadInputStream(is);
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+                    byte[] payload_fragment = new byte[65536];
+
+                    for(;;) {
+                        int readed = payload_is.read(payload_fragment);
+                        if (readed == -1)  break;
+                        os.write(payload_fragment, 0, readed);
+                    }
+
+                    payload = os.toByteArray();
+                }
+            }
+
+            //else {
+                // try to read until -1
+            //}
+
+
+            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload);
+
+            if (callback_session != null) {
+                DispatchedData feedback = callback_session.onReceived(http_request, payload);
+
+                HttpResponse response = new HttpResponse();
+                response.setConnectionClose();
+
+                if (feedback != null) {
+                    if (feedback.options.size() > 0) {
+                        for (PStr option : feedback.options) {
+                            response.addOption(option);
+                        }
+                    }
+
+                    //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
+
+                    if (feedback.payload != null) {
+                        response.appendPayload(feedback.payload);
+                    }
+                }
+                //else {
+                //...
+                //}
+
+                Http_Send(response.stringify());
+            }
+
+            //return 1;
+        }
+
+
+
+        else if (state == HTTP_STATE_HTTP_CLIENT) {
+            byte[] payload = new byte[0];
+            System.out.println("processData(). HTTP_STATE_HTTP_CLIENT");
+
+            if (http_response.hasOption("Content-Length")) {
+                String payload_length_s = http_response.getOption("Content-Length");
+                int payload_length = Integer.parseInt(payload_length_s);
+
+                int readed = 0;
+                payload = new byte[payload_length];
+
+                for(;;) {
+                    if (readed >= payload_length)  break;
+                    int readed1 = is.read(payload, readed, payload_length - readed);
+                    if (readed1 == -1)  break;
+                    readed += readed1;
+                }
+            }
+
+            else if (http_response.hasOption("Transfer-Encoding")) {
+                System.out.println("processData(). hasOption \"Transfer-Encoding\"");
+
+                String[] transfer_encoding = http_response.getOptionSplit("Transfer-Encoding");
+
+                if (Util.inArray(transfer_encoding, "chunked")) {
+                    System.out.println("processData(). Transfer-Encoding has \"chunked\"");
+
+                    ChunkedPayloadInputStream chunked_is = new ChunkedPayloadInputStream(is);
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+                    byte[] payload_fragment = new byte[65536];
+//                    for(;;) {
+//                        payload_fragment = new byte[65536];
+//                        int readed2 = is.read(payload_fragment);
+//                        System.out.println("---------------- raw (" + readed2 + ") ----------------");
+//                        System.out.println(new String(payload_fragment));
+//                        System.out.println("---------------- end ----------------");
+//                        if (readed2 == -1)  break;
+//                    }
+
+                    for(;;) {
+                        int readed = chunked_is.read(payload_fragment);
+                        System.out.println("==== processData(). chunked_is.readed: " + readed);
+                        if (readed == -1)  break;
+                        os.write(payload_fragment, 0, readed);
+                    }
+
+                    payload = os.toByteArray();
+                }
+            }
+
+            result = callback_http_payload.payloadReceived(payload);
+
+            //return 1;
+        }
+
+    }
+
+
+/*
     public int parseStream() {
         int result;
 
 
         // ---------------- 1. header not received ---------------- //
 
-        if (!isHeaderReceived) {
-            result = parseStreamHeader();
-
-            if (result < 0)  return -1;  // failed
-            else if (result == 0)  return 0;  // not found
-
-
-            // todo: switch/case
-
-            // -- mode server. process request -- //
-            // http server, websocket server, cast server
-            if (state == HTTP_STATE_SERVER) {
-                http_request = new HttpRequest();
-                try {
-                    http_request.parse(raw_header);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return -1;
-                }
-
-                result = callback_server.requestReceived(http_request);
-
-                if (result < 0)  return -1;  // failed
-                //if (result > 0) {
-                    // todo: prepare for payload receiving
-                //}
-
-            }
-
-
-            // -- if client - process response -- //
-            else if (state == HTTP_STATE_HTTP_CLIENT) {
-                HttpResponse http_response = new HttpResponse();
-                try {
-                    http_response.parse(raw_header);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return -1;
-                }
-
-                result = callback_http_client.responseReceived(http_response);
-
-                if (result < 0)  return -1;
-
-                // todo: prepare for payload receiving
-            }
-
-
-            // -- if websocket client - process response -- //
-            else if (state == HTTP_STATE_WS_CLIENT) {
-                try {
-//todo                    result = new HttpWsResponse(raw_header);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return -1;
-                }
-
-                // ---- prepare for data exchange ---- //
-              //  http->message = Expandable_Create();
-              //  http->ws_prev_fin = 1;
-
-              //  if (http->cbWsReady)  http->cbWsReady(http->cbInstance, http);
-            }
-
-
-            // -- if castclient - process response -- //
-            else if (state == HTTP_STATE_CAST_CLIENT) {
-                try {
-//todo                    result = HttpCastResponse(raw_header);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return -1;
-                }
-
-                // prepare for stream receiving
-
-              //  if (http->cbCastReady)  http->cbCastReady(http->cbInstance, http);
-            }
-
-
-            isHeaderReceived = true;
-        }
 
 
 
@@ -261,10 +316,10 @@ public class ProtocolDispatcher {
             if (result == 0) return 0;  // in progress
 
             result = 0;
-            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload.toByteArray());
+            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(request_payload.toByteArray());
 
             if (callback_session != null) {
-                DispatchedData feedback = callback_session.onReceived(http_request, payload.toByteArray());
+                DispatchedData feedback = callback_session.onReceived(http_request, request_payload.toByteArray());
 
                 HttpResponse response = new HttpResponse();
                 response.setConnectionClose();
@@ -302,7 +357,7 @@ public class ProtocolDispatcher {
             if (result < 0)  return -1;  // failed
             if (result == 0)  return 0;  // in progress
 
-            result = callback_http_payload.payloadReceived(payload.toByteArray());
+            result = callback_http_payload.payloadReceived(request_payload.toByteArray());
 
             if (result < 0)  return -1;  // failed
 
@@ -368,7 +423,7 @@ public class ProtocolDispatcher {
 
         return 0;
     }
-
+*/
 
 
 
@@ -376,6 +431,7 @@ public class ProtocolDispatcher {
     // ----------------------------- 2 Parse stream header ----------------------------- //
     // --------------------------------------------------------------------------------- //
 
+/*
     private int parseStreamHeader() {
 
         byte[] bytes = stream.toByteArray();
@@ -415,9 +471,11 @@ public class ProtocolDispatcher {
 
         return 1;  // header found
     }
+*/
 
 
 
+/*
     private int searchDoubleNewLine(byte[] stm) {
         int search_end = stm.length - 3;
 
@@ -429,6 +487,91 @@ public class ProtocolDispatcher {
 
         return -1;  // not found
     }
+*/
+
+    public void parseHeader(byte[] raw_header) throws Exception {
+        int result;
+
+        // todo: switch/case
+
+        // -- mode server. process request -- //
+        // http server, websocket server, cast server
+        if (state == HTTP_STATE_SERVER) {
+            http_request = new HttpRequest();
+            //try {
+                http_request.parse(raw_header);
+            //} catch (Exception e) {
+            //    e.printStackTrace();
+                //return -1;
+            //}
+//x            System.out.println("http_request location: " + http_request.szLocation);
+
+            result = callback_server.requestReceived(http_request);
+
+            //if (result < 0)   return -1;  // failed
+            if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
+            //if (result > 0) {
+            // todo: prepare for payload receiving
+            //}
+
+        }
+
+
+        // -- if client - process response -- //
+        else if (state == HTTP_STATE_HTTP_CLIENT) {
+            //HttpResponse http_response = new HttpResponse();
+            http_response = new HttpResponse();
+            //try {
+                http_response.parse(raw_header);
+            //} catch (Exception e) {
+            //    e.printStackTrace();
+            //    return -1;
+            //}
+
+            result = callback_http_client.responseReceived(http_response);
+
+            //if (result < 0)  return -1;
+            if (result < 0)   throw new Exception("processing in callback 'responseReceived' failed");  // failed
+
+            // todo: prepare for payload receiving
+        }
+
+
+        // -- if websocket client - process response -- //
+        else if (state == HTTP_STATE_WS_CLIENT) {
+            //try {
+//todo                    result = new HttpWsResponse(raw_header);
+            //} catch (Exception e) {
+            //    e.printStackTrace();
+            //    return -1;
+            //}
+
+            // ---- prepare for data exchange ---- //
+            //  http->message = Expandable_Create();
+            //  http->ws_prev_fin = 1;
+
+            //  if (http->cbWsReady)  http->cbWsReady(http->cbInstance, http);
+        }
+
+
+        // -- if castclient - process response -- //
+        else if (state == HTTP_STATE_CAST_CLIENT) {
+            //try {
+//todo                    result = HttpCastResponse(raw_header);
+            //} catch (Exception e) {
+            //    e.printStackTrace();
+            //    return -1;
+            //}
+
+            // prepare for stream receiving
+
+            //  if (http->cbCastReady)  http->cbCastReady(http->cbInstance, http);
+        }
+
+
+        //isHeaderReceived = true;
+    }
+
 
 
 
@@ -560,7 +703,7 @@ public class ProtocolDispatcher {
                 //if (!strcmp(opt->value, "chunked")) {
                 if (opt.value.equals("chunked")) {
     //!                ds(" chunked");
-                    isChunked = true;
+//!                    isChunked = true;
                 }
             }  // "Transfer-Encoding: "
 
@@ -618,7 +761,7 @@ public class ProtocolDispatcher {
             // lame compare. todo: explode value with ','
             if (opt.value.equals("chunked")) {
                 //ds(" chunked");
-                isChunked = true;
+//!                isChunked = true;
             }
         }
 
@@ -752,6 +895,7 @@ public class ProtocolDispatcher {
     // -------------------------------- Receive http payload -------------------------------- //
     // -------------------------------------------------------------------------------------- //
 
+/*
     private int receiveHttpPayload() {
 
         if (!isChunked) {
@@ -759,14 +903,14 @@ public class ProtocolDispatcher {
             //if (size_to_copy > http->contentSize)  size_to_copy = http->contentSize;
 
             //r Expandable_Append(http->payload, http->stream->data, http->stream->size);
-            try { payload.write(stream.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
+            try { request_payload.write(stream.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
 
             //r Expandable_Truncate(http->stream);
             stream.reset();
 
 //!            DebugCy_("compare: size (");  di(http->payload->size); ds(") >= ("); di(http->contentLength); ds(")");
 
-            if (payload.size() >= content_length)  return 1;
+            if (request_payload.size() >= content_length)  return 1;
         }
 
 
@@ -816,7 +960,7 @@ public class ProtocolDispatcher {
                     byte[] stream_bytes = stream.toByteArray();
 
                     //r Expandable_Append(http->payload, http->stream->data, http->chunkSize - 2);  // excluding trailing "\r\n"
-                    try { payload.write(stream_bytes, 0, (chunkSize - 2) ); } catch (Exception e) { e.printStackTrace(); }
+                    try { request_payload.write(stream_bytes, 0, (chunkSize - 2) ); } catch (Exception e) { e.printStackTrace(); }
 
                     //r Expandable_Shift(http->stream, http->chunkSize);
                     stream.reset();
@@ -845,9 +989,11 @@ public class ProtocolDispatcher {
 
         return 0;
     }
+*/
 
 
 
+/*
     private int Http_HasNewLine(byte[] bytes) { //Str stream, size_t size) {
         int p = 0;
         int search_end = p + bytes.length - 1;
@@ -887,7 +1033,8 @@ public class ProtocolDispatcher {
             else if (nibble >= 'a' && nibble <= 'f')  nibble = nibble - 'a' + 10;
             else if (nibble >= 'A' && nibble <= 'F')  nibble = nibble - 'A' + 10;
             else  break;
-            //*val = nibble;
+            /*/
+/*val = nibble;
             val <<= 4;
             val |= nibble & 0xF;
             //p--;
@@ -912,6 +1059,7 @@ public class ProtocolDispatcher {
 
         return val;  // number;
     }
+*/
 
 
 

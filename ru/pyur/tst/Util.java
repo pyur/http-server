@@ -115,4 +115,16 @@ public class Util {
     }
 
 
+
+    // ---- contains ---- //
+    public static boolean inArray(String[] str_arr, String string) {
+
+        for (String str: str_arr) {
+            if (string.equals(str))  return true;
+        }
+
+        return false;
+    }
+
+
 }

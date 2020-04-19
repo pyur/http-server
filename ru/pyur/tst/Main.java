@@ -17,8 +17,8 @@ public class Main {
 //        } catch (Exception e) { e.printStackTrace(); }
 
 
-        //TestClient client = new TestClient();
-        //client.run();
+//        TestClient client = new TestClient();
+//        client.run();
 
 
         ServerTcp server = new ServerTcp(80);

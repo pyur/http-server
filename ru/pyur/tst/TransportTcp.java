@@ -13,12 +13,18 @@ public class TransportTcp extends Transport implements Runnable {
 
     private OutputStream os;
 
+    //private Session session;
+
+
 
     public TransportTcp() {}
 
 
     //public TransportTcp(Socket client, Transport.TransportCallback tc, ProtocolDispatcher.CallbackServer pd_cs, ProtocolDispatcher.CallbackHttpPayload pd_chp) {
-    public TransportTcp(Socket client, Session session) {
+    //public TransportTcp(Socket client, Session session) {
+    public TransportTcp(Socket client) {
+        Session session = new Session();
+
         this.client = client;
         protocolDispatcher = new ProtocolDispatcher(transport_callback);
         protocolDispatcher.setStateServerSession(session.getProtocolCallback());
@@ -53,16 +59,10 @@ public class TransportTcp extends Transport implements Runnable {
     public void listen() {
 
         try {
-            //DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            //DataInputStream in = new DataInputStream(client.getInputStream());
-            //ByteArrayOutputStream os = new ByteArrayOutputStream();
-            //OutputStream os = new ByteArrayOutputStream();
             InputStream is = client.getInputStream();
+            HeaderInputStream hhis = new HeaderInputStream(is);
             os = client.getOutputStream();
 
-
-            byte[] buf = new byte[8192];  // in C 16384
-            int received_size;
 
             if (tr_callback != null) {
                 byte[] bytes = tr_callback.onConnected();
@@ -70,8 +70,36 @@ public class TransportTcp extends Transport implements Runnable {
             }
 
 
+            // ---- 1. receive header ---- //
+
+            byte[] raw_header = new byte[8192];
+
+            int header_size = hhis.read(raw_header);
+
+            //byte[] trail = hhis.getTrail();  // or maybe better to read form is one-by-one
+
+            //hhis.close();
+
+            System.out.println("header size: " + header_size);
+            System.out.println("[" + new String(raw_header) + "]");
+
+            protocolDispatcher.parseHeader(raw_header);  // Exception on failed
+
+
+
+            // ---- 2. receive payload ---- //
+
+            protocolDispatcher.processData(is);  // Exception on error
+
+/*
+            byte[] buf_data = new byte[65536];  // in C 16384
+            int received_size;
+
+
             for (;;) {
-                received_size = is.read(buf);
+                System.out.println("read...");
+                received_size = is.read(buf_data);
+                System.out.println("...readed");
 
                 if (received_size == -1) {
                     // connection failed
@@ -79,17 +107,16 @@ public class TransportTcp extends Transport implements Runnable {
                 }
 
                 else if (received_size == 0) {
-                    // remote host closed connection ?
                     System.out.println("received_size is 0");
-                    //break;
                     continue;
                 }
 
-                System.out.println("received " + received_size + " bytes.");
+                System.out.println("received data: " + received_size + " bytes.");
                 //System.out.println(new String(buf));
 
+                // depending on 'mode' create PayloadInputStream, WebsocketInputStream, etc.
 
-                protocolDispatcher.append(buf, received_size);
+                protocolDispatcher.append(buf_data, received_size);  // todo: rename to 'put'
 
 
                 int result = protocolDispatcher.parseStream();
@@ -107,7 +134,7 @@ public class TransportTcp extends Transport implements Runnable {
                 }
 
             }  // for
-
+*/
             System.out.println("Client disconnected.");
 
             is.close();
@@ -142,7 +169,6 @@ public class TransportTcp extends Transport implements Runnable {
 
         return 0;
     }
-
 
 
 }

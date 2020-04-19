@@ -56,6 +56,7 @@ public abstract class HttpHeader {
         if (value == null)  return null;
 
         String[] values = Util.explode(',', value);
+        //maybe trim each value
 
         return values;
     }

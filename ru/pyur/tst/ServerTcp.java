@@ -31,8 +31,9 @@ public class ServerTcp {
                 Socket client = server.accept();  // thread locking
                 //System.out.println("Connection accepted.");
 
-                Session session = new Session();
-                service.execute(new TransportTcp(client, session));
+                //Session session = new Session();
+                //service.execute(new TransportTcp(client, session));
+                service.execute(new TransportTcp(client));
             }
 
         } catch (Exception e) {

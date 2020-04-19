@@ -2,7 +2,7 @@ package ru.pyur.tst;
 
 public class TestClient {
 
-    String host;
+    private String host;
 
 
     public TestClient() {}
@@ -11,19 +11,21 @@ public class TestClient {
 
     public void run() {
         TransportTcp transp = new TransportTcp();
-        host = "loga.pyur.ru";
-        transp.createClient(host, test_t, test_1, test_2);
+        //host = "loga.pyur.ru";
+        host = "anglesharp.azurewebsites.net";
+        transp.createClient(host, cb_transport, cb_client, cb_payload);
     }
 
 
 
-    private Transport.TransportCallback test_t = new Transport.TransportCallback() {
+    private Transport.TransportCallback cb_transport = new Transport.TransportCallback() {
         @Override
         public byte[] onConnected() {
             System.out.println("onConnected()");
             HttpRequest rq = new HttpRequest();
 
-            rq.defaultGet("/", host);
+            //rq.defaultGet("/", host);
+            rq.defaultGet("/Chunked", host);
 
             return rq.stringify();
         }
@@ -33,7 +35,7 @@ public class TestClient {
     };
 
 
-    private ProtocolDispatcher.CallbackHttpClient test_1 = new ProtocolDispatcher.CallbackHttpClient() {
+    private ProtocolDispatcher.CallbackHttpClient cb_client = new ProtocolDispatcher.CallbackHttpClient() {
         @Override
         public int responseReceived(HttpResponse http_response) {
             System.out.println("----------- Response -----------");
@@ -48,10 +50,10 @@ public class TestClient {
 
 
 
-    private ProtocolDispatcher.CallbackHttpPayload test_2 = new ProtocolDispatcher.CallbackHttpPayload() {
+    private ProtocolDispatcher.CallbackHttpPayload cb_payload = new ProtocolDispatcher.CallbackHttpPayload() {
         @Override
         public int payloadReceived(byte[] bytes) {
-            System.out.println("----------- Payload ------------");
+            System.out.println("----------- Payload (" + bytes.length + ") ------------");
             System.out.println(new String(bytes));
             System.out.println("--------------------------------");
 
