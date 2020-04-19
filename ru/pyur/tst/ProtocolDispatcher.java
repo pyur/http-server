@@ -25,43 +25,15 @@ public class ProtocolDispatcher {
     private final int HTTP_STATE_CAST_CLIENT = 8;
 
 
-//x    private boolean isHeaderReceived;
 
 //    private final int RECV_HEADER_LIMIT = 8192;  // in C 16384
 
-//    private byte[] raw_header;
 
     private HttpRequest http_request;
     private HttpResponse http_response;
 
-/*
-    HTTP_METHOD_Unknown = 0,
-    HTTP_METHOD_GET = 1,
-    HTTP_METHOD_POST = 2,
-    HTTP_METHOD_HEAD = 3,
-    HTTP_METHOD_OPTIONS = 4,
-    HTTP_METHOD_PUT = 5,
-    HTTP_METHOD_DELETE = 6,
-    HTTP_METHOD_PATCH = 7,
-    HTTP_METHOD_CONNECT= 8,
-    HTTP_METHOD_TRACE = 9,
-
-    HTTP_VERSION_Unknown = 0,
-    HTTP_VERSION_0_9 = 1,
-    HTTP_VERSION_1_0 = 2,
-    HTTP_VERSION_1_1 = 3,
-*/
-
 
     private String ws_key;
-
-//    private boolean isChunked = false;
-    private int content_length = 0;
-//    private int chunkSize = 0;
-
-    private boolean isDeflated = false;
-    private boolean isGzipped = false;
-
 
 
     private Transport.Callback transport_callback;
@@ -431,64 +403,6 @@ public class ProtocolDispatcher {
     // ----------------------------- 2 Parse stream header ----------------------------- //
     // --------------------------------------------------------------------------------- //
 
-/*
-    private int parseStreamHeader() {
-
-        byte[] bytes = stream.toByteArray();
-
-        int header_size = searchDoubleNewLine(bytes);
-
-        if (header_size < 0) {
-            // -- "\r\n\r\n" not found -- //
-            if (bytes.length > RECV_HEADER_LIMIT) {
-                System.out.println("ProtocolDispatcher. Search header within limit (" + RECV_HEADER_LIMIT + ") failed. Terminate.");
-                return -2;  // failed
-            }
-
-            return 0;  // not found
-        }
-
-
-        // -- copy header from stream -- //
-
-        raw_header = Arrays.copyOfRange(bytes, 0, header_size);
-
-        //System.out.println("---- raw header ------------------------------------------------");
-        //System.out.println(new String(raw_header));
-        //System.out.println("----------------------------------------------------------------");
-
-
-        // -- cut header from stream-- //
-
-        stream = new ByteArrayOutputStream();
-        int offset = header_size + 4;
-        byte[] trail = Arrays.copyOfRange(bytes, offset, offset + bytes.length );  // 4 is for "\r\n\r\n"
-        //System.out.println("beg: " + (header_size + 4) + ", end: " + stm.length);
-        try {
-            stream.write(trail);
-        } catch (Exception e) { e.printStackTrace(); }
-
-
-        return 1;  // header found
-    }
-*/
-
-
-
-/*
-    private int searchDoubleNewLine(byte[] stm) {
-        int search_end = stm.length - 3;
-
-        for (int i = 0; i < search_end; i++) {
-            if (stm[i] != '\r')  continue;
-
-            if (stm[i+1] == '\n' && stm[i+2] == '\r' && stm[i+3] == '\n')  return i;
-        }
-
-        return -1;  // not found
-    }
-*/
-
     public void parseHeader(byte[] raw_header) throws Exception {
         int result;
 
@@ -498,53 +412,31 @@ public class ProtocolDispatcher {
         // http server, websocket server, cast server
         if (state == HTTP_STATE_SERVER) {
             http_request = new HttpRequest();
-            //try {
-                http_request.parse(raw_header);
-            //} catch (Exception e) {
-            //    e.printStackTrace();
-                //return -1;
-            //}
-//x            System.out.println("http_request location: " + http_request.szLocation);
+
+            http_request.parse(raw_header);
 
             result = callback_server.requestReceived(http_request);
 
-            //if (result < 0)   return -1;  // failed
             if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
-            //if (result > 0) {
-            // todo: prepare for payload receiving
-            //}
-
         }
 
 
         // -- if client - process response -- //
         else if (state == HTTP_STATE_HTTP_CLIENT) {
-            //HttpResponse http_response = new HttpResponse();
             http_response = new HttpResponse();
-            //try {
-                http_response.parse(raw_header);
-            //} catch (Exception e) {
-            //    e.printStackTrace();
-            //    return -1;
-            //}
+
+            http_response.parse(raw_header);
 
             result = callback_http_client.responseReceived(http_response);
 
-            //if (result < 0)  return -1;
             if (result < 0)   throw new Exception("processing in callback 'responseReceived' failed");  // failed
-
-            // todo: prepare for payload receiving
         }
 
 
         // -- if websocket client - process response -- //
         else if (state == HTTP_STATE_WS_CLIENT) {
-            //try {
+
 //todo                    result = new HttpWsResponse(raw_header);
-            //} catch (Exception e) {
-            //    e.printStackTrace();
-            //    return -1;
-            //}
 
             // ---- prepare for data exchange ---- //
             //  http->message = Expandable_Create();
@@ -556,20 +448,14 @@ public class ProtocolDispatcher {
 
         // -- if castclient - process response -- //
         else if (state == HTTP_STATE_CAST_CLIENT) {
-            //try {
+
 //todo                    result = HttpCastResponse(raw_header);
-            //} catch (Exception e) {
-            //    e.printStackTrace();
-            //    return -1;
-            //}
 
             // prepare for stream receiving
 
             //  if (http->cbCastReady)  http->cbCastReady(http->cbInstance, http);
         }
 
-
-        //isHeaderReceived = true;
     }
 
 
@@ -590,51 +476,33 @@ public class ProtocolDispatcher {
 
             // ---------------- determining what client wants ---------------- //
 
-            PStr opt;
-
-            // ---- GET ---- //
-            //if (rq->method == 1) {
-            //return 1;  // ??
-            //  }
-
-            // ---- POST ---- //
-            //else if (rq->method == 2) {
-            //  }
-
-    // Host: www.googleapis.com
-    // Connection: close
-    // Content-Type: application/x-www-form-urlencoded
-    // Content-Length: %d
-
-    // Content-Type: application/json
-    // Authorization: Bearer %s
-
-
             // ---------------- WebSocket ---------------- //
 
-            //opt = PairList_FindByKey(rq->options, "Connection");
-            //if (opt) {
-            //  //DebugIMsg(http, "option \"Connection\" found.");
-            //  if (!strcmp(opt->value, "Upgrade")) {  // can be: "keep-alive, Upgrade"
-            //    //DebugIMsg(http, "option \"Connection\" is \"Upgrade\".");
+            if (http_request.hasOption("Connection")) {
+                System.out.println("option \"Connection\" found.");
+                String[] opts = http_request.getOptionSplit("Connection");
+                if (Util.inArray(opts, "Upgrade")) {  // can be: "keep-alive, Upgrade"
+                    System.out.println("option \"Connection\" has \"Upgrade\".");
+                    //...
+                }
+            }
 
             //----
 
-            opt = PStr.PairList_FindByKey(http_request.options, "Upgrade");
-            if (opt != null) {
-                if (opt.value.equals("websocket")) {
-                    //DebugIVerbose(http, "found \"Upgrade: websocket\". use mode \"websocket\".");
+            if (http_request.hasOption("Upgrade")) {
+                if (http_request.getOption("Upgrade").equals("websocket")) {
 
                     // -------- check 'Sec-WebSocket-Version' -------- //
-                    //opt = Pair_ListFindByKey(rq->options, "Sec-WebSocket-Version");
-                    //if (!opt) { DebugIInfo(session, "option \"Sec-WebSocket-Version\" not found."); }
+                    if (!http_request.hasOption("Sec-WebSocket-Version")) {
+                        System.out.println("defaultDispatchServer. error. option \"Sec-WebSocket-Version\" not found.");
+                    }
 
 
                     // -------- check 'Sec-WebSocket-Key' -------- //
-                    opt = PStr.PairList_FindByKey(http_request.options, "Sec-WebSocket-Key");
-                    if (opt != null) {
-                        //DebugIMsg(http, "option \"Sec-WebSocket-Key\" present.");
-                        ws_key = opt.value;
+                    if (http_request.hasOption("Sec-WebSocket-Key")) {
+                        //System.out.println("option \"Sec-WebSocket-Key\" present.");
+
+                        ws_key = http_request.getOption("Sec-WebSocket-Key");
 
                         // ---- validate auth ---- //
                         int iResult;
@@ -668,9 +536,9 @@ public class ProtocolDispatcher {
 
             // ---------------- Audio Cast ---------------- //
 
-            opt = PStr.PairList_FindByKey(http_request.options, "Icy-MetaData");  // "icy-metadata"
-            if (opt != null) {
-    //todo            int metadata = atoi(opt->value);
+            if (http_request.hasOption("Icy-MetaData")) {
+
+                    //todo            int metadata = atoi(opt->value);
     //todo            DebugIVerbose_(http, "found \"icy-metadata: #\". use mode \"audio cast\". ");  di(metadata);  dcd();
 
                 state = HTTP_STATE_CAST_SERVER;
@@ -688,32 +556,10 @@ public class ProtocolDispatcher {
 
 
 
-            //DebugIInfo(http, "no special options found, work as plain standard http server.");
+            //System.out.println("no special options found, work as plain standard http server.");
 
             // ---------------- casual http request ---------------- //
             state = HTTP_STATE_HTTP_SERVER;
-
-            // ---------------- prepare payload receiver ---------------- //
-            // ---- determine format of payload ---- //
-            opt = PStr.PairList_FindByKey(http_request.options, "Transfer-Encoding");  // chunked, compress, deflate, gzip, identity
-            // Several values can be listed, separated by a comma
-            if (opt != null) {
-    //!            DebugIInfo(http, "used \"Transfer-Encoding\".");
-                // lame compare. must explode value with ','
-                //if (!strcmp(opt->value, "chunked")) {
-                if (opt.value.equals("chunked")) {
-    //!                ds(" chunked");
-//!                    isChunked = true;
-                }
-            }  // "Transfer-Encoding: "
-
-
-            //if (!isChunked) {
-            //    // ? where setted-up 'Content-Length:' ?
-            //    opt = PStr.PairList_FindByKey(http_request.options, "Content-Length");
-            //
-            //    // ...
-            //}
 
 
             return 1;
@@ -723,7 +569,7 @@ public class ProtocolDispatcher {
 
 
 
-    // ----------------------------------------------------------------------------
+    // -------------------- default Http Server payload dispatcher -------------------- //
 
     private CallbackHttpPayload defaultDispatchHttpServerPayload = new CallbackHttpPayload() {
         @Override
@@ -744,38 +590,38 @@ public class ProtocolDispatcher {
 
 
 
-    // ----------------------------------------------------------------------------
+    // -------------------- default Http Client response dispatcher -------------------- //
 
     private CallbackHttpClient defaultDispatchHttpClient = new CallbackHttpClient() {
         @Override
         public int responseReceived(HttpResponse http_response) {
 
-        // ---------------- prepare payload receiver ---------------- //
+            // ---------------- prepare payload receiver ---------------- //
 
-        PStr opt;
+//r            PStr opt;
 
-        opt = PStr.PairList_FindByKey(http_response.options, "Transfer-Encoding");  // chunked, compress, deflate, gzip, identity
-        // Several values can be listed, separated by a comma
-        if (opt != null) {
-            //DebugIInfo(http, "used \"Transfer-Encoding\".");
-            // lame compare. todo: explode value with ','
-            if (opt.value.equals("chunked")) {
-                //ds(" chunked");
-//!                isChunked = true;
-            }
-        }
-
-
-        opt = PStr.PairList_FindByKey(http_response.options, "Content-Length");
-        if (opt != null) {
-            //DebugICy(http, "\"Content-Length\" present.");
-            content_length = Integer.parseInt(opt.value);
-            http_response.content_length = content_length;
-        }
+//r            opt = PStr.PairList_FindByKey(http_response.options, "Transfer-Encoding");  // chunked, compress, deflate, gzip, identity
+//r            // Several values can be listed, separated by a comma
+//r            if (opt != null) {
+//r                //DebugIInfo(http, "used \"Transfer-Encoding\".");
+//r                // lame compare. todo: explode value with ','
+//r                if (opt.value.equals("chunked")) {
+//r                    //ds(" chunked");
+//r    //!                isChunked = true;
+//r                }
+//r            }
 
 
+//r            opt = PStr.PairList_FindByKey(http_response.options, "Content-Length");
+//r            if (opt != null) {
+//r                //DebugICy(http, "\"Content-Length\" present.");
+//r                content_length = Integer.parseInt(opt.value);
+//r                http_response.content_length = content_length;
+//r            }
 
-        // ---------------- grab cookies ---------------- //
+
+
+            // ---------------- grab cookies ---------------- //
 
 /* todo
         LPair lspOptions = rs->options;
@@ -800,7 +646,7 @@ public class ProtocolDispatcher {
 
 
 
-    // ----------------------------------------------------------------------------
+    // -------------------- default Http Client payload dispatcher -------------------- //
 
     private CallbackHttpPayload defaultDispatchHttpClientPayload = new CallbackHttpPayload() {
         @Override
@@ -815,7 +661,7 @@ public class ProtocolDispatcher {
 
 
 
-    // ----------------------------------------------------------------------------
+    // -------------------- default Websocket Client response dispatcher -------------------- //
 
     private int Http_ProcessWsResponse() {
 /*
@@ -894,172 +740,6 @@ public class ProtocolDispatcher {
     // -------------------------------------------------------------------------------------- //
     // -------------------------------- Receive http payload -------------------------------- //
     // -------------------------------------------------------------------------------------- //
-
-/*
-    private int receiveHttpPayload() {
-
-        if (!isChunked) {
-            //size_t size_to_copy = http->stream->size;
-            //if (size_to_copy > http->contentSize)  size_to_copy = http->contentSize;
-
-            //r Expandable_Append(http->payload, http->stream->data, http->stream->size);
-            try { request_payload.write(stream.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
-
-            //r Expandable_Truncate(http->stream);
-            stream.reset();
-
-//!            DebugCy_("compare: size (");  di(http->payload->size); ds(") >= ("); di(http->contentLength); ds(")");
-
-            if (request_payload.size() >= content_length)  return 1;
-        }
-
-
-        // ---------------- chunked ---------------- //
-
-        else {
-            for(;;) {
-                if (chunkSize == 0) {
-                    //if (http->stream->size < 6)  return 0;
-                    //r int size_size = Http_HasNewLine(http->stream->data, http->stream->size);
-                    byte[] stream_bytes = stream.toByteArray();
-                    int size_size = Http_HasNewLine(stream_bytes);
-                    if (size_size < 0)  return 0;
-                    else if (size_size > 8) {
-                        System.err.println("HttpSession. stream chunk size exceed 8 chars.");
-                        return -1;
-                    }
-
-                    //r Str szChunkSize = String_Substr(http->stream->data, size_size);
-                    byte[] byChunkSize = Arrays.copyOfRange(stream_bytes, 0, size_size);
-                    chunkSize = byte_HexToInt(byChunkSize);
-                    //r String_Destroy(szChunkSize);
-                    System.out.println("chunk size: " + chunkSize);
-                    chunkSize += 2;  // for trailing "\r\n"
-
-                    //if (!http->chunkSize) {
-                    if (chunkSize == 2) {
-                        //DebugWarn("chunk [0]. flushing.");
-                        //return 1;
-                        // or raise a flush flag, read remaining 2 bytes, and then flush.
-                        System.out.println("chunk [0]. ready to flush.");
-                    }
-
-                    //r Expandable_Shift(http->stream, size_size + 2);  // 2 is for "\r\n"
-                    stream.reset();
-                    try {
-                        stream.write(Arrays.copyOfRange(stream_bytes, size_size + 2, stream_bytes.length));
-                    } catch (Exception e) { e.printStackTrace(); }
-                }
-
-
-//!                DebugCy_("stream->size: ");  di(http->stream->size);  ds(", chunk size: ");  di(http->chunkSize);
-
-                //r if (http->stream->size >= http->chunkSize) {
-                if (stream.size() >= chunkSize) {
-                    //DebugWarn("equals or more. copy to payload.");
-                    byte[] stream_bytes = stream.toByteArray();
-
-                    //r Expandable_Append(http->payload, http->stream->data, http->chunkSize - 2);  // excluding trailing "\r\n"
-                    try { request_payload.write(stream_bytes, 0, (chunkSize - 2) ); } catch (Exception e) { e.printStackTrace(); }
-
-                    //r Expandable_Shift(http->stream, http->chunkSize);
-                    stream.reset();
-                    try {
-                        stream.write(Arrays.copyOfRange(stream_bytes, chunkSize, stream_bytes.length));
-                    } catch (Exception e) { e.printStackTrace(); }
-
-                    if (chunkSize == 2) {
-                        System.out.println("remainings readed. flushing.");
-                        chunkSize = 0;  // redundant
-                        return 1;
-                    }
-
-                    //DebugWarning("chunk move. size reset.");
-                    chunkSize = 0;
-                }
-
-                else {
-                    break;
-                }
-
-            }  // for
-
-        }
-
-
-        return 0;
-    }
-*/
-
-
-
-/*
-    private int Http_HasNewLine(byte[] bytes) { //Str stream, size_t size) {
-        int p = 0;
-        int search_end = p + bytes.length - 1;
-
-        // ooooooox
-        for (;;) {
-            while (bytes[p] != '\r' && p < search_end)  p++;
-
-            if (p >= search_end)  break;  // return -1;
-
-            if (bytes[p+1] == '\n')  return p;
-
-            p++;
-        }
-
-        return -1;
-    }
-
-
-
-    private int byte_HexToInt(byte[] p) {
-        //Str p = string + strlen(string) - 1;
-        int i = 0;  // p.length - 1;
-        int nibble;
-        int number = 0;
-//        Bin val = (Bin)&number;
-        //long val = 0;
-        int val = 0;
-
-        int limit = 4;
-        while(i < p.length && (limit--) >= 0) {  // todo: noy sure about '>='
-
-//            // -- first nibble -- //
-            nibble = p[i];
-
-            if (nibble >= '0' && nibble <= '9')  nibble = nibble - '0';
-            else if (nibble >= 'a' && nibble <= 'f')  nibble = nibble - 'a' + 10;
-            else if (nibble >= 'A' && nibble <= 'F')  nibble = nibble - 'A' + 10;
-            else  break;
-            /*/
-/*val = nibble;
-            val <<= 4;
-            val |= nibble & 0xF;
-            //p--;
-            i++;
-
-            // -- second nibble -- //
-//            if (!*p)  break;
-//            nibble = *p;
-//
-//            if (nibble >= '0' && nibble <= '9')  nibble = nibble - '0';
-//            else if (nibble >= 'a' && nibble <= 'f')  nibble = nibble - 'a' + 10;
-//            else if (nibble >= 'A' && nibble <= 'F')  nibble = nibble - 'A' + 10;
-//            else  break;
-//
-//            *val |= (nibble & 0xF) << 4;  // is `& 0xF` necessary?
-//            p--;
-//
-//            val++;
-        }
-
-        //number = _byteswap_ulong(number);
-
-        return val;  // number;
-    }
-*/
 
 
 

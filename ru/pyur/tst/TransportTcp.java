@@ -76,65 +76,17 @@ public class TransportTcp extends Transport implements Runnable {
 
             int header_size = hhis.read(raw_header);
 
-            //byte[] trail = hhis.getTrail();  // or maybe better to read form is one-by-one
-
-            //hhis.close();
-
             System.out.println("header size: " + header_size);
-            System.out.println("[" + new String(raw_header) + "]");
+            //System.out.println("[" + new String(raw_header) + "]");
 
-            protocolDispatcher.parseHeader(raw_header);  // Exception on failed
-
+            protocolDispatcher.parseHeader(raw_header);
 
 
             // ---- 2. receive payload ---- //
 
-            protocolDispatcher.processData(is);  // Exception on error
-
-/*
-            byte[] buf_data = new byte[65536];  // in C 16384
-            int received_size;
+            protocolDispatcher.processData(is);
 
 
-            for (;;) {
-                System.out.println("read...");
-                received_size = is.read(buf_data);
-                System.out.println("...readed");
-
-                if (received_size == -1) {
-                    // connection failed
-                    break;
-                }
-
-                else if (received_size == 0) {
-                    System.out.println("received_size is 0");
-                    continue;
-                }
-
-                System.out.println("received data: " + received_size + " bytes.");
-                //System.out.println(new String(buf));
-
-                // depending on 'mode' create PayloadInputStream, WebsocketInputStream, etc.
-
-                protocolDispatcher.append(buf_data, received_size);  // todo: rename to 'put'
-
-
-                int result = protocolDispatcher.parseStream();
-
-                if (result < 0) {
-                    System.out.println("unexpected protocol error");
-                    // set: unexpected protocol error
-                    break;
-                }
-
-                else if (result > 0) {
-                    System.out.println("Force close stream. Protocol signalled, that all payload is received.");
-                    //return_code = SESSION_LISTEN_OK;
-                    break;
-                }
-
-            }  // for
-*/
             System.out.println("Client disconnected.");
 
             is.close();
