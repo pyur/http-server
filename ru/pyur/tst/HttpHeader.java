@@ -5,7 +5,8 @@ import java.util.ArrayList;
 
 public abstract class HttpHeader {
 
-    protected ArrayList<PStr> options;
+    protected ArrayList<PStr> options = new ArrayList<>();
+    protected ArrayList<PStr> options_low = new ArrayList<>();
 
 
 
@@ -61,5 +62,40 @@ public abstract class HttpHeader {
         return values;
     }
 
+
+
+    public abstract void setFirstLine(String first_line) throws Exception;
+
+
+
+    public void addOption(String string_line) {  // throws Exception
+        //todo: throw some exceptions
+        PStr option = Util.split(':', string_line);
+
+        PStr option_trim = new PStr(option.key.trim(), option.value.trim());
+
+        options.add(option_trim);
+
+        PStr option_low = new PStr(option_trim.key.toLowerCase(), option_trim.value.toLowerCase());
+
+        options_low.add(option_low);
+    }
+
+
+
+    public void addOption(PStr option) {
+        options.add(option);
+    }
+
+
+
+    public void addOptions(ArrayList<PStr> add_options) {
+        if (add_options.size() > 0) {
+            for (PStr option : add_options) {
+                addOption(option);
+            }
+        }
+
+    }
 
 }

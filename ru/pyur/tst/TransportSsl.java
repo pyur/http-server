@@ -5,9 +5,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 
-public class TransportTcp extends Transport implements Runnable {
+public class TransportSsl extends Transport implements Runnable {
 
-    private Socket client;
+    private Socket socket;
 
     private ProtocolDispatcher protocolDispatcher;
 
@@ -17,15 +17,15 @@ public class TransportTcp extends Transport implements Runnable {
 
 
 
-    public TransportTcp() {}
+    public TransportSsl() {}
 
 
     //public TransportTcp(Socket client, Transport.TransportCallback tc, ProtocolDispatcher.CallbackServer pd_cs, ProtocolDispatcher.CallbackHttpPayload pd_chp) {
     //public TransportTcp(Socket client, Session session) {
-    public TransportTcp(Socket client) {
+    public TransportSsl(Socket socket) {
         Session session = new Session();
 
-        this.client = client;
+        this.socket = socket;
         protocolDispatcher = new ProtocolDispatcher(transport_callback);
         protocolDispatcher.setStateServerSession(session.getProtocolCallback());
 
@@ -34,67 +34,61 @@ public class TransportTcp extends Transport implements Runnable {
 
 
 
-    public void createClient(String host, Transport.TransportCallback tc, ProtocolDispatcher.CallbackHttpClient pd_chc, ProtocolDispatcher.CallbackHttpPayload pd_chp) {
+    public void createClient(String host, TransportCallback tc, ProtocolDispatcher.CallbackHttpClient pd_chc, ProtocolDispatcher.CallbackHttpPayload pd_chp) {
         tr_callback = tc;
 
         protocolDispatcher = new ProtocolDispatcher(transport_callback);
         protocolDispatcher.setStateHttpClient(pd_chc, pd_chp);
 
         try {
-            client = new Socket(host, 80);
+            socket = new Socket(host, 80);  // todo SSL
         } catch (Exception e) { e.printStackTrace(); return; }
 
-        listen();
+        try {
+            listen();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 
 
     @Override
     public void run() {
-        listen();
+        try {
+            listen();
+        } catch (Exception e) { e.printStackTrace(); }
+
     }
 
 
 
-    public void listen() {
+    public void listen() throws Exception {
 
-        try {
-            InputStream is = client.getInputStream();
-            HeaderInputStream hhis = new HeaderInputStream(is);
-            os = client.getOutputStream();
+        InputStream is = socket.getInputStream();
+        //HeaderInputStream hhis = new HeaderInputStream(is);
+        os = socket.getOutputStream();
 
-
-            if (tr_callback != null) {
-                byte[] bytes = tr_callback.onConnected();
-                if (bytes != null)  Send(bytes);
-            }
+        if (tr_callback != null) {
+            byte[] bytes = tr_callback.onConnected();
+            if (bytes != null)  Send(bytes);
+        }
 
 
-            // ---- 1. receive header ---- //
+        // ---- 1. receive header ---- //
 
-            byte[] raw_header = new byte[8192];
-
-            int header_size = hhis.read(raw_header);
-
-            System.out.println("header size: " + header_size);
-            //System.out.println("[" + new String(raw_header) + "]");
-
-//!            protocolDispatcher.parseHeader(raw_header);
+        HttpHeader header = protocolDispatcher.processHeader_v2(is);
 
 
-            // ---- 2. receive payload ---- //
+        // ---- 2. receive payload ---- //
 
-//!            protocolDispatcher.processData(is);
+        protocolDispatcher.processData_v2(is, header);
 
 
-            System.out.println("Client disconnected.");
 
-            is.close();
-            os.close();
+        is.close();
+        os.close();
 
-            client.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
+        System.out.println("closing socket.");
+        socket.close();
     }
 
 

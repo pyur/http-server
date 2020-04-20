@@ -8,16 +8,18 @@ public class NewlineInputStream extends InputStream {
 
     private InputStream input_stream;
 
-    protected byte buf[];
+//    protected byte buf[];
     //protected int pos;
-    protected int count;
+//    protected int count;
+    protected int max_line;
 
 
 
     public NewlineInputStream(InputStream is, int max_line) {
         input_stream = is;
-        buf = new byte[max_line];
-        count = 0;
+//        buf = new byte[max_line];
+//        count = 0;
+        this.max_line = max_line;
     }
 
 
@@ -31,7 +33,9 @@ public class NewlineInputStream extends InputStream {
 
     @Override
     public int read(byte b[], int off, int len) throws IOException {
-        System.out.println("NewlineInputStream. read ("+off+","+len+")");
+        //System.out.println("NewlineInputStream. read ("+off+","+len+")");
+        byte[] buf = new byte[max_line];
+        int count = 0;
 
         int received_size;
         byte[] recv = new byte[1];

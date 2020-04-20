@@ -192,7 +192,7 @@ public class HttpRequest extends HttpHeader {
 
 
     public HttpRequest() {
-        options = new ArrayList<>();
+        //options = new ArrayList<>();
         cookies = new ArrayList<>();
         payload = new ByteArrayOutputStream();
     }
@@ -358,6 +358,41 @@ public class HttpRequest extends HttpHeader {
 
     public ArrayList<PStr> getQuery() {
         return lsQuery;
+    }
+
+
+
+    @Override
+    public void setFirstLine(String first_line) throws Exception {
+        String[] request = Util.explode(' ', first_line);
+
+        //System.out.println("----------------------------------------------------------------");
+        //for (String str : request) { System.out.println("[" + str + "]"); }
+        //System.out.println("----------------------------------------------------------------");
+
+        if (request.length != 3)  throw new Exception("request length != 3");
+
+        szMethod = request[0];
+        szLocation = request[1];
+        szVersion = request[2];
+
+        method = 0;  // todo
+        version = 0;  // todo
+
+        PStr path_split = Util.split('?', szLocation);
+
+        szPath = path_split.key;
+        lsPath = Util.explode('/', szPath);
+
+        szQuery = path_split.value;
+        if (!szQuery.isEmpty()) {
+            String[] explode_query = Util.explode('&', szQuery);
+            lsQuery = new ArrayList<>();
+            for (String q : explode_query) {
+                lsQuery.add(Util.split('=', q));
+            }
+        }
+
     }
 
 

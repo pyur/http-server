@@ -27,7 +27,7 @@ public class HttpResponse extends HttpHeader {
 
 
     public HttpResponse() {
-        options = new ArrayList<>();
+        //options = new ArrayList<>();
         payload = new ByteArrayOutputStream();
     }
 
@@ -83,9 +83,6 @@ public class HttpResponse extends HttpHeader {
 
 
 
-    public void addOption(PStr option) {
-        options.add(option);
-    }
 
 
 
@@ -194,6 +191,27 @@ public class HttpResponse extends HttpHeader {
         //r Str szResponse = Expandable_ConvertToString(&exResponse);
         //r return szResponse;
         return os.toByteArray();
+    }
+
+
+
+    @Override
+    public void setFirstLine(String first_line) throws Exception {
+        PStr response1 = Util.split(' ', first_line);
+
+        if (response1.value.isEmpty())  throw new Exception("first line has no spaces");
+
+        //System.out.println("----------------------------------------------------------------");
+        //for (String str : request) { System.out.println("[" + str + "]"); }
+        //System.out.println("----------------------------------------------------------------");
+
+        szVersion = response1.key;
+//todo  version = Integer.parseInt(response[0]);
+
+        PStr response2 = Util.split(' ', response1.value);
+
+        code = Integer.parseInt(response2.key);
+        szDesc = response2.value;
     }
 
 

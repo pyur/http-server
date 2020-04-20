@@ -21,7 +21,8 @@ public class Main {
 //        client.run();
 
 
-        ServerTcp server = new ServerTcp(80);
+        //ServerTcp server = new ServerTcp(80);
+        ServerSsl server = new ServerSsl(443);
         server.run();
 
     }
