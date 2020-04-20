@@ -6,7 +6,25 @@ import java.util.ArrayList;
 public abstract class HttpHeader {
 
     protected ArrayList<PStr> options = new ArrayList<>();
+    protected ArrayList<PStr> options_low_key = new ArrayList<>();
     protected ArrayList<PStr> options_low = new ArrayList<>();
+
+
+
+    public static final int HTTP_VERSION_Unknown = 0;
+    public static final int HTTP_VERSION_0_9 = 1;
+    public static final int HTTP_VERSION_1_0 = 2;
+    public static final int HTTP_VERSION_1_1 = 3;
+
+
+    protected String szHttpVersion[] = {
+            "Unknown",
+            "HTTP/0.9",
+            "HTTP/1.0",
+            "HTTP/1.1"
+    };
+
+
 
 
 
@@ -32,20 +50,37 @@ public abstract class HttpHeader {
 
 
     public boolean hasOption(String name) {
-        return getOption(name) != null;
+        String name_low = name.toLowerCase();
+        //System.out.println("searching for \"" + name_low + "\"...");
+
+        for (PStr opt : options_low) {
+            //System.out.println("...\"" + opt.key + "\"");
+            if (opt.key.equals(name_low)) {
+                //System.out.println("......found!");
+                return true;
+            }
+        }
+
+        //System.out.println("......not found.");
+        //throw("option missing.");
+        return false;
     }
 
 
 
     public String getOption(String name) {  // throw Exception
         String name_low = name.toLowerCase();
+        //System.out.println("searching for \"" + name_low + "\"...");
 
-        for (PStr opt : options) {
-            if (opt.key.toLowerCase().equals(name_low)) {
+        for (PStr opt : options_low_key) {
+            //System.out.println("...\"" + opt.key + "\"");
+            if (opt.key.equals(name_low)) {
+                //System.out.println("......found!");
                 return opt.value;
             }
         }
 
+        //System.out.println("......not found.");
         //throw("option missing.");
         return null;
     }
@@ -76,7 +111,11 @@ public abstract class HttpHeader {
 
         options.add(option_trim);
 
-        PStr option_low = new PStr(option_trim.key.toLowerCase(), option_trim.value.toLowerCase());
+        PStr option_low_key = new PStr(option_trim.key.toLowerCase(), option_trim.value);
+
+        options_low_key.add(option_low_key);
+
+        PStr option_low = new PStr(option_low_key.key, option_low_key.value.toLowerCase());
 
         options_low.add(option_low);
     }
@@ -85,6 +124,11 @@ public abstract class HttpHeader {
 
     public void addOption(PStr option) {
         options.add(option);
+    }
+
+
+    public void addOption(String name, String value) {
+        options.add(new PStr(name, value));
     }
 
 

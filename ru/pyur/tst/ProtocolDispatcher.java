@@ -2,7 +2,15 @@ package ru.pyur.tst;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
+
+import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_0;
+import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_1;
 
 
 public class ProtocolDispatcher {
@@ -77,6 +85,15 @@ public class ProtocolDispatcher {
 
 
 
+    private CallbackWebsocketServer callback_websocket_server;
+
+    public interface CallbackWebsocketServer {
+        int headerReceived(HttpRequest http_request);
+        void dispatchStreams(InputStream is, OutputStream os);
+    }
+
+
+
 
 
     public ProtocolDispatcher(Transport.Callback transport_callback) {
@@ -100,6 +117,11 @@ public class ProtocolDispatcher {
         callback_server = defaultDispatchServer;
         callback_http_payload = null;  // defaultDispatchHttpServerPayload
         callback_session = css;
+    }
+
+
+    public void setWebsocketServerCallback(CallbackWebsocketServer cb_wss) {
+        callback_websocket_server = cb_wss;
     }
 
 
@@ -135,7 +157,7 @@ public class ProtocolDispatcher {
 
         header.setFirstLine(new String(header_line));
 
-
+        // -------- feed options -------- //
         for(;;) {
             header_line = new byte[MAX_LINE];
             line_size = nis.read(header_line);  // maybe replace with "Reader"
@@ -183,7 +205,7 @@ public class ProtocolDispatcher {
         // -- if websocket client - process response -- //
         else if (state == HTTP_STATE_WS_CLIENT) {
 
-//todo                    result = new HttpWsResponse(raw_header);
+            //todo  result = new HttpWsResponse(raw_header);
 
             // ---- prepare for data exchange ---- //
             //  http->message = Expandable_Create();
@@ -200,7 +222,7 @@ public class ProtocolDispatcher {
 
     // ---------------------------- 1.0. Process data v2 ---------------------------- //
 
-    public void processData_v2(InputStream is, HttpHeader header) throws Exception {
+    public void processData_v2(InputStream is, HttpHeader header, OutputStream os) throws Exception {
         int result = 0;
 
         if (state == HTTP_STATE_HTTP_SERVER) {
@@ -221,6 +243,9 @@ public class ProtocolDispatcher {
 
                 HttpResponse response = new HttpResponse();
                 response.setConnectionClose();
+                response.setVersion(HTTP_VERSION_1_0);
+                response.setCode(200);
+
 
                 if (feedback != null) {
                     response.addOptions(feedback.options);
@@ -259,6 +284,7 @@ public class ProtocolDispatcher {
             //result = callback_ws.dataStream(wis, wos);
 
             // start websocket dispatcher
+            if (callback_websocket_server != null)  callback_websocket_server.dispatchStreams(is, os);
 
             //if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
         }
@@ -319,142 +345,6 @@ public class ProtocolDispatcher {
     // ----------------------------------------------------------------------------------- //
     // -------------------------------- 1.1. Parse stream -------------------------------- //
     // ----------------------------------------------------------------------------------- //
-/*
-    public void processData(InputStream is) throws Exception {
-        int result;
-
-        if (state == HTTP_STATE_HTTP_SERVER) {
-            byte[] payload = new byte[0];
-
-            if (http_request.hasOption("Content-Length")) {
-                String payload_length_s = http_request.getOption("Content-Length");
-                int payload_length = Integer.parseInt(payload_length_s);
-
-                int readed = 0;
-                payload = new byte[payload_length];
-
-                for(;;) {
-                    if (readed >= payload_length)  break;
-                    int readed1 = is.read(payload, readed, payload_length - readed);
-                    if (readed1 == -1)  break;
-                    readed += readed1;
-                }
-            }
-
-            else if (http_request.hasOption("Transfer-Encoding")) {
-                String[] transfer_encoding = http_request.getOptionSplit("Transfer-Encoding");
-                if (Util.inArray(transfer_encoding, "chunked")) {
-                    ChunkedPayloadInputStream payload_is = new ChunkedPayloadInputStream(is);
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-                    byte[] payload_fragment = new byte[65536];
-
-                    for(;;) {
-                        int readed = payload_is.read(payload_fragment);
-                        if (readed == -1)  break;
-                        os.write(payload_fragment, 0, readed);
-                    }
-
-                    payload = os.toByteArray();
-                }
-            }
-
-            //else {
-                // try to read until -1
-            //}
-
-
-            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload);
-
-            if (callback_session != null) {
-                DispatchedData feedback = callback_session.onReceived(http_request, payload);
-
-                HttpResponse response = new HttpResponse();
-                response.setConnectionClose();
-
-                if (feedback != null) {
-                    if (feedback.options.size() > 0) {
-                        for (PStr option : feedback.options) {
-                            response.addOption(option);
-                        }
-                    }
-
-                    //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
-
-                    if (feedback.payload != null) {
-                        response.appendPayload(feedback.payload);
-                    }
-                }
-                //else {
-                //...
-                //}
-
-                Http_Send(response.stringify());
-            }
-
-            //return 1;
-        }
-
-
-
-        else if (state == HTTP_STATE_HTTP_CLIENT) {
-            byte[] payload = new byte[0];
-            System.out.println("processData(). HTTP_STATE_HTTP_CLIENT");
-
-            if (http_response.hasOption("Content-Length")) {
-                String payload_length_s = http_response.getOption("Content-Length");
-                int payload_length = Integer.parseInt(payload_length_s);
-
-                int readed = 0;
-                payload = new byte[payload_length];
-
-                for(;;) {
-                    if (readed >= payload_length)  break;
-                    int readed1 = is.read(payload, readed, payload_length - readed);
-                    if (readed1 == -1)  break;
-                    readed += readed1;
-                }
-            }
-
-            else if (http_response.hasOption("Transfer-Encoding")) {
-                System.out.println("processData(). hasOption \"Transfer-Encoding\"");
-
-                String[] transfer_encoding = http_response.getOptionSplit("Transfer-Encoding");
-
-                if (Util.inArray(transfer_encoding, "chunked")) {
-                    System.out.println("processData(). Transfer-Encoding has \"chunked\"");
-
-                    ChunkedPayloadInputStream chunked_is = new ChunkedPayloadInputStream(is);
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-                    byte[] payload_fragment = new byte[65536];
-//                    for(;;) {
-//                        payload_fragment = new byte[65536];
-//                        int readed2 = is.read(payload_fragment);
-//                        System.out.println("---------------- raw (" + readed2 + ") ----------------");
-//                        System.out.println(new String(payload_fragment));
-//                        System.out.println("---------------- end ----------------");
-//                        if (readed2 == -1)  break;
-//                    }
-
-                    for(;;) {
-                        int readed = chunked_is.read(payload_fragment);
-                        System.out.println("==== processData(). chunked_is.readed: " + readed);
-                        if (readed == -1)  break;
-                        os.write(payload_fragment, 0, readed);
-                    }
-
-                    payload = os.toByteArray();
-                }
-            }
-
-            result = callback_http_payload.payloadReceived(payload);
-
-            //return 1;
-        }
-
-    }
-*/
 
 /*
     public int parseStream() {
@@ -587,70 +477,6 @@ public class ProtocolDispatcher {
 */
 
 
-
-    // --------------------------------------------------------------------------------- //
-    // ----------------------------- 2 Parse stream header ----------------------------- //
-    // --------------------------------------------------------------------------------- //
-/*
-    public void parseHeader(byte[] raw_header) throws Exception {
-        int result;
-
-        // todo: switch/case
-
-        // -- mode server. process request -- //
-        // http server, websocket server, cast server
-        if (state == HTTP_STATE_SERVER) {
-            http_request = new HttpRequest();
-
-            http_request.parse(raw_header);
-
-            result = callback_server.requestReceived(http_request);
-
-            if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
-        }
-
-
-        // -- if client - process response -- //
-        else if (state == HTTP_STATE_HTTP_CLIENT) {
-            http_response = new HttpResponse();
-
-            http_response.parse(raw_header);
-
-            result = callback_http_client.responseReceived(http_response);
-
-            if (result < 0)   throw new Exception("processing in callback 'responseReceived' failed");  // failed
-        }
-
-
-        // -- if websocket client - process response -- //
-        else if (state == HTTP_STATE_WS_CLIENT) {
-
-//todo                    result = new HttpWsResponse(raw_header);
-
-            // ---- prepare for data exchange ---- //
-            //  http->message = Expandable_Create();
-            //  http->ws_prev_fin = 1;
-
-            //  if (http->cbWsReady)  http->cbWsReady(http->cbInstance, http);
-        }
-
-
-        // -- if castclient - process response -- //
-        else if (state == HTTP_STATE_CAST_CLIENT) {
-
-//todo                    result = HttpCastResponse(raw_header);
-
-            // prepare for stream receiving
-
-            //  if (http->cbCastReady)  http->cbCastReady(http->cbInstance, http);
-        }
-
-    }
-*/
-
-
-
-
     // --------------------------------------------------------------------------------- //
     // ------------------------------- 3 Dispatch header ------------------------------- //
     // --------------------------------------------------------------------------------- //
@@ -660,21 +486,19 @@ public class ProtocolDispatcher {
     private CallbackServer defaultDispatchServer = new CallbackServer() {
         @Override
         public int requestReceived(HttpRequest http_request) {
-            //System.out.println("Http_ProcessRequest()");
-
 
             // ---------------- determining what client wants ---------------- //
 
             // ---------------- WebSocket ---------------- //
 
-            if (http_request.hasOption("Connection")) {
-                //System.out.println("option \"Connection\" found.");
-                String[] opts = http_request.getOptionSplit("Connection");
-                if (Util.inArray(opts, "Upgrade")) {  // can be: "keep-alive, Upgrade"
-                    System.out.println("option \"Connection\" has \"Upgrade\".");
-                    //...
-                }
-            }
+            //if (http_request.hasOption("Connection")) {
+            //    //System.out.println("option \"Connection\" found.");
+            //    String[] opts = http_request.getOptionSplit("Connection");
+            //    if (Util.inArray(opts, "Upgrade")) {  // can be: "keep-alive, Upgrade"
+            //        System.out.println("option \"Connection\" has \"Upgrade\".");
+            //        //...
+            //    }
+            //}
 
             //----
 
@@ -689,23 +513,24 @@ public class ProtocolDispatcher {
 
                     // -------- check 'Sec-WebSocket-Key' -------- //
                     if (http_request.hasOption("Sec-WebSocket-Key")) {
-                        //System.out.println("option \"Sec-WebSocket-Key\" present.");
+                        System.out.println("option \"Sec-WebSocket-Key\" present.");
 
                         ws_key = http_request.getOption("Sec-WebSocket-Key");
 
                         // ---- validate auth ---- //
                         int iResult;
     //todo                    if (http->cbWsProcessHeader)  iResult = http->cbWsProcessHeader(http->cbInstance, http);
-                        /*else*/ iResult = -1;
+                        if (callback_websocket_server != null)  iResult = callback_websocket_server.headerReceived(http_request);
+                        else  iResult = -1;
+
                         if (iResult < 0) {
-                            //Http_SendStandardWsResponseAuthFail(http);  // into called custom processor
+                            //Http_SendReferenceWsResponseAuthFail(http);  // into called custom processor
                             return -1;
                         }
 
                         state = HTTP_STATE_WS_SERVER;
 
-    //todo                    Http_SendStandardWsResponseOk(http);
-                        //Http_SendStandardWsResponseFail(http);  in case of not correct params
+                        Http_SendReferenceWsResponseOk();
 
                         // set-up websocket server
                         // callback: websocket server
@@ -784,31 +609,6 @@ public class ProtocolDispatcher {
     private CallbackHttpClient defaultDispatchHttpClient = new CallbackHttpClient() {
         @Override
         public int responseReceived(HttpResponse http_response) {
-
-            // ---------------- prepare payload receiver ---------------- //
-
-//r            PStr opt;
-
-//r            opt = PStr.PairList_FindByKey(http_response.options, "Transfer-Encoding");  // chunked, compress, deflate, gzip, identity
-//r            // Several values can be listed, separated by a comma
-//r            if (opt != null) {
-//r                //DebugIInfo(http, "used \"Transfer-Encoding\".");
-//r                // lame compare. todo: explode value with ','
-//r                if (opt.value.equals("chunked")) {
-//r                    //ds(" chunked");
-//r    //!                isChunked = true;
-//r                }
-//r            }
-
-
-//r            opt = PStr.PairList_FindByKey(http_response.options, "Content-Length");
-//r            if (opt != null) {
-//r                //DebugICy(http, "\"Content-Length\" present.");
-//r                content_length = Integer.parseInt(opt.value);
-//r                http_response.content_length = content_length;
-//r            }
-
-
 
             // ---------------- grab cookies ---------------- //
 
@@ -918,17 +718,64 @@ public class ProtocolDispatcher {
 
 
 
-    private int Http_ProcessCastResponse() {
-        // ...
-        return 0;
+    private void Http_SendReferenceWsResponseOk() {
+//        DebugInfo("Http_SendStandardWsResponseOk()");
+        HttpResponse rs = new HttpResponse();
+
+        // HTTP/1.1 101 Switching Protocols
+        // Upgrade: websocket
+        // Connection: Upgrade
+        // Sec-WebSocket-Accept: hsBlbuDTkk24srzEOTBUlZAlC2g=
+
+        rs.setVersion(HTTP_VERSION_1_1);
+        rs.setCode(101);
+
+        //HttpResponse_Server(rs, Http_CB_GetServerString(http));
+
+        rs.addOption("Upgrade", "websocket");
+        rs.addOption("Connection", "Upgrade");
+
+        // ---- calc hash ---- //
+        //Expandable exRsKey = Expandable_Create();
+        //printf("http->ws_key: %s", http->ws_key);
+        //Expandable_AppendString(exRsKey, http->ws_key);
+        //Expandable_AppendString(exRsKey, "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+        String ws_key_resp = ws_key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+        //System.out.println("ws_key_resp: " + ws_key_resp);
+
+        //Str szKeyMix = Expandable_ConvertToString(&exRsKey);
+
+        //char sha1_hash[21];
+        //DebugInfo("Http_SendStandardWsResponseOk(). calling sha1...");
+        //SHA1_(sha1_hash, szKeyMix, strlen(szKeyMix));
+
+        byte[] sha1 = null;
+        try {
+            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+            crypt.reset();
+            crypt.update(ws_key_resp.getBytes());  // getBytes("UTF-8")
+            sha1 = crypt.digest();
+        } catch(NoSuchAlgorithmException e) { e.printStackTrace(); }
+        //catch(UnsupportedEncodingException e) { e.printStackTrace(); }
+
+        //DebugInfo("Http_SendStandardWsResponseOk(). calling String_Base64EncodeBin()...");
+        //Str szKey64 = String_Base64EncodeBin((Blob)sha1_hash, 20);
+        String szKey64 = new String (Base64.getEncoder().encode(sha1));
+
+        rs.addOption("Sec-WebSocket-Accept", szKey64);
+        //String_Destroy(szKey64);
+
+
+        //DebugInfo("Http_SendStandardWsResponseOk(). calling HttpResponse_Stringify()...");
+        //Str szResponse = HttpResponse_Stringify(rs);
+        //Http_SendStr(http, szResponse);
+        Http_Send(rs.stringify());
+        //byte[] tmp = rs.stringify();
+        //System.out.println(new String(tmp));
+        //Http_Send(tmp);
+
+        //DebugInfo("Http_SendStandardWsResponseOk(). done...");
     }
-
-
-
-
-    // -------------------------------------------------------------------------------------- //
-    // -------------------------------- Receive http payload -------------------------------- //
-    // -------------------------------------------------------------------------------------- //
 
 
 
@@ -940,17 +787,6 @@ public class ProtocolDispatcher {
         transport_callback.send(bytes);
         return 0;
     }
-
-
-
-
-//    // --------------------------------------------------------------------------------------
-//
-//    public void onConnected() {
-//        if (state == HTTP_STATE_HTTP_CLIENT) {
-//
-//        }
-//    }
 
 
 }

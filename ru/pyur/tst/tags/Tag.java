@@ -86,6 +86,14 @@ public abstract class Tag {
     }
 
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void addClass(String class_name) {
         classes.add(class_name);
     }

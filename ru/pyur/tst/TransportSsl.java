@@ -15,6 +15,8 @@ public class TransportSsl extends Transport implements Runnable {
 
     //private Session session;
 
+    private WebsocketSession ws_session;
+
 
 
     public TransportSsl() {}
@@ -28,6 +30,8 @@ public class TransportSsl extends Transport implements Runnable {
         this.socket = socket;
         protocolDispatcher = new ProtocolDispatcher(transport_callback);
         protocolDispatcher.setStateServerSession(session.getProtocolCallback());
+
+        protocolDispatcher.setWebsocketServerCallback(ws_instancer);
 
         tr_callback = session.getTransportCallback();
     }
@@ -80,7 +84,7 @@ public class TransportSsl extends Transport implements Runnable {
 
         // ---- 2. receive payload ---- //
 
-        protocolDispatcher.processData_v2(is, header);
+        protocolDispatcher.processData_v2(is, header, os);
 
 
 
@@ -115,6 +119,45 @@ public class TransportSsl extends Transport implements Runnable {
 
         return 0;
     }
+
+
+
+
+    // ----
+
+    private ProtocolDispatcher.CallbackWebsocketServer ws_instancer = new ProtocolDispatcher.CallbackWebsocketServer() {
+        @Override
+        public int headerReceived(HttpRequest http_request) {
+            ws_session = new WebsocketSession();
+            int result = ws_session.validate(http_request);
+            //WsDispatcher ws_dispatcher = ws_session.getDispatcher();
+
+            return 1;  // ws_dispatcher
+        }
+
+
+        @Override
+        public void dispatchStreams(InputStream is, OutputStream os) {
+            wis = new WebsocketInputStream(is);
+            wos = new WebsocketOutputStream(os);
+            WsDispatcher();
+        }
+
+    };
+
+
+
+    WebsocketInputStream wis;
+    WebsocketOutputStream wos;
+
+
+    private void WsDispatcher() {
+
+        wis.read();  // etc
+        //todo: stopped here
+
+    }
+
 
 
 }

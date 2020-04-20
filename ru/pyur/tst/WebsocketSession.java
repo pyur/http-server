@@ -1,18 +1,12 @@
 package ru.pyur.tst;
 
-import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
-
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 
-//todo: rename to 'HttpSession'
-public class Session {
+public class WebsocketSession {
 
-    private Session session;
+//    private WebsocketSession session;
 
     private HttpRequest request_header;
     private byte[] request_payload;
@@ -25,8 +19,8 @@ public class Session {
 
 
 
-    public Session() {
-        session = this;
+    public WebsocketSession() {
+//        session = this;
         module = "";
         action = "";
     }
@@ -67,7 +61,7 @@ public class Session {
 //    };
 
 
-
+/*
     public ProtocolDispatcher.CallbackSession getProtocolCallback() { return cb_session; }
 
     private ProtocolDispatcher.CallbackSession cb_session = new ProtocolDispatcher.CallbackSession() {
@@ -89,7 +83,7 @@ public class Session {
             return dispatch();
         }
     };
-
+*/
 
 
 
@@ -191,60 +185,41 @@ public class Session {
 
         if (module.isEmpty())  module = "default";
 
-        //Info mi = null;
         Module md = null;
 
-        if (module.equals("elec")) {
-            //mi = new ru.pyur.tst.elec.Info();
-            md = new ru.pyur.tst.elec.Md_Elec(session);
-        }
+        //todo: attach dispatcher
 
-        else if (module.equals("water")) {
-            //mi = new ru.pyur.tst.water.Info();
-            md = new ru.pyur.tst.water.Md_Water(session);
-        }
-
-        else if (module.equals("db")) {
-            md = new ru.pyur.tst.dbedit.Info(session).dispatch();
-        }
-
-        else if (module.equals("res")) {
-            md = new ru.pyur.tst.resources.Info(session).dispatch();
-        }
-
-        else if (module.equals("ws")) {
-            md = new ru.pyur.tst.websocket.Info(session).dispatch();
-        }
+//        if (module.equals("ws")) {
+//            //mi = new ru.pyur.tst.elec.Info();
+//            md = new ru.pyur.tst.elec.Md_Elec(session);
+//        }
+//
+//        else if (module.equals("water")) {
+//            //mi = new ru.pyur.tst.water.Info();
+//            md = new ru.pyur.tst.water.Md_Water(session);
+//        }
+//
+//        else if (module.equals("db")) {
+//            md = new ru.pyur.tst.dbedit.Info(session).dispatch();
+//        }
+//
+//        else if (module.equals("res")) {
+//            md = new ru.pyur.tst.resources.Info(session).dispatch();
+//        }
 
         //else if (module.equals("ext")) {
         //    new ru.pyur.tst.extsample.ExtMod();
         //}
 
 
-        if (md != null) {
-            byte[] contents = md.getContents();
-            byte[] compressed_contents = null;
-
-            ArrayList<PStr> response_options = md.getOptions();
-/*
-            // compression
-            //if (header has "Accept-Encoding: gzip, deflate, br") {
-
-            try {
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                GZIPOutputStream gos = new GZIPOutputStream(os);
-                gos.write(contents);
-                gos.close();
-                compressed_contents = os.toByteArray();
-            } catch (Exception e) { e.printStackTrace(); }
-
-            if (compressed_contents != null) {
-                contents = compressed_contents;
-                response_options.add(new PStr("Content-Encoding", "gzip"));
-            }
-*/
-            return new DispatchedData(contents, response_options);
-        }
+//        if (md != null) {
+//            byte[] contents = md.getContents();
+//            byte[] compressed_contents = null;
+//
+//            ArrayList<PStr> response_options = md.getOptions();
+//
+//            return new DispatchedData(contents, response_options);
+//        }
 
 
         return null;
@@ -257,6 +232,15 @@ public class Session {
         return request_header.getQuery();
     }
 
+
+
+
+    public int validate(HttpRequest http_request) {
+        System.out.println("WebsocketSession. validate()");
+
+
+        return 1;
+    }
 
 
 }

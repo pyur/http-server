@@ -5,6 +5,13 @@ import java.io.InputStream;
 
 public class WebsocketInputStream extends InputStream {
 
+    InputStream is;
+
+
+    public WebsocketInputStream(InputStream is) {
+        this.is = is;
+    }
+
 
     @Override
     public int read() {
