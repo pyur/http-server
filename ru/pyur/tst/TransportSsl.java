@@ -138,23 +138,33 @@ public class TransportSsl extends Transport implements Runnable {
 
         @Override
         public void dispatchStreams(InputStream is, OutputStream os) {
-            wis = new WebsocketInputStream(is);
+            //wis = new WebsocketInputStream(is);
+            wis = is;
             wos = new WebsocketOutputStream(os);
-            WsDispatcher();
+
+            try {
+                WsDispatcher();
+            } catch (Exception e) { e.printStackTrace(); }
+
         }
 
     };
 
 
 
-    WebsocketInputStream wis;
+    InputStream wis;
+    //WebsocketInputStream wis;
     WebsocketOutputStream wos;
 
 
-    private void WsDispatcher() {
+    private void WsDispatcher() throws Exception {
+        WebsocketReader wr = new WebsocketReader(wis);
+        WebsocketReader.WebsocketPacket packet;
 
-        wis.read();  // etc
-        //todo: stopped here
+        for(;;) {
+            packet = wr.read();
+            //todo: stopped here
+        }
 
     }
 
