@@ -40,16 +40,12 @@ public class ServerSsl {
             //SSLServerSocket server = new SSLServerSocket(port);
             //ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
             ServerSocketFactory ssocketFactory = createSSLFactory(new File("c.vtof.ru.key.pem"), new File("c.vtof.ru.fullchain.pem"), "");
-            ServerSocket server = ssocketFactory.createServerSocket(port);
+            ServerSocket server_socket = ssocketFactory.createServerSocket(port);
 
             for(;;) {
-                //System.out.println("waiting...");
-                Socket client = server.accept();  // thread locking
-                //System.out.println("Connection accepted.");
+                Socket socket = server_socket.accept();  // thread locking
 
-                //Session session = new Session();
-                //service.execute(new TransportTcp(client, session));
-                service.execute(new TransportSsl(client));
+                service.execute(new TransportSsl(socket));
             }
 
         } catch (Exception e) {

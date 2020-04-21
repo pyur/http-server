@@ -1,11 +1,11 @@
 package ru.pyur.tst.water;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HttpSession;
 
-public class Md_Water extends Module {
+public class Md_Water extends HttpModule {
 
-    public Md_Water(Session session) {
+    public Md_Water(HttpSession session) {
         initHtml(session);
     }
 

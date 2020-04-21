@@ -1,8 +1,8 @@
 package ru.pyur.tst.dbedit;
 
-import ru.pyur.tst.Module;
+import ru.pyur.tst.HttpModule;
 import ru.pyur.tst.ModuleInfo;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpSession;
 
 
 public class Info extends ModuleInfo {
@@ -19,9 +19,9 @@ public class Info extends ModuleInfo {
     public static final String DBEDIT_PARAM_TABLE = "table";
 
 
-    public Info(Session session) {
+    public Info(HttpSession session) {
         //System.out.println("Info(Session)");
-        setSession(session);
+        setHttpSession(session);
     }
 
 
@@ -29,8 +29,8 @@ public class Info extends ModuleInfo {
     //public int ModuleIcon() { return ICON; }
 
 
-    public Module dispatch() {
-        Module md = null;
+    public HttpModule dispatch() {
+        HttpModule md = null;
 
         if (action.isEmpty()) {
             md = new Md_DbList(session);

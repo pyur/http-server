@@ -3,10 +3,8 @@ package ru.pyur.tst;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_0;
@@ -14,9 +12,6 @@ import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_1;
 
 
 public class ProtocolDispatcher {
-
-//r    private ByteArrayOutputStream stream;
-//r    private ByteArrayOutputStream request_payload;
 
 
     private int state;
@@ -37,106 +32,109 @@ public class ProtocolDispatcher {
 //    private final int RECV_HEADER_LIMIT = 8192;  // in C 16384
 
 
-//    private HttpRequest http_request;
-//    private HttpResponse http_response;
-
-
     private String ws_key;
 
 
-    private Transport.Callback transport_callback;
-    private Callback protocol_callback;
+    // ---------------- Callbacks ---------------- //
 
-    public interface Callback {
-        int http(byte[] bytes);
-        int ws(byte[] bytes);
-        int cast(byte[] bytes);
+    private Transport.CallbackTransportControl callback_transport_control;
+
+
+
+    private CallbackProtocolHeader callback_protocol_header;
+
+    public interface CallbackProtocolHeader {
+        int dispatchRequest(HttpRequest http_request);
+    }
+
+
+//    private CallbackHttpPayload callback_http_payload;
+
+//    public interface CallbackHttpPayload {
+//        int dispatchPayload(byte[] payload);
+//    }
+
+
+    private CallbackProtocolHttpClient callback_protocol_http_client;
+
+    public interface CallbackProtocolHttpClient {
+        int dispatchResponse(HttpResponse http_response);
+        int dispatchPayload(byte[] payload);
     }
 
 
 
-    private CallbackServer callback_server;
 
-    public interface CallbackServer {
-        int requestReceived(HttpRequest http_request);
-    }
+    private CallbackProtocolServerEvent callback_protocol_server_event;
 
+    public interface CallbackProtocolServerEvent {
+        int httpHeaderReceived(HttpRequest http_request);
+        DispatchedData dispatchRequest(byte[] payload);
 
-    private CallbackHttpPayload callback_http_payload;
-
-    public interface CallbackHttpPayload {
-        int payloadReceived(byte[] payload);
-    }
-
-
-    private CallbackHttpClient callback_http_client;
-
-    public interface CallbackHttpClient {
-        int responseReceived(HttpResponse http_response);
-    }
-
-
-    private CallbackSession callback_session;
-
-    public interface CallbackSession {
-        //byte[] onReceived(HttpRequest http_request, byte[] payload);
-        DispatchedData onReceived(HttpRequest http_request, byte[] payload);
-    }
-
-
-
-    private CallbackWebsocketServer callback_websocket_server;
-
-    public interface CallbackWebsocketServer {
-        int headerReceived(HttpRequest http_request);
+        int websocketHeaderReceived(HttpRequest http_request);
         void dispatchStreams(InputStream is, OutputStream os);
     }
 
 
+//    public interface DummyProtCallback {
+//        void sendString(String str);
+//    }
+//
+//
+//    private DummyModCallback dummy_mod_callback;
+//
+//    public interface DummyModCallback {
+//        void receivedString(String str);
+//        void receivedBinary(byte[] data);
+//    }
 
 
 
-    public ProtocolDispatcher(Transport.Callback transport_callback) {
-        this.transport_callback = transport_callback;
+
+
+
+    public ProtocolDispatcher(Transport.CallbackTransportControl callback_transport_control) {
+        this.callback_transport_control = callback_transport_control;
     }
 
 
-
-    //public void setStateServer(CallbackServer cs, CallbackHttpPayload cp) {
-    //    state = HTTP_STATE_SERVER;
-    //
-    //    callback_server = (cs != null) ? cs : defaultDispatchServer;
-    //    callback_http_payload = (cp != null) ? cp : defaultDispatchHttpServerPayload;
+    //public void setTransport(Transport.CallbackTransportControl callback_transport_control) {
+    //    this.callback_transport_control = callback_transport_control;
     //}
 
 
 
-    public void setStateServerSession(CallbackSession css) {
+    //public void setStateServer(CallbackProtocolHeader cs, CallbackHttpPayload cp) {
+    //    state = HTTP_STATE_SERVER;
+    //
+    //    callback_protocol_header = (cs != null) ? cs : defaultHeaderDispatcher;
+    //    callback_http_payload = (cp != null) ? cp : defaultHttpServerPayloadDispatcher;
+    //}
+
+
+
+    public void setStateServer(CallbackProtocolServerEvent cb_server_event) {
         state = HTTP_STATE_SERVER;
 
-        callback_server = defaultDispatchServer;
-        callback_http_payload = null;  // defaultDispatchHttpServerPayload
-        callback_session = css;
-    }
-
-
-    public void setWebsocketServerCallback(CallbackWebsocketServer cb_wss) {
-        callback_websocket_server = cb_wss;
+        callback_protocol_header = defaultHeaderDispatcher;
+//        callback_http_payload = null;  // defaultHttpServerPayloadDispatcher
+        callback_protocol_server_event = cb_server_event;
     }
 
 
 
-    public void setStateHttpClient(CallbackHttpClient chc, CallbackHttpPayload cp) {
+
+    public void setStateHttpClient(CallbackProtocolHttpClient chc) {
         state = HTTP_STATE_HTTP_CLIENT;
 
-        callback_http_client = (chc != null) ? chc : defaultDispatchHttpClient;
-        callback_http_payload = (cp != null) ? cp : defaultDispatchHttpClientPayload;
+        callback_protocol_http_client = (chc != null) ? chc : defaultHttpClientDispatcher;
+//        callback_http_payload = (cp != null) ? cp : defaultHttpClientPayloadDispatcher;
     }
 
 
 
 
-    // ---------------------------- 1.0. Parse/dispatch header v2 ---------------------------- //
+    // ---------------------------- Parse/dispatch header v2 ---------------------------- //
 
     public HttpHeader processHeader_v2(InputStream is) throws Exception {
         final int MAX_LINE = 2048;
@@ -155,7 +153,7 @@ public class ProtocolDispatcher {
 
         line_size = nis.read(header_line);  // maybe replace with "Reader"
 
-        header.setFirstLine(new String(header_line));
+        header.setFirstLine(new String(header_line, 0, line_size));
 
         // -------- feed options -------- //
         for(;;) {
@@ -166,39 +164,39 @@ public class ProtocolDispatcher {
             if (line_size == 0)  break;
             if (line_size == -1)  throw new Exception("line_size == -1");
 
-            System.out.println(new String(header_line));
-            header.addOption(new String(header_line));
+            System.out.println(new String(header_line, 0, line_size));
+            header.addOption(new String(header_line, 0, line_size));
         }
 
 
         // -------- Process header -------- //
 
         //todo: custom callback
-        dispatchHeader_v2(header);
-
-        return header;
-    }
-
-
-
-
-    public void dispatchHeader_v2(HttpHeader header) throws Exception {
+//        dispatchHeader_v2(header);
+//
+//        return header;
+//    }
+//
+//
+//
+//
+//    public void dispatchHeader_v2(HttpHeader header) throws Exception {
         int result;
 
         // -- mode server. process request -- //
         // http server, websocket server, cast server
         if (state == HTTP_STATE_SERVER) {
             HttpRequest http_request = (HttpRequest)header;
-            result = callback_server.requestReceived(http_request);
+            result = callback_protocol_header.dispatchRequest(http_request);
         }
 
 
         // -- if client - process response -- //
         else if (state == HTTP_STATE_HTTP_CLIENT) {
             HttpResponse http_response = (HttpResponse)header;
-            result = callback_http_client.responseReceived(http_response);
+            result = callback_protocol_http_client.dispatchResponse(http_response);
 
-            if (result < 0)   throw new Exception("processing in callback 'responseReceived' failed");  // failed
+            if (result < 0)   throw new Exception("processing in callback 'dispatchResponse' failed");  // failed
         }
 
 
@@ -215,14 +213,15 @@ public class ProtocolDispatcher {
         }
 
 
+        return header;
     }
 
 
 
 
-    // ---------------------------- 1.0. Process data v2 ---------------------------- //
+    // ---------------------------- Process data v2 ---------------------------- //
 
-    public void processData_v2(InputStream is, HttpHeader header, OutputStream os) throws Exception {
+    public void processData_v2(InputStream is, HttpHeader header) throws Exception {
         int result = 0;
 
         if (state == HTTP_STATE_HTTP_SERVER) {
@@ -230,16 +229,18 @@ public class ProtocolDispatcher {
 
             HttpRequest http_request = (HttpRequest)header;
 
-            //result = callback_server.requestReceivedWithPayload(http_request);
+            //result = callback_protocol_header.requestReceivedWithPayload(http_request);
             //todo: default, with default response
 
-////            if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
+////            if (result < 0)   throw new Exception("processing in callback 'dispatchRequest' failed");  // failed
 
-            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(payload);
+//?            if (callback_http_payload != null)  result = callback_http_payload.dispatchPayload(payload);
 
-            if (callback_session != null) {
+//r            if (callback_session != null) {
+            if (callback_protocol_server_event != null) {
                 //maybe here spawn session, call, and dispose
-                DispatchedData feedback = callback_session.onReceived(http_request, payload);
+//r                DispatchedData feedback = callback_session.onReceived(http_request, payload);
+                DispatchedData feedback = callback_protocol_server_event.dispatchRequest(payload);
 
                 HttpResponse response = new HttpResponse();
                 response.setConnectionClose();
@@ -271,9 +272,10 @@ public class ProtocolDispatcher {
 
             HttpRequest http_request = (HttpRequest)header;
 
-            result = callback_http_payload.payloadReceived(payload);  // todo: pass header
+//r            result = callback_http_payload.dispatchPayload(payload);  // todo: pass header
+            if (callback_protocol_http_client != null)  callback_protocol_http_client.dispatchPayload(payload);  // todo: pass header
 
-            if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
+            if (result < 0)   throw new Exception("processing in callback 'dispatchRequest' failed");  // failed
         }
 
 
@@ -282,11 +284,12 @@ public class ProtocolDispatcher {
             //WebsocketInputStream wis = new WebsocketInputStream(is);
             //WebsocketOutputStream wos = new WebsocketOutputStream(os);
             //result = callback_ws.dataStream(wis, wos);
+            OutputStream os = getOutputStream();
 
             // start websocket dispatcher
-            if (callback_websocket_server != null)  callback_websocket_server.dispatchStreams(is, os);
+            if (callback_protocol_server_event != null)  callback_protocol_server_event.dispatchStreams(is, os);
 
-            //if (result < 0)   throw new Exception("processing in callback 'requestReceived' failed");  // failed
+            //if (result < 0)   throw new Exception("processing in callback 'dispatchRequest' failed");  // failed
         }
 
     }
@@ -367,7 +370,7 @@ public class ProtocolDispatcher {
             if (result == 0) return 0;  // in progress
 
             result = 0;
-            if (callback_http_payload != null)  result = callback_http_payload.payloadReceived(request_payload.toByteArray());
+            if (callback_http_payload != null)  result = callback_http_payload.dispatchPayload(request_payload.toByteArray());
 
             if (callback_session != null) {
                 DispatchedData feedback = callback_session.onReceived(http_request, request_payload.toByteArray());
@@ -408,7 +411,7 @@ public class ProtocolDispatcher {
             if (result < 0)  return -1;  // failed
             if (result == 0)  return 0;  // in progress
 
-            result = callback_http_payload.payloadReceived(request_payload.toByteArray());
+            result = callback_http_payload.dispatchPayload(request_payload.toByteArray());
 
             if (result < 0)  return -1;  // failed
 
@@ -481,13 +484,11 @@ public class ProtocolDispatcher {
     // ------------------------------- 3 Dispatch header ------------------------------- //
     // --------------------------------------------------------------------------------- //
 
-    // ------------------------ default Server request analyzer ------------------------ //
+    // ------------------------ default Server request dispatcher ------------------------ //
 
-    private CallbackServer defaultDispatchServer = new CallbackServer() {
+    private CallbackProtocolHeader defaultHeaderDispatcher = new CallbackProtocolHeader() {
         @Override
-        public int requestReceived(HttpRequest http_request) {
-
-            // ---------------- determining what client wants ---------------- //
+        public int dispatchRequest(HttpRequest http_request) {
 
             // ---------------- WebSocket ---------------- //
 
@@ -500,14 +501,13 @@ public class ProtocolDispatcher {
             //    }
             //}
 
-            //----
 
             if (http_request.hasOption("Upgrade")) {
                 if (http_request.getOption("Upgrade").equals("websocket")) {
 
                     // -------- check 'Sec-WebSocket-Version' -------- //
                     if (!http_request.hasOption("Sec-WebSocket-Version")) {
-                        System.out.println("defaultDispatchServer. error. option \"Sec-WebSocket-Version\" not found.");
+                        System.out.println("defaultHeaderDispatcher. error. option \"Sec-WebSocket-Version\" not found.");
                     }
 
 
@@ -519,8 +519,7 @@ public class ProtocolDispatcher {
 
                         // ---- validate auth ---- //
                         int iResult;
-    //todo                    if (http->cbWsProcessHeader)  iResult = http->cbWsProcessHeader(http->cbInstance, http);
-                        if (callback_websocket_server != null)  iResult = callback_websocket_server.headerReceived(http_request);
+                        if (callback_protocol_server_event != null)  iResult = callback_protocol_server_event.websocketHeaderReceived(http_request);
                         else  iResult = -1;
 
                         if (iResult < 0) {
@@ -575,6 +574,9 @@ public class ProtocolDispatcher {
             // ---------------- casual http request ---------------- //
             state = HTTP_STATE_HTTP_SERVER;
 
+            int result2 = 0;
+            if (callback_protocol_server_event != null)  result2 = callback_protocol_server_event.httpHeaderReceived(http_request);
+
 
             return 1;
         }
@@ -585,9 +587,10 @@ public class ProtocolDispatcher {
 
     // -------------------- default Http Server payload dispatcher -------------------- //
 
-    private CallbackHttpPayload defaultDispatchHttpServerPayload = new CallbackHttpPayload() {
+/*
+    private CallbackHttpPayload defaultHttpServerPayloadDispatcher = new CallbackHttpPayload() {
         @Override
-        public int payloadReceived(byte[] payload) {
+        public int dispatchPayload(byte[] payload) {
             HttpResponse response = new HttpResponse();
             response.setConnectionClose();
 
@@ -600,15 +603,16 @@ public class ProtocolDispatcher {
             return 0;
         }
     };
+*/
 
 
 
 
     // -------------------- default Http Client response dispatcher -------------------- //
 
-    private CallbackHttpClient defaultDispatchHttpClient = new CallbackHttpClient() {
+    private CallbackProtocolHttpClient defaultHttpClientDispatcher = new CallbackProtocolHttpClient() {
         @Override
-        public int responseReceived(HttpResponse http_response) {
+        public int dispatchResponse(HttpResponse http_response) {
 
             // ---------------- grab cookies ---------------- //
 
@@ -625,21 +629,16 @@ public class ProtocolDispatcher {
         //LCookie co = rs->cookies = Parse_SetCookies(rs->options);
 
 
-        // Callback for process custom `options`
+        // CallbackTransportControl for process custom `options`
 
 
         return 1;
         }
-    };
 
 
 
-
-    // -------------------- default Http Client payload dispatcher -------------------- //
-
-    private CallbackHttpPayload defaultDispatchHttpClientPayload = new CallbackHttpPayload() {
         @Override
-        public int payloadReceived(byte[] payload) {
+        public int dispatchPayload(byte[] payload) {
             // remote host sent answer payload
             System.out.println(new String(payload));
 
@@ -650,9 +649,21 @@ public class ProtocolDispatcher {
 
 
 
+    // -------------------- default Http Client payload dispatcher -------------------- //
+
+//    private CallbackHttpPayload defaultHttpClientPayloadDispatcher = new CallbackHttpPayload() {
+//    };
+
+
+
+
     // -------------------- default Websocket Client response dispatcher -------------------- //
 
-    private int Http_ProcessWsResponse() {
+//x    private int Http_ProcessWsResponse() {
+//    private CallbackProtocolWsClient defaultWsClientDispatcher = new CallbackProtocolWsClient() {
+//        @Override
+//        public int dispatchResponse(HttpResponse http_response) {
+
 /*
 
         http->response = HttpResponse_Parse(http->lsLines);
@@ -708,18 +719,17 @@ public class ProtocolDispatcher {
 
 
 
-        // Callback for process custom `options`
+        // CallbackTransportControl for process custom `options`
 
 */
 
-        return 1;
-    }
+//        return 1;
+//    }
 
 
 
 
     private void Http_SendReferenceWsResponseOk() {
-//        DebugInfo("Http_SendStandardWsResponseOk()");
         HttpResponse rs = new HttpResponse();
 
         // HTTP/1.1 101 Switching Protocols
@@ -782,10 +792,16 @@ public class ProtocolDispatcher {
 
     // --------------------------------------------------------------------------------------
 
-    public int Http_Send(byte[] bytes) {
+    private int Http_Send(byte[] bytes) {
         // ---- redirect call to transport ---- //
-        transport_callback.send(bytes);
+        if (callback_transport_control != null)  return callback_transport_control.send(bytes);
         return 0;
+    }
+
+
+    private OutputStream getOutputStream() {
+        if (callback_transport_control != null)  return callback_transport_control.getOutputStream();
+        return null;
     }
 
 

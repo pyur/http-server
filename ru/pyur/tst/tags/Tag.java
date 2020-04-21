@@ -1,7 +1,6 @@
 package ru.pyur.tst.tags;
 
 import ru.pyur.tst.Coordinate;
-import ru.pyur.tst.Module;
 import ru.pyur.tst.PStr;
 import ru.pyur.tst.Util;
 

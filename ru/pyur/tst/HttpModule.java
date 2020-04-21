@@ -12,9 +12,9 @@ import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
 import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
-public abstract class Module {
+public abstract class HttpModule {
 
-    protected Session session;
+    protected HttpSession session;
 
     private ArrayList<PStr> lsQuery;
 
@@ -89,7 +89,7 @@ public abstract class Module {
 
 
 
-    private void initCommon(Session session) {
+    private void initCommon(HttpSession session) {
         this.session = session;
         lsQuery = session.getQuery();
     }
@@ -170,7 +170,7 @@ public abstract class Module {
 
     // -------------------------------- Html -------------------------------- //
 
-    protected void initHtml(Session session) {
+    protected void initHtml(HttpSession session) {
 //z    protected void initHtml() {
         initCommon(session);
         module_type = MODULE_TYPE_HTML;
@@ -378,7 +378,7 @@ public abstract class Module {
 
     // -------------------------------- Json -------------------------------- //
 
-    protected void initJson(Session session) {
+    protected void initJson(HttpSession session) {
         initCommon(session);
         module_type = MODULE_TYPE_JSON;
         setContentType("application/json");
@@ -418,7 +418,7 @@ public abstract class Module {
 
     // -------------------------------- Binary -------------------------------- //
 
-    protected void initBinary(Session session) {
+    protected void initBinary(HttpSession session) {
         initCommon(session);
         module_type = MODULE_TYPE_BINARY;
         setContentType("application/octet-stream");

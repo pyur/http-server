@@ -1,7 +1,7 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HttpSession;
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
@@ -11,12 +11,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 
-public class Md_MakeSpriteModules extends Module {
+public class Md_MakeSpriteModules extends HttpModule {
 
     public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-    public Md_MakeSpriteModules(Session session) { initHtml(session); }
+    public Md_MakeSpriteModules(HttpSession session) { initHtml(session); }
 
 
     private class ModuleDesc {

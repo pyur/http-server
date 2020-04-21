@@ -1,22 +1,14 @@
 package ru.pyur.tst;
 
-import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
-
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 
-//todo: rename to 'HttpSession'
-public class Session {
+public class HttpSession {
 
-    private Session session;
+    private HttpSession session;
 
     private HttpRequest request_header;
-    private byte[] request_payload;
-    private String host;  // option "Host" in http header
 
     private String prefix;  // a - api, i - image, e - embed, etc
     public String module;
@@ -25,7 +17,7 @@ public class Session {
 
 
 
-    public Session() {
+    public HttpSession() {
         session = this;
         module = "";
         action = "";
@@ -36,9 +28,9 @@ public class Session {
 
     // --------------------------------------------------------------------------------
 
-    public Transport.TransportCallback getTransportCallback() { return cb_transport; }
+    public Transport.CallbackTransportEvents getTransportCallback() { return cb_transport; }
 
-    private Transport.TransportCallback cb_transport = new Transport.TransportCallback() {
+    private Transport.CallbackTransportEvents cb_transport = new Transport.CallbackTransportEvents() {
         @Override
         public byte[] onConnected() {
             System.out.println("onConnected()");
@@ -53,9 +45,9 @@ public class Session {
 
 
 
-//    private ProtocolDispatcher.CallbackServer cb_server = new ProtocolDispatcher.CallbackServer() {
+//    private ProtocolDispatcher.CallbackProtocolHeader cb_server = new ProtocolDispatcher.CallbackProtocolHeader() {
 //        @Override
-//        public int requestReceived(HttpRequest http_request) {
+//        public int dispatchRequest(HttpRequest http_request) {
 //            System.out.println("----------- Request -----------");
 //            System.out.println("[" + http_request.szMethod + "] [" + http_request.szLocation + "] [" + http_request.szVersion + "]");
 //
@@ -67,7 +59,7 @@ public class Session {
 //    };
 
 
-
+/*
     public ProtocolDispatcher.CallbackSession getProtocolCallback() { return cb_session; }
 
     private ProtocolDispatcher.CallbackSession cb_session = new ProtocolDispatcher.CallbackSession() {
@@ -89,13 +81,18 @@ public class Session {
             return dispatch();
         }
     };
+*/
+    public void setRequest(HttpRequest http_request) {
+        request_header = http_request;
+    }
+
 
 
 
 
     // --------------------------------------------------------------------------------
 
-    private DispatchedData dispatch() {
+    public DispatchedData dispatch(byte[] payload) {
 
         // ---------------- dispatch Host ---------------- //
 
@@ -192,7 +189,7 @@ public class Session {
         if (module.isEmpty())  module = "default";
 
         //Info mi = null;
-        Module md = null;
+        HttpModule md = null;
 
         if (module.equals("elec")) {
             //mi = new ru.pyur.tst.elec.Info();

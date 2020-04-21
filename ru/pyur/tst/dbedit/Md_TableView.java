@@ -1,7 +1,7 @@
 package ru.pyur.tst.dbedit;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.tags.*;
 
 import java.sql.ResultSet;
@@ -13,10 +13,10 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
 import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
 
 
-public class Md_TableView extends Module {
+public class Md_TableView extends HttpModule {
 
 
-    public Md_TableView(Session session) {
+    public Md_TableView(HttpSession session) {
         initHtml(session);
     }
 

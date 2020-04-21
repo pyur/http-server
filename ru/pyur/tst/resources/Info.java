@@ -1,8 +1,8 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.Module;
+import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.ModuleInfo;
-import ru.pyur.tst.Session;
 
 
 public class Info extends ModuleInfo {
@@ -17,17 +17,17 @@ public class Info extends ModuleInfo {
     public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info(Session session) {
+    public Info(HttpSession session) {
         //System.out.println("Info(Session)");
-        setSession(session);
+        setHttpSession(session);
     }
 
 
     public String ModuleName() { return NAME; }
 
 
-    public Module dispatch() {
-        Module md = null;
+    public HttpModule dispatch() {
+        HttpModule md = null;
 
         if (action.isEmpty()) {
             md = new Md_ResList(session);

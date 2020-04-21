@@ -1,24 +1,19 @@
 package ru.pyur.tst.websocket;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpSession;
+import ru.pyur.tst.HttpModule;
 import ru.pyur.tst.tags.Div;
 
-import javax.imageio.ImageIO;
-import java.awt.image.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 
 
-public class Md_Chat extends Module {
+public class Md_Chat extends HttpModule {
 
     //public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-    public Md_Chat(Session session) { initHtml(session); }
+    public Md_Chat(HttpSession session) { initHtml(session); }
 
 
     private class ModuleDesc {

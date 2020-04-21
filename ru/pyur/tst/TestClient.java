@@ -10,15 +10,15 @@ public class TestClient {
 
 
     public void run() {
-        TransportTcp transp = new TransportTcp();
+//!        TransportTcp transp = new TransportTcp();
         //host = "loga.pyur.ru";
         host = "anglesharp.azurewebsites.net";
-        transp.createClient(host, cb_transport, cb_client, cb_payload);
+//!        transp.createClient(host, cb_transport, cb_client, cb_payload);
     }
 
 
 
-    private Transport.TransportCallback cb_transport = new Transport.TransportCallback() {
+    private Transport.CallbackTransportEvents cb_transport = new Transport.CallbackTransportEvents() {
         @Override
         public byte[] onConnected() {
             System.out.println("onConnected()");
@@ -35,9 +35,9 @@ public class TestClient {
     };
 
 
-    private ProtocolDispatcher.CallbackHttpClient cb_client = new ProtocolDispatcher.CallbackHttpClient() {
+    private ProtocolDispatcher.CallbackProtocolHttpClient cb_client = new ProtocolDispatcher.CallbackProtocolHttpClient() {
         @Override
-        public int responseReceived(HttpResponse http_response) {
+        public int dispatchResponse(HttpResponse http_response) {
             System.out.println("----------- Response -----------");
             System.out.println(http_response.code + " " + http_response.szDesc);
 
@@ -46,13 +46,11 @@ public class TestClient {
 
             return 0;
         }
-    };
 
 
 
-    private ProtocolDispatcher.CallbackHttpPayload cb_payload = new ProtocolDispatcher.CallbackHttpPayload() {
         @Override
-        public int payloadReceived(byte[] bytes) {
+        public int dispatchPayload(byte[] bytes) {
             System.out.println("----------- Payload (" + bytes.length + ") ------------");
             System.out.println(new String(bytes));
             System.out.println("--------------------------------");
@@ -60,7 +58,6 @@ public class TestClient {
             return 0;
         }
     };
-
 
 
 }

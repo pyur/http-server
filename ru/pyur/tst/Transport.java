@@ -1,18 +1,21 @@
 package ru.pyur.tst;
 
+import java.io.OutputStream;
+
 public class Transport {
 
 
-    TransportCallback tr_callback;
+    CallbackTransportEvents callback_transport_events;
 
-    public interface TransportCallback {
+    public interface CallbackTransportEvents {
         byte[] onConnected();
         void onFailed();
     }
 
 
-    public interface Callback {
+    public interface CallbackTransportControl {
         int send(byte[] bytes);
+        OutputStream getOutputStream();
     }
 
 

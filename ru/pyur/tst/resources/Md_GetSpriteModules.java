@@ -1,20 +1,18 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpSession;
+import ru.pyur.tst.HttpModule;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Base64;
 
 import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
-public class Md_GetSpriteModules extends Module {
+public class Md_GetSpriteModules extends HttpModule {
 
-    public Md_GetSpriteModules(Session session) {
+    public Md_GetSpriteModules(HttpSession session) {
         initJson(session);
     }
 

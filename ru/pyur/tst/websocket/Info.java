@@ -1,9 +1,6 @@
 package ru.pyur.tst.websocket;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.ModuleInfo;
-import ru.pyur.tst.Session;
-import ru.pyur.tst.resources.*;
+import ru.pyur.tst.*;
 
 
 public class Info extends ModuleInfo {
@@ -16,17 +13,25 @@ public class Info extends ModuleInfo {
     //public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info(Session session) {
+    public Info() {}
+
+    public Info(HttpSession http_session) {
         //System.out.println("Info(Session)");
-        setSession(session);
+        setHttpSession(http_session);
+    }
+
+
+    public Info(WebsocketSession websocket_session) {
+        //System.out.println("Info(Session)");
+        setWebsocketSession(websocket_session);
     }
 
 
     public String ModuleName() { return NAME; }
 
 
-    public Module dispatch() {
-        Module md = null;
+    public HttpModule dispatch() {
+        HttpModule md = null;
 
         if (action.isEmpty()) {
             md = new Md_Chat(session);
@@ -40,6 +45,19 @@ public class Info extends ModuleInfo {
 
 
         return md;
+    }
+
+
+
+    public WebsocketModule getWs() {
+        WebsocketModule wsm = null;
+
+        if (action.isEmpty()) {
+            wsm = new Ws_Chat();
+            //wsm.setStreams();
+        }
+
+        return wsm;
     }
 
 

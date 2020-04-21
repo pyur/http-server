@@ -1,12 +1,16 @@
 package ru.pyur.tst;
 
 import java.util.ArrayList;
+import ru.pyur.tst.DummyProtCallback;
+import ru.pyur.tst.DummyModCallback;
+
 
 public abstract class ModuleInfo {
     public abstract String ModuleName();
     //public abstract int ModuleIcon();
 
-    protected Session session;
+    protected HttpSession session;
+    protected WebsocketSession websocket_session;
 
     protected String action;
     private ArrayList<PStr> lsQuery;
@@ -26,14 +30,68 @@ public abstract class ModuleInfo {
     //    //this.session = session;
     //}
 
-    protected void setSession(Session session) {
-        this.session = session;
-        action = session.action;
-        lsQuery = session.getQuery();
+
+
+    // -------------------------------- Http -------------------------------- //
+
+    public void setHttpSession(HttpSession http_session) {
+        this.session = http_session;
+        action = http_session.action;
+        lsQuery = http_session.getQuery();
     }
 
 //    public abstract Module module();
 
-    public Module dispatch() { return null; }
+    public HttpModule dispatch() { return null; }
+
+
+
+
+    // -------------------------------- Websocket -------------------------------- //
+
+    public void setWebsocketSession(WebsocketSession websocket_session) {
+        this.websocket_session = websocket_session;
+        action = websocket_session.action;
+        lsQuery = websocket_session.getQuery();
+    }
+
+
+    public WebsocketModule getWs() { return null; }
+
+
+
+    DummyProtCallback mod_callback;
+
+    public DummyModCallback setGetWebsocketCallback(DummyProtCallback dummy_callback) {
+        mod_callback = dummy_callback;
+
+        return websocketDispatcher;
+    }
+
+
+
+    private DummyModCallback websocketDispatcher = new DummyModCallback() {
+        @Override
+        public void receivedString(String str) {
+            receivedString2(str);
+        }
+
+        @Override
+        public void receivedBinary(byte[] data) {
+            receivedBinary2(data);
+        }
+    };
+
+
+    // ---- for Override ---- //
+    protected void receivedString2(String str) {}
+
+    protected void receivedBinary2(byte[] data) {}
+
+
+    // ---- for back ---- //
+    protected void sendString(String str) {
+        if (mod_callback != null)  mod_callback.sendString(str);
+    }
 
 }

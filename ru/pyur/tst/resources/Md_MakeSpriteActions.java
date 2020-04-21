@@ -1,23 +1,22 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.Util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;
 import java.io.File;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 
-public class Md_MakeSpriteActions extends Module {
+public class Md_MakeSpriteActions extends HttpModule {
 
     public static final String CONFIG_ACTION_ICON_UPD = "action_icon_upd";
 
 
-    public Md_MakeSpriteActions(Session session) { initHtml(session); }
+    public Md_MakeSpriteActions(HttpSession session) { initHtml(session); }
 
 
 

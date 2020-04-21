@@ -1,7 +1,7 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.Module;
-import ru.pyur.tst.Session;
+import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HttpSession;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,9 +10,9 @@ import java.util.Base64;
 import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
 
 
-public class Md_GetSpriteActions extends Module {
+public class Md_GetSpriteActions extends HttpModule {
 
-    public Md_GetSpriteActions(Session session) {
+    public Md_GetSpriteActions(HttpSession session) {
         initJson(session);
     }
 

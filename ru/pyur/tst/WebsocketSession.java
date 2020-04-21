@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 
@@ -9,12 +10,14 @@ public class WebsocketSession {
 //    private WebsocketSession session;
 
     private HttpRequest request_header;
-    private byte[] request_payload;
+//    private byte[] request_payload;
     private String host;  // option "Host" in http header
 
     private String prefix;  // a - api, i - image, e - embed, etc
     public String module;
     public String action;
+
+    DummyModCallback ws_mod_cb;
 
 
 
@@ -30,9 +33,9 @@ public class WebsocketSession {
 
     // --------------------------------------------------------------------------------
 
-    public Transport.TransportCallback getTransportCallback() { return cb_transport; }
+    public Transport.CallbackTransportEvents getTransportCallback() { return cb_transport; }
 
-    private Transport.TransportCallback cb_transport = new Transport.TransportCallback() {
+    private Transport.CallbackTransportEvents cb_transport = new Transport.CallbackTransportEvents() {
         @Override
         public byte[] onConnected() {
             System.out.println("onConnected()");
@@ -47,9 +50,9 @@ public class WebsocketSession {
 
 
 
-//    private ProtocolDispatcher.CallbackServer cb_server = new ProtocolDispatcher.CallbackServer() {
+//    private ProtocolDispatcher.CallbackProtocolHeader cb_server = new ProtocolDispatcher.CallbackProtocolHeader() {
 //        @Override
-//        public int requestReceived(HttpRequest http_request) {
+//        public int dispatchRequest(HttpRequest http_request) {
 //            System.out.println("----------- Request -----------");
 //            System.out.println("[" + http_request.szMethod + "] [" + http_request.szLocation + "] [" + http_request.szVersion + "]");
 //
@@ -85,11 +88,15 @@ public class WebsocketSession {
     };
 */
 
+    public void setRequest(HttpRequest http_request) {
+        request_header = http_request;
+    }
+
 
 
     // --------------------------------------------------------------------------------
 
-    private DispatchedData dispatch() {
+    public void dispatch(InputStream is, OutputStream os) throws Exception {
 
         // ---------------- dispatch Host ---------------- //
 
@@ -149,22 +156,6 @@ public class WebsocketSession {
                 action = request_header.lsPath[2];
             }
 
-            // /favicon.ico
-            if (request_header.lsPath.length == 2) {
-                if (request_header.lsPath[1].equals("favicon.ico")) {
-                    //System.out.println("must return favicon");
-                    byte[] bytes = null;
-
-                    try {
-                        //System.out.println("user dir: " + System.getProperty("user.dir"));
-                        FileInputStream fis = new FileInputStream("favicon.ico");
-                        bytes = new byte[fis.available()];
-                        int read_length = fis.read(bytes);
-                    } catch (Exception e) { e.printStackTrace(); }
-
-                    return new DispatchedData(bytes);
-                }
-            }
         }
 
         else {
@@ -181,19 +172,29 @@ public class WebsocketSession {
         }
 
 
-        // ---- ---- //
+        // ---- dispatch 'module' ---- //
 
-        if (module.isEmpty())  module = "default";
+        //if (module.isEmpty())  module = "default";
 
-        Module md = null;
+        //WsDispatcher md = null;
+        ModuleInfo info = null;
 
         //todo: attach dispatcher
 
+
+        if (module.isEmpty()) {
+            info = new ru.pyur.tst.websocket.Info(this);
+            //ws_mod_cb = info.setGetWebsocketCallback();
+            WebsocketModule wsm = info.getWs();
+            // todo: info.getWs(is, os).dispatch();
+            //info.setWebsocketSession(this);
+            wsm.setStreams(is, os);
+            wsm.dispatch();
+        }
+
 //        if (module.equals("ws")) {
-//            //mi = new ru.pyur.tst.elec.Info();
-//            md = new ru.pyur.tst.elec.Md_Elec(session);
 //        }
-//
+
 //        else if (module.equals("water")) {
 //            //mi = new ru.pyur.tst.water.Info();
 //            md = new ru.pyur.tst.water.Md_Water(session);
@@ -222,7 +223,9 @@ public class WebsocketSession {
 //        }
 
 
-        return null;
+
+
+        //return null;
     }
 
 
