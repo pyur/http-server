@@ -1,5 +1,7 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.json.Json;
+import ru.pyur.tst.json.JsonParser;
 import ru.pyur.tst.tags.*;
 
 import java.io.*;
@@ -143,6 +145,22 @@ public abstract class WebsocketModule {
         //parse JSON
         //call 'action'
         //if not parsable, call 'malcious request'
+
+        Json json;
+        JsonParser jp = new JsonParser();
+        try {
+            json = jp.parse(text);
+        } catch (Exception e) { e.printStackTrace(); return; }
+
+        //System.out.println("\n>>>>--------------------------------");
+        //jp.dump(json);
+        //System.out.println("\n>>>>--------------------------------");
+        //jp.dumpNode(json);
+        //System.out.println("\n>>>>--------------------------------");
+
+        //System.out.println(">>> " + (json.has("act") ? "yes" : "no") );
+
+        System.out.println(">>> " + json.stringify() );
     }
 
     protected void receivedBinary(byte[] data) {}
