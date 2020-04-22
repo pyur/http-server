@@ -17,6 +17,8 @@ public abstract class WebsocketModule {
     private OutputStream os;
     private WebsocketWriter websocket_writer;
 
+    //protected String jact;  // json action
+
 
 
     // ---------------- Database ---------------- //
@@ -85,6 +87,7 @@ public abstract class WebsocketModule {
 
         WebsocketReader wr = new WebsocketReader(is);
         websocket_writer = new WebsocketWriter(os);
+
         WebsocketReader.WebsocketPacket packet;
 
 
@@ -136,7 +139,7 @@ public abstract class WebsocketModule {
 
 
     protected void receivedText(String text) {
-        System.out.println("text: " + text);
+        //System.out.println("text: " + text);
         //parse JSON
         //call 'action'
         //if not parsable, call 'malcious request'
@@ -146,6 +149,19 @@ public abstract class WebsocketModule {
             json.parse(text);
         } catch (Exception e) { e.printStackTrace(); return; }
 
+
+        if (json.has("act")) {
+            String act = "";
+            try {
+                act = json.getNode("act").getString();
+            } catch (Exception e) { e.printStackTrace(); }
+            action(act, json);
+        }
+
+
+
+
+
         //System.out.println("\n>>>>--------------------------------");
         //jp.dump(json);
         //System.out.println("\n>>>>--------------------------------");
@@ -154,7 +170,7 @@ public abstract class WebsocketModule {
 
         //System.out.println(">>> " + (json.has("act") ? "yes" : "no") );
 
-        System.out.println(">>> " + json.stringify() );
+        //System.out.println(">>> " + json.stringify() );
 
 
 //        try {
@@ -171,18 +187,25 @@ public abstract class WebsocketModule {
     protected void receivedBinary(byte[] data) {}
 
 
-    protected void action(String action) {}
+    protected void action(String action, Json other_params) {}
 
 
 
     protected void sendText(String text) {
-        //try {
-        //    wos.write(text);
-        //} catch (Exception e) { e.printStackTrace(); }
+        try {
+            //wos.write(text);
+            websocket_writer.write(text);
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     protected void sendBinary(byte[] data) {
         //wos.write(data);
+    }
+
+
+    protected void sendAction(Json json) {
+        String flat = json.stringify();
+        sendText(flat);
     }
 
 

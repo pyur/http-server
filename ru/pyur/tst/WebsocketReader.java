@@ -85,7 +85,7 @@ public class WebsocketReader {  // extends Reader {
             }
         }
 
-        new Dump().dumpBinary(payload);
+        //new Dump().dumpBinary(payload);
 
         //?opcode
 

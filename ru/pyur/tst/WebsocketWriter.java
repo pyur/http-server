@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public class WebsocketWriter {
 
-    OutputStream os;
+    private OutputStream os;
 
 
     public WebsocketWriter(OutputStream os) {
@@ -25,71 +25,50 @@ public class WebsocketWriter {
 
 
     public void write(int opcode, byte[] data) throws Exception {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream sos = new ByteArrayOutputStream();
 
-/*
-        int p1 = is.read();
-        int opcode = p1 & 0xF;
-        boolean fin = (p1 & 0x80) != 0;
+        boolean fin = true;
+        boolean masked = false;
+        byte[] b = new byte[2];
 
-        int p2 = is.read();
-        int len_8 = p2 & 0x7F;
-        boolean masked = (p2 & 0x80) != 0;
+        if (data.length > 125)  throw new Exception("packets longer than 125 bytes not supported.");
+        int len_8 = data.length;
 
-        int payload_length = 0;
+        int p1 = opcode & 0xF;
+        p1 |= fin ? 0x80 : 0;
 
-        if (len_8 == 126) {
-            int p3 = is.read();
-            int p4 = is.read();
-            int len_16 = (p3 << 8) | p4;
-            payload_length = len_16;
-        }
+        int p2 = len_8 & 0x7F;
+        p2 |= masked ? 0x80 : 0;
 
-        else if (len_8 == 127) {
-            int p3 = is.read();
-            int p4 = is.read();
-            int p5 = is.read();
-            int p6 = is.read();
-            int len_32 = (p3 << 24) | (p4 << 16) | (p5 << 8) | p6;
-            payload_length = len_32;
-        }
-
-        else {
-            payload_length = len_8;
-        }
-
-        byte[] mask = new byte[4];
-        if (masked) {
-            //mask = new byte[4];
-            int readed = is.read(mask);
-            if (readed != 4)  throw new Exception("mask not 4 bytes");
-            //new Dump().dumpBinary(mask);
-        }
+        b[0] = (byte)p1;
+        b[1] = (byte)p2;
+        sos.write(b);
 
 
-        byte[] payload = new byte[payload_length];
+        sos.write(data);
 
-        int off = 0;
-        for(;;) {
-            int readed = is.read(payload, off, payload_length - off);
-            off += readed;
-            if (off == payload_length)  break;
-        }
 
-        //new Dump().dumpBinary(payload);
+//        byte[] mask = new byte[4];
+//        if (masked) {
+//            //mask = new byte[4];
+//            int readed = is.read(mask);
+//            if (readed != 4)  throw new Exception("mask not 4 bytes");
+//            //new Dump().dumpBinary(mask);
+//        }
 
-        if (masked) {
-            for (int i = 0; i < payload_length; i++) {
-                payload[i] ^= mask[i % 4];
-            }
-        }
 
-        new Dump().dumpBinary(payload);
+//        if (masked) {
+//            for (int i = 0; i < payload_length; i++) {
+//                payload[i] ^= mask[i % 4];
+//            }
+//        }
 
-        //?opcode
 
-        return new WebsocketPacket(opcode, payload);
-*/
+        byte[] packet = sos.toByteArray();
+
+        //new Dump().dumpBinary(packet);
+
+        os.write(packet);
     }
 
 
