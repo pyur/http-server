@@ -1,15 +1,10 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.json.Json;
-import ru.pyur.tst.json.JsonParser;
-import ru.pyur.tst.tags.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
-
-import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
-import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
 public abstract class WebsocketModule {
@@ -146,10 +141,9 @@ public abstract class WebsocketModule {
         //call 'action'
         //if not parsable, call 'malcious request'
 
-        Json json;
-        JsonParser jp = new JsonParser();
+        Json json = new Json();  // .parse("[]");
         try {
-            json = jp.parse(text);
+            json.parse(text);
         } catch (Exception e) { e.printStackTrace(); return; }
 
         //System.out.println("\n>>>>--------------------------------");
@@ -161,6 +155,17 @@ public abstract class WebsocketModule {
         //System.out.println(">>> " + (json.has("act") ? "yes" : "no") );
 
         System.out.println(">>> " + json.stringify() );
+
+
+//        try {
+//            System.out.println("\n---- test --------------------------------");
+//            Json json_test = new Json().parse("[\"first\", \"second \\u0041\\u001F\", \"third\"]");
+//            json.parse(text);
+//            json.dump(json_test);
+//            String json_test_str = json_test.stringify();
+//            System.out.println("strigified: " + json_test_str);
+//            System.out.println("\n---- test end --------------------------------");
+//        } catch (Exception e) { e.printStackTrace(); return; }
     }
 
     protected void receivedBinary(byte[] data) {}
