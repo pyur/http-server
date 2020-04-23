@@ -137,7 +137,7 @@ public class Json {
     }
 
 
-    public ArrayList<Json> getObject() {
+    public ArrayList<Json> toObject() {
         if (type == JSON_TYPE_OBJECT) {
             return lsJson;
         }
@@ -146,7 +146,7 @@ public class Json {
     }
 
 
-    public ArrayList<Json> getArray() {
+    public ArrayList<Json> toArray() {
     //todo: public JsonArray getArray() {
         if (type == JSON_TYPE_ARRAY) {
             return lsJson;
@@ -156,7 +156,7 @@ public class Json {
     }
 
 
-    public String getString() {
+    public String toString() {
         switch (type) {
             case JSON_TYPE_OBJECT:
                 return "[Object]";
@@ -189,7 +189,7 @@ public class Json {
 
 
 
-    public int getInt() {
+    public int toInt() {
         switch (type) {
             case JSON_TYPE_OBJECT:
                 //throw new Exception("not convertible");
@@ -219,7 +219,7 @@ public class Json {
 
 
 
-    public long getLong() {
+    public long toLong() {
         switch (type) {
             case JSON_TYPE_OBJECT:
                 //throw new Exception("not convertible");
@@ -248,9 +248,9 @@ public class Json {
     }
 
 
-    //public float getFloat() {}
-    //public double getDouble() {}
-    //public boolean getBoolean() {}
+    //public float toFloat() {}
+    //public double toDouble() {}
+    //public boolean toBoolean() {}
 
 
 
@@ -327,6 +327,24 @@ public class Json {
         return lsJson.get(pos);
     }
 
+
+
+    public String getString(String key) throws Exception {
+        Json node = getNode(key);
+        return node.toString();
+    }
+
+
+    public int getInt(String key) throws Exception {
+        Json node = getNode(key);
+        return node.toInt();
+    }
+
+
+    public long getLong(String key) throws Exception {
+        Json node = getNode(key);
+        return node.toLong();
+    }
 
 
 

@@ -83,25 +83,30 @@ public abstract class WebsocketModule {
 
 
 
-    public void dispatch() throws Exception {
+    public void dispatch() {
 
         WebsocketReader wr = new WebsocketReader(is);
         websocket_writer = new WebsocketWriter(os);
 
-        WebsocketReader.WebsocketPacket packet;
-        boolean terminate = false;
-
         onConnect();
 
+        try {
+            receiveLoop(wr);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        onDisconnect();
+    }
+
+    private void receiveLoop(WebsocketReader wr) throws Exception {
+        WebsocketReader.WebsocketPacket packet;
 
         for(;;) {
             packet = wr.read();
-
-            //if (ws_mod_cb != null)  ws_mod_cb.cb();
+            //if (packet.opcode == -1)  throw new Exception("unexpected stream close.");
 
             switch (packet.opcode) {
                 case 0:
-                    // continuation frame
+                    // todo: continuation frame
                     break;
 
                 case 1:
@@ -116,8 +121,7 @@ public abstract class WebsocketModule {
 
                 case 8:
                     receivedClose(packet.payload);
-                    terminate = true;
-                    break;
+                    return;
 
                 case 9:
                     System.out.println("ping");
@@ -137,7 +141,6 @@ public abstract class WebsocketModule {
                     break;
             }
 
-            if (terminate)  break;
         }  // for
 
     }
@@ -145,6 +148,9 @@ public abstract class WebsocketModule {
 
 
     protected void onConnect() {}
+
+    protected void onDisconnect() {}
+
 
 
 
@@ -163,7 +169,7 @@ public abstract class WebsocketModule {
         if (json.has("act")) {
             String act = "";
             try {
-                act = json.getNode("act").getString();
+                act = json.getNode("act").toString();
             } catch (Exception e) { e.printStackTrace(); }
             action(act, json);
         }
@@ -205,6 +211,7 @@ public abstract class WebsocketModule {
 
     protected void receivedClose(byte[] data) {
         System.out.println("receivedClose()");
+        //TODO!! send back close packet
     }
 
 
@@ -379,7 +386,7 @@ public abstract class WebsocketModule {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                value = rs.getInt(1);
+                value = rs.toInt(1);
             }
         } catch (Exception e) { e.printStackTrace(); }
 
@@ -402,7 +409,7 @@ public abstract class WebsocketModule {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                value = rs.getString(1);
+                value = rs.toString(1);
             }
         } catch (Exception e) { e.printStackTrace(); }
 

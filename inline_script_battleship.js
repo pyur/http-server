@@ -6,29 +6,11 @@ function ws_open() {
   //msgAppendBubble("Соединение установлено.");
   //snd_ok.play();
 
-
   //var packet = {
-  //  "act" : "ech",  // enter chat
-  //  "cht" : chat_id
+  //  "act" : "fun"
   //  }
   //
   //socket.send(JSON.stringify(packet));
-
-    // fetch user_names
-//  var packet = {
-//    "act" : "fun"
-//    }
-//
-//  socket.send(JSON.stringify(packet));
-
-    // request last messages
-    // fetch chat history
-//  var packet = {
-//    "act" : "fch",
-//    "cht" : chat_id
-//    }
-//
-//  socket.send(JSON.stringify(packet));
   }
 
 
@@ -78,16 +60,36 @@ function ws_message(event) {
 
   if (message.act == "reg") {
     user = message.user;
-//x    console.log("user: " + user);
     }
 
 
   if (message.act == "fch") {
-    var user_fch = message.user;
+    //var user_fch = message.user;
     var x = message.x;
     var y = message.y;
     var val = message.val;
     fieldChange(x, y, val);
+    }
+
+
+  if (message.act == "efc") {
+    //var user_fch = message.user;
+    var x = message.x;
+    var y = message.y;
+    var val = message.val;
+    enemyFieldChange(x, y, val);
+    }
+
+
+  if (message.act == "rdy") {
+    var user_rdy = message.user;
+    //var val = message.val;
+    readyChange(user_rdy);
+    }
+
+
+  if (message.act == "gme") {
+    gameChange();
     }
 
 
@@ -118,8 +120,13 @@ function ws_error(error) {
 var table_own;
 var table_enemy;
 
+var button_own;
+var button_enemy;
+
 
 var table_own_clicked;
+var table_enemy_clicked;
+var button_own_clicked;
 
 
 
@@ -143,14 +150,19 @@ window.onload = function () {
   var container_own = document.createElement('DIV');
   container_own.style.display = "inline-block";
   container_own.style.width = "400px";
+  container_own.style.verticalAlign = 'top';
   container.appendChild(container_own);
 
   var container_enemy = document.createElement('DIV');
   container_enemy.style.display = "inline-block";
+  container_enemy.style.verticalAlign = 'top';
   container.appendChild(container_enemy);
 
 
   var col_letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'];
+
+
+  // ---------------- Own ---------------- //
 
   table_own = document.createElement('TABLE');
 
@@ -190,6 +202,21 @@ window.onload = function () {
   table_own.addEventListener("click", table_own_clicked, false);
 
 
+
+  // ---------------- own button ---------------- //
+
+  button_own = document.createElement('INPUT');
+  button_own.type = 'button';
+  button_own.value = 'Не готов';
+  button_own.style.margin = '10px auto 0 140px';
+  container_own.appendChild(button_own);
+
+  button_own.addEventListener("click", button_own_clicked, false);
+
+
+
+
+  // ---------------- Enemy ---------------- //
 
   table_enemy = document.createElement('TABLE');
 
@@ -231,6 +258,17 @@ window.onload = function () {
 
 
 
+  // ---------------- enemy button ---------------- //
+
+  button_enemy = document.createElement('INPUT');
+  button_enemy.type = 'button';
+  button_enemy.value = 'Не готов';
+  button_enemy.disabled = true;
+  button_enemy.style.margin = '10px auto 0 140px';
+  container_enemy.appendChild(button_enemy);
+
+  //button_own.addEventListener("click", button_own_clicked, false);
+
   }
 
 
@@ -257,7 +295,7 @@ var table_own_clicked = function(e) {
 
     var packet = {
       "act" : "tch",
-      "user" : user,
+      //"user" : user,
       "x" : x,
       "y" : y
       }
@@ -285,10 +323,39 @@ var table_enemy_clicked = function(e) {
     // ---- left mouse button ---- //
   if (e.button == 0) {
     if (t.id == "")  return;
-    alert("enemy " + t.id);
+
+    x = getX(t.id);
+    y = getY(t.id);
+
+    var packet = {
+      "act" : "ten",
+      //"user" : user,
+      "x" : x,
+      "y" : y
+      }
+
+    socket.send(JSON.stringify(packet));
     }
 
   }
+
+
+
+
+var button_own_clicked = function(e) {
+    // ---- left mouse button ---- //
+  if (e.button == 0) {
+
+    var packet = {
+      "act" : "rdy",
+      "user" : user
+      }
+
+    socket.send(JSON.stringify(packet));
+    }
+
+  }
+
 
 
 
@@ -336,8 +403,34 @@ function getY(str) {
 
 
 
+
+var field_char = ['-', '.', 'D', 'X'];
+
 function fieldChange(x, y, val) {
-  var tr = table_own.rows[y+1].cells[x+1].innerHTML = val;
+  var tr = table_own.rows[y+1].cells[x+1].innerHTML = field_char[val];
+  }
+
+
+
+function enemyFieldChange(x, y, val) {
+  var tr = table_enemy.rows[y+1].cells[x+1].innerHTML = field_char[val];
+  }
+
+
+
+
+function readyChange(user_rdy) {
+  var button;
+  if (user_rdy == user)  button = button_own;
+  else  button = button_enemy;
+
+  button.value = "Готов";
+  }
+
+
+
+function gameChange() {
+  // change state to game (enable enemy field clicking, etc)
   }
 
 
