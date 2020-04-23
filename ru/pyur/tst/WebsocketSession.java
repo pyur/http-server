@@ -195,11 +195,16 @@ public class WebsocketSession {
 //        if (module.equals("ws")) {
 //        }
 
-//        else if (module.equals("water")) {
-//            //mi = new ru.pyur.tst.water.Info();
-//            md = new ru.pyur.tst.water.Md_Water(session);
-//        }
-//
+        else if (module.equals("battleship")) {
+            info = new ru.pyur.tst.battleship.Info(this);
+            //ws_mod_cb = info.setGetWebsocketCallback();
+            WebsocketModule wsm = info.getWs();
+            // todo: info.getWs(is, os).dispatch();
+            //info.setWebsocketSession(this);
+            wsm.setStreams(is, os);
+            wsm.dispatch();
+        }
+
 //        else if (module.equals("db")) {
 //            md = new ru.pyur.tst.dbedit.Info(session).dispatch();
 //        }

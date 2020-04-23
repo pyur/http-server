@@ -26,14 +26,16 @@ public class WebsocketReader {  // extends Reader {
 
 
     public WebsocketPacket read() throws Exception {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        //ByteArrayOutputStream os = new ByteArrayOutputStream();
 
 
         int p1 = is.read();
+        if (p1 == -1)  System.out.println("p1. stream end.");
         int opcode = p1 & 0xF;
         boolean fin = (p1 & 0x80) != 0;
 
         int p2 = is.read();
+        if (p2 == -1)  System.out.println("p2. stream end.");
         int len_8 = p2 & 0x7F;
         boolean masked = (p2 & 0x80) != 0;
 
@@ -63,6 +65,7 @@ public class WebsocketReader {  // extends Reader {
         if (masked) {
             //mask = new byte[4];
             int readed = is.read(mask);
+            if (readed == -1)  System.out.println("mask. stream end.");
             if (readed != 4)  throw new Exception("mask not 4 bytes");
             //new Dump().dumpBinary(mask);
         }

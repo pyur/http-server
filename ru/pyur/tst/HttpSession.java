@@ -213,6 +213,10 @@ public class HttpSession {
             md = new ru.pyur.tst.websocket.Info(session).dispatch();
         }
 
+        else if (module.equals("battleship")) {
+            md = new ru.pyur.tst.battleship.Info(session).dispatch();
+        }
+
         //else if (module.equals("ext")) {
         //    new ru.pyur.tst.extsample.ExtMod();
         //}

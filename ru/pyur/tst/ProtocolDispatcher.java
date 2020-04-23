@@ -152,6 +152,8 @@ public class ProtocolDispatcher {
         int line_size;
 
         line_size = nis.read(header_line);  // maybe replace with "Reader"
+        if (line_size == -1)  throw new Exception("first line is -1");
+        System.out.println(new String(header_line, 0, line_size));
 
         header.setFirstLine(new String(header_line, 0, line_size));
 

@@ -89,6 +89,9 @@ public abstract class WebsocketModule {
         websocket_writer = new WebsocketWriter(os);
 
         WebsocketReader.WebsocketPacket packet;
+        boolean terminate = false;
+
+        onConnect();
 
 
         for(;;) {
@@ -112,16 +115,17 @@ public abstract class WebsocketModule {
                 // 3-7 reserved
 
                 case 8:
-                    // close
+                    receivedClose(packet.payload);
+                    terminate = true;
                     break;
 
                 case 9:
-                    // ping
+                    System.out.println("ping");
                     // todo: answer with pong
                     break;
 
                 case 10:
-                    // pong
+                    System.out.println("pong");
                     // do reset keep-alive timeout
                     break;
 
@@ -133,13 +137,19 @@ public abstract class WebsocketModule {
                     break;
             }
 
+            if (terminate)  break;
         }  // for
 
     }
 
 
+
+    protected void onConnect() {}
+
+
+
     protected void receivedText(String text) {
-        //System.out.println("text: " + text);
+        System.out.println("text: " + text);
         //parse JSON
         //call 'action'
         //if not parsable, call 'malcious request'
@@ -188,6 +198,15 @@ public abstract class WebsocketModule {
 
 
     protected void action(String action, Json other_params) {}
+
+    //protected String getParam(String key) {}
+
+
+
+    protected void receivedClose(byte[] data) {
+        System.out.println("receivedClose()");
+    }
+
 
 
 

@@ -122,7 +122,7 @@ public class WebsocketWriter {
 //        }
 
 
-        System.out.println("off: " + off + ", block_len: " + block_len);
+        //System.out.println("off: " + off + ", block_len: " + block_len);
         sos.write(data, off, block_len);
 
 

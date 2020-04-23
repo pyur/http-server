@@ -314,7 +314,7 @@ public class Json {
             if (json.key.equals(key))  return json;
         }
 
-        throw new Exception("node miss");
+        throw new Exception("node \'" + key + "\' miss");
     }
 
 
