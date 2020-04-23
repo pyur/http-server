@@ -271,6 +271,26 @@ public class Json {
     }
 
 
+    public void add(String key, int value) throws Exception {
+        add(new Json(key, value));
+    }
+
+
+    public void add(String key, double value) throws Exception {
+        add(new Json(key, value));
+    }
+
+
+    public void add(String key, String value) throws Exception {
+        add(new Json(key, value));
+    }
+
+
+    public void add(String key, boolean value) throws Exception {
+        add(new Json(key, value));
+    }
+
+
 
 
     // -------------------------------- Utilities -------------------------------- //

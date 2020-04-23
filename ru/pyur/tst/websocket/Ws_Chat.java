@@ -27,11 +27,11 @@ public class Ws_Chat extends WebsocketModule {
 
             Json aw = new Json();
             try {
-                aw.add(new Json("act", "msg"));
-                aw.add(new Json("chat", 0));
-                aw.add(new Json("user", 0));
-                aw.add(new Json("msg", "Hello from Java server!"));
-                aw.add(new Json("time", (int)(System.currentTimeMillis()/1000)));
+                aw.add("act", "msg");
+                aw.add("chat", 0);
+                aw.add("user", 0);
+                aw.add("msg", "Hello from Java server!");
+                aw.add("time", (int)(System.currentTimeMillis()/1000));
             } catch (Exception e) { e.printStackTrace(); }
 
             sendAction(aw);
