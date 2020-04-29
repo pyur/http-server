@@ -38,9 +38,9 @@ public class Md_TableView extends HttpModule {
         table.addColumn("Default", 180);
         table.addColumn("Extra", 250);
 
-        table.addAction("pencil-button", "edt");  // edit
-        table.addAction("rainbow", "rnbw");  // some action 2
-        table.addAction("holly", "hly");  // some action 3
+        table.addActionLocation("pencil-button", getModule(), "edt");  // edit
+        table.addActionLocation("rainbow", getModule(), "rnbw");  // some action 2
+        table.addActionLocation("holly", getModule(), "hly");  // some action 3
         //table.addAction("wheel");  // some action 4
 
 
@@ -65,7 +65,7 @@ public class Md_TableView extends HttpModule {
 
             ResultSet rs = stmt.executeQuery(query);
 
-            int row_id = 0;
+//x            int row_id = 0;
             while(rs.next()) {
                 String column_name = rs.getString(1);
                 String data_type = rs.getString(2);
@@ -74,7 +74,10 @@ public class Md_TableView extends HttpModule {
                 String default_value = rs.getString(5);
                 String extra = rs.getString(6);
 
-                Tr tr = new Tr(row_id);
+                //Tr tr = new Tr(row_id);
+                Tr tr = new Tr(column_name);
+//todo                Tr tr = new Tr();
+//todo                tr.addData("opt", column_name);
                 table.add(tr);
 
                 tr.add(new Td(column_name));
@@ -110,7 +113,7 @@ public class Md_TableView extends HttpModule {
 //                url.addParameter("col", column_name);
 //                tr.addAction(url);
 
-                row_id++;
+//x                row_id++;
             }
 
         } catch (SQLException se) {

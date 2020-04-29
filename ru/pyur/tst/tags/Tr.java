@@ -29,15 +29,15 @@ public class Tr extends Tag {
     public Tr(int row_id) {
         tag_name = "tr";
         closing = false;
-        //this.row_id = row_id;
         addAttribute("data-id", "" + row_id);
     }
 
 
-
-//r    public void addAction(Url url) {
-//r        actions.add(new TrAction(url));
-//r    }
+    public Tr(String row_id) {
+        tag_name = "tr";
+        closing = false;
+        addAttribute("data-id", row_id);
+    }
 
 
 
@@ -48,31 +48,6 @@ public class Tr extends Tag {
 //        additional_options.add(new PStr("data-id", "" + row_id));
 //        return additional_options;
 //    }
-
-
-/*
-    @Override
-    public String renderNestedPost() {
-        //if (!hasHeader)  return "";
-
-        StringBuilder sb = new StringBuilder();
-
-        if (actions.size() != 0) {
-            Td actions_td = new Td();
-            for (TrAction ta : actions) {
-                A act = new A();
-                actions_td.add(act);
-                //act.addClass("i"+);
-                act.addClass("s");
-                act.setHref(ta.url);
-            }
-
-            sb.append(actions_td.toString());
-        }
-
-        return sb.toString();
-    }
-*/
 
 
 }

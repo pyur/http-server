@@ -35,19 +35,56 @@ public class Table extends Tag {
     private class ActionButton {
         public String icon;
         //public String description;
-        //public String module;
+        public String module;
         public String action;
 
-        //public ActionButton(String icon) {
-        //    this(icon, "");
-        //}
+        private int mode;
+        private final int MODE_LOCATION = 0;
+        private final int MODE_AJAX = 1;
+        private final int MODE_CODE = 2;
+
+
+
+        public ActionButton(String icon) {
+            this.icon = icon;
+        }
+
 
         public ActionButton(String icon, String action) {
             this.icon = icon;
             //this.description = description;
             this.action = action;
-
         }
+
+
+        public void setLocation(String module, String action) {
+            this.module = module;
+            this.action = action;
+            mode = MODE_LOCATION;
+        }
+
+
+        public String getFunction() {
+            String function = "";
+
+            switch (mode) {
+                case MODE_LOCATION:
+                    function = "window.location = '/" + module + "/";
+                    if (action != null)  function += action + "/";
+                    function += "?id=' + row_id";
+                    break;
+
+                case MODE_AJAX:
+                    break;
+
+                case MODE_CODE:
+                    break;
+            }
+
+            return function;
+        }
+
+
     }
 
 
@@ -83,11 +120,15 @@ public class Table extends Tag {
 
 
     public void addAction(String icon, String action) {
-//x        if (!hasActions) {
-//x            hasActions = true;
-//x        }
-
+        //??
         actions.add(new ActionButton(icon, action));
+    }
+
+
+    public void addActionLocation(String icon, String module, String action) {
+        ActionButton ab = new ActionButton(icon);
+        ab.setLocation(module, action);
+        actions.add(ab);
     }
 
 
@@ -240,9 +281,12 @@ public class Table extends Tag {
 
             // -- callback functions -- //
             boolean first = true;
-            for (ActionButton but : actions) {
+            for (ActionButton ab : actions) {
                 if (!first)  sb.append(", ");
-                sb.append("function (row_id) { alert(\"func " + but.icon + " : \" + row_id);}");
+                sb.append("function (row_id) { ");
+                //sb.append("alert(\"func " + ab.icon + " : \" + row_id);}");
+                sb.append(ab.getFunction());
+                sb.append(" }");
                 if (first)  first = false;
             }
 
