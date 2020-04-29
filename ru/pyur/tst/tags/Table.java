@@ -28,22 +28,25 @@ public class Table extends Tag {
     }
 
 
-    boolean hasActions = false;
+//x    private boolean hasActions = false;
 
     private ArrayList<ActionButton> actions = new ArrayList<>();
 
     private class ActionButton {
         public String icon;
-        public String description;
-        //public String location;
+        //public String description;
+        //public String module;
+        public String action;
 
-        public ActionButton(String icon) {
-            this(icon, "");
-        }
+        //public ActionButton(String icon) {
+        //    this(icon, "");
+        //}
 
-        public ActionButton(String icon, String description) {
+        public ActionButton(String icon, String action) {
             this.icon = icon;
-            this.description = description;
+            //this.description = description;
+            this.action = action;
+
         }
     }
 
@@ -51,6 +54,12 @@ public class Table extends Tag {
 
     public Table() {
         tag_name = "table";
+    }
+
+
+    public Table(String id) {
+        tag_name = "table";
+        setId(id);
     }
 
 
@@ -64,10 +73,8 @@ public class Table extends Tag {
     public void addColumn(String description, int width, int align) {
         if (description != null) { hasHeader = true; }
 
-        if (!hasPre) {
-            hasPre = true;
-            //classes.add("lst");
-            addClass("lst");
+        if (columns.size() == 0) {
+            addClass(id);
         }
 
         columns.add(new TableColumn(description, width, align));
@@ -75,18 +82,21 @@ public class Table extends Tag {
 
 
 
-    public void addAction(String icon) {
-        if (!hasActions) {
-            hasActions = true;
-        }
+    public void addAction(String icon, String action) {
+//x        if (!hasActions) {
+//x            hasActions = true;
+//x        }
 
-        actions.add(new ActionButton(icon));
+        actions.add(new ActionButton(icon, action));
     }
 
 
 
     @Override
-    public String renderPre() {
+    public String renderBeforeTag() {
+
+        // ---- append actions column ---- //
+
         if (actions.size() != 0) {
             String actions_desc = null;
             if (hasHeader) {
@@ -112,14 +122,25 @@ public class Table extends Tag {
         }
 
 
+        // ---- columns, actions style ---- //
+
         StringBuilder sb = new StringBuilder();
 
         if (columns.size() != 0) {
             sb.append("\r\n<style>\r\n");
 
+            sb.append("table.");
+            sb.append(id);
+            sb.append(" tr:first-child td {font-weight: bold; background-color: #ddd; text-align: center; padding: 0;}\r\n");
+            sb.append("table.");
+            sb.append(id);
+            sb.append(" tr:nth-child(odd) {background-color: #eee;}\r\n");
+
             int i = 1;
             for (TableColumn tc : columns) {
-                sb.append("table.lst td:nth-child(");
+                sb.append("table.");
+                sb.append(id);
+                sb.append(" td:nth-child(");
                 //todo: exclude optional head row. tr:nth-child(n+1)
                 sb.append(i);
                 sb.append(") {");
@@ -140,14 +161,29 @@ public class Table extends Tag {
                 i++;
             }
 
+
+            // ---- actions style ---- //
+
             if (actions.size() != 0) {
                 //table.lst td:nth-child(7) > a:nth-child(1) {background-position: -288px -64px;}
 
+                sb.append("table.");
+                sb.append(id);
+                sb.append(" td:nth-child(");
+                sb.append(columns.size());
+                sb.append(") > hr {");
+                sb.append("cursor: pointer;");
+                sb.append("}\r\n");
+
+
                 int j = 1;
                 for (ActionButton but : actions) {
-                    sb.append("table.lst td:nth-child(");
+                    sb.append("table.");
+                    sb.append(id);
+                    sb.append(" td:nth-child(");
                     sb.append(columns.size());
-                    sb.append(") > a:nth-child(");
+                    //sb.append(") > a:nth-child(");
+                    sb.append(") > hr:nth-child(");
                     sb.append(j);
                     sb.append(")");
 
@@ -173,20 +209,6 @@ public class Table extends Tag {
 
                     sb.append(";");
 
-//                    switch (j) {
-//                        case 1:
-//                            sb.append(" border: 1px solid blue;");
-//                            break;
-//
-//                        case 2:
-//                            sb.append(" border: 1px solid magenta;");
-//                            break;
-//
-//                        case 3:
-//                            sb.append(" border: 1px solid cyan;");
-//                            break;
-//                    }
-
                     sb.append("}\r\n");
                     j++;
                 }
@@ -196,37 +218,46 @@ public class Table extends Tag {
         }
 
 
-//        if (actions.size() != 0) {
-//            pre.append("\r\n<style>\r\n");
-//            //a.i0 {background-position: -288px -64px;}
-//            //<a class="i0 s" href="/elec/ele/?elc=1"></a>
-//
-//            int i = 0;
-//            for (ActionButton but : actions) {
-//                pre.append("a.i");
-//                pre.append(i);
-//
-//                pre.append(" {background-position: ");
-//                pre.append(0);
-//                pre.append("px ");
-//                pre.append(0);
-//                pre.append("px;");
-//
-//                pre.append("}\r\n");
-//                i++;
-//            }
-//
-//            pre.append("</style>\r\n");
-//        }
+        return sb.toString();
+    }
 
+
+
+
+    @Override
+    public String renderAfterTag() {
+        StringBuilder sb = new StringBuilder();
+
+
+        // ---- actions script ---- //
+
+        if (actions.size() != 0) {
+            sb.append("\r\n<script>\r\n");
+            //sb.append("var callback_function\r\n");
+            sb.append("TableActions('");
+            sb.append(id);
+            sb.append("', [");
+
+            // -- callback functions -- //
+            boolean first = true;
+            for (ActionButton but : actions) {
+                if (!first)  sb.append(", ");
+                sb.append("function (row_id) { alert(\"func " + but.icon + " : \" + row_id);}");
+                if (first)  first = false;
+            }
+
+            sb.append("]);\r\n");
+            sb.append("</script>\r\n");
+        }
 
         return sb.toString();
     }
 
 
 
+
     @Override
-    public String renderNested() {
+    public String renderNestedPre() {
         if (!hasHeader)  return "";
 
         StringBuilder sb = new StringBuilder();
@@ -239,6 +270,28 @@ public class Table extends Tag {
             }
 
             sb.append(head_tr.toString());
+        }
+
+        return sb.toString();
+    }
+
+
+
+    @Override
+    public String renderPostTag() {
+        StringBuilder sb = new StringBuilder();
+
+        if (actions.size() != 0) {
+            Td actions_td = new Td();
+            for (ActionButton ta : actions) {
+                Hr act_button = new Hr();
+                actions_td.add(act_button);
+                //act.addClass("i"+);
+                //act.addClass("s");
+                //act.setHref(ta.url);
+            }
+
+            sb.append(actions_td.toString());
         }
 
         return sb.toString();

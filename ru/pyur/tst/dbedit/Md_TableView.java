@@ -28,7 +28,7 @@ public class Md_TableView extends HttpModule {
         b("Колонки таблицы");
 
 
-        Table table = new Table();
+        Table table = new Table("lmt");  // todo: lst
         b(table);
 
         table.addColumn("Имя", 150);
@@ -38,9 +38,9 @@ public class Md_TableView extends HttpModule {
         table.addColumn("Default", 180);
         table.addColumn("Extra", 250);
 
-        table.addAction("pencil-button");  // edit
-        table.addAction("rainbow");  // some action 2
-        table.addAction("holly");  // some action 3
+        table.addAction("pencil-button", "edt");  // edit
+        table.addAction("rainbow", "rnbw");  // some action 2
+        table.addAction("holly", "hly");  // some action 3
         //table.addAction("wheel");  // some action 4
 
 
@@ -65,6 +65,7 @@ public class Md_TableView extends HttpModule {
 
             ResultSet rs = stmt.executeQuery(query);
 
+            int row_id = 0;
             while(rs.next()) {
                 String column_name = rs.getString(1);
                 String data_type = rs.getString(2);
@@ -73,7 +74,7 @@ public class Md_TableView extends HttpModule {
                 String default_value = rs.getString(5);
                 String extra = rs.getString(6);
 
-                Tr tr = new Tr();
+                Tr tr = new Tr(row_id);
                 table.add(tr);
 
                 tr.add(new Td(column_name));
@@ -85,29 +86,31 @@ public class Md_TableView extends HttpModule {
                 tr.add(new Td(default_value));
                 tr.add(new Td(extra));
 
-                Url url = new Url();
-                url.setModule(getModule());
-                url.setAction(DBEDIT_ACTION_TABLE_EDIT);
-                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
-                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
-                url.addParameter("col", column_name);
-                tr.addAction(url);
+//                Url url = new Url();
+//                url.setModule(getModule());
+//                url.setAction(DBEDIT_ACTION_TABLE_EDIT);
+//                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
+//                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
+//                url.addParameter("col", column_name);
+//                tr.addAction(url);
 
-                url = new Url();
-                url.setModule(getModule());
-                url.setAction("act2");
-                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
-                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
-                url.addParameter("col", column_name);
-                tr.addAction(url);
+//                url = new Url();
+//                url.setModule(getModule());
+//                url.setAction("act2");
+//                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
+//                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
+//                url.addParameter("col", column_name);
+//                tr.addAction(url);
 
-                url = new Url();
-                url.setModule(getModule());
-                url.setAction("act3");
-                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
-                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
-                url.addParameter("col", column_name);
-                tr.addAction(url);
+//                url = new Url();
+//                url.setModule(getModule());
+//                url.setAction("act3");
+//                url.addParameter(DBEDIT_PARAM_DB, db_name);  // ?
+//                url.addParameter(DBEDIT_PARAM_TABLE, table_name);
+//                url.addParameter("col", column_name);
+//                tr.addAction(url);
+
+                row_id++;
             }
 
         } catch (SQLException se) {

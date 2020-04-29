@@ -12,6 +12,9 @@ import java.util.ArrayList;
 
 public abstract class Tag {
 
+    private boolean new_line_after_tag = false;
+    //private boolean new_line_after_tag = true;
+
     protected String plainText;
 
     private ArrayList<Tag> tags = new ArrayList<>();
@@ -30,7 +33,7 @@ public abstract class Tag {
 
     //protected boolean clo = false;
 
-    protected boolean hasPre = false;
+    //protected boolean hasPre = false;
     //protected boolean hasNested = false;
 
 
@@ -112,14 +115,25 @@ public abstract class Tag {
     }
 
 
+    public void addAttribute(PStr attribute) {
+        attributes.add(attribute);
+    }
+
+
     public void setUnselectable() { attributes.add(new PStr("unselectable", "on")); }
 
 
-    public String renderPre() { return null; }
+    public String renderBeforeTag() { return null; }
 
-    public String renderNested() { return null; }
+    public String renderAfterTag() { return null; }
+
+    public String renderNestedPre() { return null; }
 
     public String renderNestedPost() { return null; }
+
+    protected String renderPostTag() { return null; }  // for '<table>'
+
+    //protected ArrayList<PStr> tagAttributes() { return null; }
 
 
 
@@ -132,9 +146,9 @@ public abstract class Tag {
 
         StringBuilder t = new StringBuilder();
 
-        if (hasPre) {
-            t.append(renderPre());
-        }
+        String before_tag = renderBeforeTag();
+        if (before_tag != null)  t.append(before_tag);
+
 
         t.append("<");
         t.append(tag_name);
@@ -185,6 +199,17 @@ public abstract class Tag {
         }
 
 
+        // ---- custom attributes ---- //
+
+//        ArrayList<PStr> custom_attributes = tagAttributes();
+//        if (custom_attributes != null) {
+//            for (PStr custom_attr : custom_attributes) {
+//                //addAttribute(custom_attr);
+//                attributes.add(custom_attr);
+//            }
+//        }
+
+
         // ---- attributes ---- //
 
         for (PStr attribute : attributes) {
@@ -198,18 +223,22 @@ public abstract class Tag {
         }
 
 
+
         if (self_closing) { t.append(" /"); }
         t.append(">");
 
 
         //if (hasNested) {
-        String nested = renderNested();
+        String nested = renderNestedPre();
         if (nested != null)  t.append(nested);
         //}
 
 
         for (Tag tag : tags) {
             t.append(tag.toString());
+
+            String nested_post_tag = renderPostTag();
+            if (nested_post_tag != null)  t.append(nested_post_tag);
         }
 
 
@@ -223,6 +252,13 @@ public abstract class Tag {
             t.append(tag_name);
             t.append(">");
         }
+
+
+        String after_tag = renderAfterTag();
+        if (after_tag != null)  t.append(after_tag);
+
+
+        if (new_line_after_tag)  t.append("\r\n");
 
         return t.toString();
     }
