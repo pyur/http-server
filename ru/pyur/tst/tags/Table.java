@@ -32,60 +32,6 @@ public class Table extends Tag {
 
     private ArrayList<ActionButton> actions = new ArrayList<>();
 
-    private class ActionButton {
-        public String icon;
-        //public String description;
-        public String module;
-        public String action;
-
-        private int mode;
-        private final int MODE_LOCATION = 0;
-        private final int MODE_AJAX = 1;
-        private final int MODE_CODE = 2;
-
-
-
-        public ActionButton(String icon) {
-            this.icon = icon;
-        }
-
-
-        public ActionButton(String icon, String action) {
-            this.icon = icon;
-            //this.description = description;
-            this.action = action;
-        }
-
-
-        public void setLocation(String module, String action) {
-            this.module = module;
-            this.action = action;
-            mode = MODE_LOCATION;
-        }
-
-
-        public String getFunction() {
-            String function = "";
-
-            switch (mode) {
-                case MODE_LOCATION:
-                    function = "window.location = '/" + module + "/";
-                    if (action != null)  function += action + "/";
-                    function += "?id=' + row_id";
-                    break;
-
-                case MODE_AJAX:
-                    break;
-
-                case MODE_CODE:
-                    break;
-            }
-
-            return function;
-        }
-
-
-    }
 
 
 
@@ -119,14 +65,10 @@ public class Table extends Tag {
 
 
 
-    public void addAction(String icon, String action) {
-        //??
-        actions.add(new ActionButton(icon, action));
-    }
+    // ---------------- action button location ---------------- //
 
-
-    public void addActionLocation(String icon, String module, String action) {
-        ActionButton ab = new ActionButton(icon);
+    public void addAbLocation(String icon, String description, String module, String action) {
+        ActionButton ab = new ActionButton(icon, description);
         ab.setLocation(module, action);
         actions.add(ab);
     }
@@ -203,7 +145,7 @@ public class Table extends Tag {
             }
 
 
-            // ---- actions style ---- //
+            // ---- action buttons style ---- //
 
             if (actions.size() != 0) {
                 //table.lst td:nth-child(7) > a:nth-child(1) {background-position: -288px -64px;}
@@ -249,6 +191,8 @@ public class Table extends Tag {
                     }
 
                     sb.append(";");
+
+                    // it is good to apply here shared description tooltip
 
                     sb.append("}\r\n");
                     j++;
@@ -327,12 +271,11 @@ public class Table extends Tag {
 
         if (actions.size() != 0) {
             Td actions_td = new Td();
-            for (ActionButton ta : actions) {
+            for (ActionButton ab : actions) {
                 Hr act_button = new Hr();
+                // it is not best solution to populate title for each button
+                if (ab.description != null)  act_button.addAttribute("title", ab.description);
                 actions_td.add(act_button);
-                //act.addClass("i"+);
-                //act.addClass("s");
-                //act.setHref(ta.url);
             }
 
             sb.append(actions_td.toString());

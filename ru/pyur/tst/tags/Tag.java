@@ -140,7 +140,7 @@ public abstract class Tag {
     @Override
     public String toString() {
         if (tag_name == null) {
-            if (plainText == null)  return "[NULL]";
+            if (plainText == null)  return "<span style=\"color: red;\">[NULL]</span>";
             return plainText;
         }
 

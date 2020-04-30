@@ -96,7 +96,7 @@ public abstract class HttpModule {
 
 
 
-    protected abstract void makeContent();
+    protected abstract void makeContent() throws Exception;
 
 
 
@@ -180,21 +180,8 @@ public abstract class HttpModule {
 
 
 
-    // ---- string, int, tags ---- //
-    protected void b(String text) {
-        body.add(new PlainText(text));
-    }
+    // ---- append to head: string, int, tags ---- //
 
-    protected void b(int number) {
-        body.add(new PlainText("" + number));
-    }
-
-    protected void b(Tag tag) {
-        body.add(tag);
-    }
-
-
-    // ---- string, int, tags ---- //
     protected void h(String text) {
         head.add(new PlainText(text));
     }
@@ -209,11 +196,68 @@ public abstract class HttpModule {
 
 
 
+    // ---- append to body: string, int, tags ---- //
+
+    protected void b(String text) {
+        body.add(new PlainText(text));
+    }
+
+    protected void b(int number) {
+        body.add(new PlainText("" + number));
+    }
+
+    protected void b(Tag tag) {
+        body.add(tag);
+    }
+
+
+    protected void heading(String text) {
+        Div div = new Div();
+        div.addClass("heading");
+        div.add(new PlainText(text));
+        body.add(div);
+    }
+
+
+
+
+    // ---- compose (compile) page ---- //
+
     private byte[] makeHtml() {
 
         makeModulesBar();
 
-        makeContent();
+        try {
+            makeContent();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Div div = new Div();
+            div.addClass("exception");
+            //div.add(new PlainText(e.toString()));
+            div.add(new PlainText(e.getClass().getName()));
+            div.add(new PlainText(": "));
+            div.add(new PlainText("<span style=\"font-weight: bold;\">" + e.getMessage() + "</span>"));
+
+            StackTraceElement[] stack_trace = e.getStackTrace();
+            for (StackTraceElement ste : stack_trace) {
+                //div.add(new PlainText(ste.toString() + "<br>\n"));
+                Div div_line = new Div();
+                div.add(div_line);
+                //div_line.add(new PlainText("toString: " + ste.toString() + "<br>\n"));
+
+                //div_line.add(new PlainText(", getClassName: " + ste.getClassName() + "<br>\n"));
+                //div_line.add(new PlainText(", getMethodName: " + ste.getMethodName() + "<br>\n"));
+                //div_line.add(new PlainText(", getFileName: " + ste.getFileName() + "<br>\n"));
+                //div_line.add(new PlainText(", getLineNumber: " + ste.getLineNumber() + "<br>\n"));
+                //div_line.add(new PlainText(", isNativeMethod: " + ste.isNativeMethod() + "<br>\n"));
+
+                div_line.add(new PlainText("&nbsp; " + ste.getClassName() + " . "));
+                div_line.add(new PlainText(ste.getMethodName() + " "));
+                div_line.add(new PlainText("(" + ste.getFileName() + " : "));
+                div_line.add(new PlainText(ste.getLineNumber() + ")"));
+            }
+            b(div);
+        }
 
         makeHtmlHeader();
 
@@ -387,7 +431,12 @@ public abstract class HttpModule {
 
 
     public byte[] makeJson() {
-        makeContent();
+        try {
+            makeContent();  // todo: rename
+        } catch (Exception e) {
+            //append to json e.toString());
+            e.printStackTrace();
+        }
 
         //todo: json inflater
         StringBuilder sb = new StringBuilder();
