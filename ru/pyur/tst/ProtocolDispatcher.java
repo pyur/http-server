@@ -29,10 +29,7 @@ public class ProtocolDispatcher {
 
 
 
-//    private final int RECV_HEADER_LIMIT = 8192;  // in C 16384
-
-
-    private String ws_key;
+//joined    private String ws_key;
 
 
     // ---------------- Callbacks ---------------- //
@@ -41,18 +38,12 @@ public class ProtocolDispatcher {
 
 
 
-    private CallbackProtocolHeader callback_protocol_header;
+//x    private CallbackProtocolHeader callback_protocol_header;
+//x
+//x    public interface CallbackProtocolHeader {
+//x        int dispatchRequest(HttpRequest http_request);
+//x    }
 
-    public interface CallbackProtocolHeader {
-        int dispatchRequest(HttpRequest http_request);
-    }
-
-
-//    private CallbackHttpPayload callback_http_payload;
-
-//    public interface CallbackHttpPayload {
-//        int dispatchPayload(byte[] payload);
-//    }
 
 
     private CallbackProtocolHttpClient callback_protocol_http_client;
@@ -68,27 +59,14 @@ public class ProtocolDispatcher {
     private CallbackProtocolServerEvent callback_protocol_server_event;
 
     public interface CallbackProtocolServerEvent {
-        int httpHeaderReceived(HttpRequest http_request);
-        DispatchedData dispatchRequest(byte[] payload);
+        //int httpHeaderReceived(HttpRequest http_request);
+        //DispatchedData dispatchRequest(byte[] payload);
+        byte[] http(HttpRequest http_request, InputStream is, OutputStream os);
 
-        int websocketHeaderReceived(HttpRequest http_request);
-        void dispatchStreams(InputStream is, OutputStream os);
+        //int websocketHeaderReceived(HttpRequest http_request);
+        //void dispatchStreams(InputStream is, OutputStream os);
+        void websocket(HttpRequest http_request, InputStream is, OutputStream os);
     }
-
-
-//    public interface DummyProtCallback {
-//        void sendString(String str);
-//    }
-//
-//
-//    private DummyModCallback dummy_mod_callback;
-//
-//    public interface DummyModCallback {
-//        void receivedString(String str);
-//        void receivedBinary(byte[] data);
-//    }
-
-
 
 
 
@@ -98,26 +76,12 @@ public class ProtocolDispatcher {
     }
 
 
-    //public void setTransport(Transport.CallbackTransportControl callback_transport_control) {
-    //    this.callback_transport_control = callback_transport_control;
-    //}
-
-
-
-    //public void setStateServer(CallbackProtocolHeader cs, CallbackHttpPayload cp) {
-    //    state = HTTP_STATE_SERVER;
-    //
-    //    callback_protocol_header = (cs != null) ? cs : defaultHeaderDispatcher;
-    //    callback_http_payload = (cp != null) ? cp : defaultHttpServerPayloadDispatcher;
-    //}
-
 
 
     public void setStateServer(CallbackProtocolServerEvent cb_server_event) {
         state = HTTP_STATE_SERVER;
 
-        callback_protocol_header = defaultHeaderDispatcher;
-//        callback_http_payload = null;  // defaultHttpServerPayloadDispatcher
+//x        callback_protocol_header = defaultHeaderDispatcher;
         callback_protocol_server_event = cb_server_event;
     }
 
@@ -128,7 +92,6 @@ public class ProtocolDispatcher {
         state = HTTP_STATE_HTTP_CLIENT;
 
         callback_protocol_http_client = (chc != null) ? chc : defaultHttpClientDispatcher;
-//        callback_http_payload = (cp != null) ? cp : defaultHttpClientPayloadDispatcher;
     }
 
 
@@ -152,7 +115,7 @@ public class ProtocolDispatcher {
         int line_size;
 
         line_size = nis.read(header_line);  // maybe replace with "Reader"
-        if (line_size == -1)  throw new Exception("first line is -1");
+        if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header receive.");
         System.out.println(new String(header_line, 0, line_size));
 
         header.setFirstLine(new String(header_line, 0, line_size));
@@ -164,7 +127,7 @@ public class ProtocolDispatcher {
             //System.out.println("line_size: " + line_size);
 
             if (line_size == 0)  break;
-            if (line_size == -1)  throw new Exception("line_size == -1");
+            if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header options receive.");
 
             System.out.println(new String(header_line, 0, line_size));
             header.addOption(new String(header_line, 0, line_size));
@@ -173,23 +136,16 @@ public class ProtocolDispatcher {
 
         // -------- Process header -------- //
 
-        //todo: custom callback
-//        dispatchHeader_v2(header);
-//
-//        return header;
-//    }
-//
-//
-//
-//
-//    public void dispatchHeader_v2(HttpHeader header) throws Exception {
         int result;
 
         // -- mode server. process request -- //
         // http server, websocket server, cast server
         if (state == HTTP_STATE_SERVER) {
             HttpRequest http_request = (HttpRequest)header;
-            result = callback_protocol_header.dispatchRequest(http_request);
+//x            result = callback_protocol_header.dispatchRequest(http_request);
+            try {
+                dispatchRequest(http_request);
+            } catch (Exception e) { e.printStackTrace(); return header; }
         }
 
 
@@ -221,49 +177,117 @@ public class ProtocolDispatcher {
 
 
 
+    // --------------------------------------------------------------------------------- //
+    // ------------------------------- 3 Dispatch header ------------------------------- //
+    // --------------------------------------------------------------------------------- //
+
+    // ------------------------ default Server request dispatcher ------------------------ //
+
+    private void dispatchRequest(HttpRequest http_request) throws Exception {
+
+        // ---------------- WebSocket ---------------- //
+
+        //if (http_request.hasOption("Connection")) {
+        //    //System.out.println("option \"Connection\" found.");
+        //    String[] opts = http_request.getOptionSplit("Connection");
+        //    if (Util.inArray(opts, "Upgrade")) {  // can be: "keep-alive, Upgrade"
+        //        System.out.println("option \"Connection\" has \"Upgrade\".");
+        //        //...
+        //    }
+        //}
+
+
+        if (http_request.hasOption("Upgrade")) {
+            if (http_request.getOption("Upgrade").equals("websocket")) {
+
+                // -------- check 'Sec-WebSocket-Version' -------- //
+                if (!http_request.hasOption("Sec-WebSocket-Version")) {
+                    System.out.println("defaultHeaderDispatcher. error. option \"Sec-WebSocket-Version\" not found.");
+                }
+
+
+                // -------- check 'Sec-WebSocket-Key' -------- //
+                if (http_request.hasOption("Sec-WebSocket-Key")) {
+                    System.out.println("option \"Sec-WebSocket-Key\" present.");
+
+//joined                    ws_key = http_request.getOption("Sec-WebSocket-Key");
+
+//joined                    // ---- validate auth ---- //
+//joined                    int iResult = 0;
+//joined                    if (callback_protocol_server_event != null)  iResult = callback_protocol_server_event.websocketHeaderReceived(http_request);
+//joined                    else  iResult = -1;
+
+//joined                    if (iResult < 0) {
+                    //Http_SendReferenceWsResponseAuthFail(http);  // into called custom processor
+//joined                        return -1;
+//joined                    }
+
+                    state = HTTP_STATE_WS_SERVER;
+
+//joined                    Http_SendReferenceWsResponseOk();
+
+                    // set-up websocket server
+                    // callback: websocket server
+
+
+                    return;
+                }  // "Sec-WebSocket-Key"
+            }  // "websocket"
+        }  // "Upgrade: "
+
+
+
+        // ---------------- Audio Cast ---------------- //
+
+        if (http_request.hasOption("Icy-MetaData")) {
+
+            //todo            int metadata = atoi(opt->value);
+//todo            DebugIVerbose_(http, "found \"icy-metadata: #\". use mode \"audio cast\". ");  di(metadata);  dcd();
+
+            state = HTTP_STATE_CAST_SERVER;
+
+//todo            Http_SendStandardCastResponse(http);
+
+            // set-up audio cast (after payload receive)
+            // callback: audio cast (after payload receive)
+
+//todo            if (http->cbCastReady)  http->cbCastReady(http->cbInstance, http);
+
+            return;
+        }  // "Icy-MetaData: "
+
+
+
+
+        //System.out.println("no special options found, work as plain standard http server.");
+
+        // ---------------- casual http request ---------------- //
+        state = HTTP_STATE_HTTP_SERVER;
+
+//joined        int result2 = 0;
+//joined        if (callback_protocol_server_event != null)  result2 = callback_protocol_server_event.httpHeaderReceived(http_request);
+
+    }
+
+
+
+
     // ---------------------------- Process data v2 ---------------------------- //
 
-    public void processData_v2(InputStream is, HttpHeader header) throws Exception {
+    public void processData_v2(HttpHeader header, InputStream is, OutputStream os) throws Exception {
         int result = 0;
 
         if (state == HTTP_STATE_HTTP_SERVER) {
-            byte[] payload = receivePayload(is, header);
+//r            byte[] payload = receivePayload(is, header);
 
             HttpRequest http_request = (HttpRequest)header;
 
-            //result = callback_protocol_header.requestReceivedWithPayload(http_request);
-            //todo: default, with default response
-
-////            if (result < 0)   throw new Exception("processing in callback 'dispatchRequest' failed");  // failed
-
-//?            if (callback_http_payload != null)  result = callback_http_payload.dispatchPayload(payload);
-
-//r            if (callback_session != null) {
             if (callback_protocol_server_event != null) {
                 //maybe here spawn session, call, and dispose
-//r                DispatchedData feedback = callback_session.onReceived(http_request, payload);
-                DispatchedData feedback = callback_protocol_server_event.dispatchRequest(payload);
+//r                DispatchedData feedback = callback_protocol_server_event.dispatchRequest(payload);
+                byte[] osb = callback_protocol_server_event.http(http_request, is, os);
 
-                HttpResponse response = new HttpResponse();
-                response.setConnectionClose();
-                response.setVersion(HTTP_VERSION_1_0);
-                response.setCode(200);
-
-
-                if (feedback != null) {
-                    response.addOptions(feedback.options);
-
-                    //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
-
-                    if (feedback.payload != null) {
-                        response.appendPayload(feedback.payload);
-                    }
-                }
-                //else {
-                //...
-                //}
-
-                Http_Send(response.stringify());
+                Http_Send(osb);
             }
 
         }
@@ -274,8 +298,7 @@ public class ProtocolDispatcher {
 
             HttpRequest http_request = (HttpRequest)header;
 
-//r            result = callback_http_payload.dispatchPayload(payload);  // todo: pass header
-            if (callback_protocol_http_client != null)  callback_protocol_http_client.dispatchPayload(payload);  // todo: pass header
+            if (callback_protocol_http_client != null)  result = callback_protocol_http_client.dispatchPayload(payload);  // todo: pass header
 
             if (result < 0)   throw new Exception("processing in callback 'dispatchRequest' failed");  // failed
         }
@@ -286,10 +309,13 @@ public class ProtocolDispatcher {
             //WebsocketInputStream wis = new WebsocketInputStream(is);
             //WebsocketOutputStream wos = new WebsocketOutputStream(os);
             //result = callback_ws.dataStream(wis, wos);
-            OutputStream os = getOutputStream();
+//r            OutputStream os = getOutputStream();
 
             // start websocket dispatcher
-            if (callback_protocol_server_event != null)  callback_protocol_server_event.dispatchStreams(is, os);
+//r            if (callback_protocol_server_event != null)  result = callback_protocol_server_event.dispatchStreams(is, os);
+
+            HttpRequest http_request = (HttpRequest)header;
+            callback_protocol_server_event.websocket(http_request, is, os);
 
             //if (result < 0)   throw new Exception("processing in callback 'dispatchRequest' failed");  // failed
         }
@@ -299,7 +325,7 @@ public class ProtocolDispatcher {
 
 
 
-    private byte[] receivePayload(InputStream is, HttpHeader header) throws Exception {
+    public static byte[] receivePayload(InputStream is, HttpHeader header) throws Exception {
         byte[] payload = new byte[0];
 
         if (header.hasOption("Content-Length")) {
@@ -343,246 +369,6 @@ public class ProtocolDispatcher {
 
         return payload;
     }
-
-
-
-
-    // ----------------------------------------------------------------------------------- //
-    // -------------------------------- 1.1. Parse stream -------------------------------- //
-    // ----------------------------------------------------------------------------------- //
-
-/*
-    public int parseStream() {
-        int result;
-
-
-        // ---------------- 1. header not received ---------------- //
-
-
-
-
-        // ---------------- 2. header already received ---------------- //
-
-        // todo: switch/case
-
-        // ---- HTTP SERVER - receive payload, dispatch and answer ---- //
-        if (state == HTTP_STATE_HTTP_SERVER) {
-            result = receiveHttpPayload();  // receive POST data, etc...
-            if (result < 0) return -1;  // failed
-            if (result == 0) return 0;  // in progress
-
-            result = 0;
-            if (callback_http_payload != null)  result = callback_http_payload.dispatchPayload(request_payload.toByteArray());
-
-            if (callback_session != null) {
-                DispatchedData feedback = callback_session.onReceived(http_request, request_payload.toByteArray());
-
-                HttpResponse response = new HttpResponse();
-                response.setConnectionClose();
-
-                if (feedback != null) {
-                    if (feedback.options.size() > 0) {
-                        for (PStr option : feedback.options) {
-                            response.addOption(option);
-                        }
-                    }
-
-                    //todo HttpResponse_Server(rs, Http_CB_GetServerString(http));
-
-                    if (feedback.payload != null) {
-                        response.appendPayload(feedback.payload);
-                    }
-                }
-                //else {
-                    //...
-                //}
-
-                Http_Send(response.stringify());
-            }
-
-            if (result < 0)  return -1;  // failed
-
-            return 1;  // signal to transport to close connection
-        }
-
-
-        // ---- HTTP CLIENT - receive payload, and quit ---- //
-        else if (state == HTTP_STATE_HTTP_CLIENT) {
-            result = receiveHttpPayload();
-
-            if (result < 0)  return -1;  // failed
-            if (result == 0)  return 0;  // in progress
-
-            result = callback_http_payload.dispatchPayload(request_payload.toByteArray());
-
-            if (result < 0)  return -1;  // failed
-
-            return 1 + 0;  // all payload received
-        }
-
-
-        // ---- WS SERVER, WS CLIENT - dispatch incoming messages, quit on 'close' message ---- //
-        else if (state == HTTP_STATE_WS_CLIENT || state == HTTP_STATE_WS_SERVER) {
-            result = 0;//Websocket_ProcessStream(http);
-
-            if (result < 0)  return -1;  // stream parse error
-            if (result == 0)  return 0;
-            if (result > 0) {
-                //callback Ws_Closed
-                return 1;  // 'close' message received
-            }
-
-            return 0;  // keep connection alive
-        }
-
-
-        // ---- WS CLOSED - ... ---- //
-        else if (state == HTTP_STATE_WS_CLOSED) {
-            System.err.println("Error. ws closed received");
-            //DebugDump(http->stream->data, http->stream->size);
-
-            return 0;  // keep connection alive
-        }
-
-
-
-        // ---- CAST SERVER - dispatch incoming messages, quit on 'close' message ---- //
-        else if (state == HTTP_STATE_CAST_SERVER) {
-            //iResult = Http_ReceivePayload(http);
-            //if (iResult < 0)  return -1;
-            //if (iResult == 0)  return 0;
-
-            // iResult = Cast_ProcessStream(http);
-            // if (iResult < 0)  return -1;  // stream parse error
-            // if (iResult == 0)  return 0;
-
-            //  Http_SendStandardCastResponse(http);
-
-            //  Http_CB_CastReady(http);
-
-            //return 1;  // 'close' message received
-            return 0;  // keep connection alive
-        }
-
-
-        // ---- CAST CLIENT - dispatch incoming media stream, quit on ? ---- //
-        else if (state == HTTP_STATE_WS_CLIENT) {
-            result = 0;//Cast_ProcessStream(http);
-
-            if (result < 0)  return -1;  // stream parse error
-            if (result == 0)  return 0;
-
-            //callback Cast_Closed
-            return 1;  // ?'close' message received
-        }
-
-
-        return 0;
-    }
-*/
-
-
-    // --------------------------------------------------------------------------------- //
-    // ------------------------------- 3 Dispatch header ------------------------------- //
-    // --------------------------------------------------------------------------------- //
-
-    // ------------------------ default Server request dispatcher ------------------------ //
-
-    private CallbackProtocolHeader defaultHeaderDispatcher = new CallbackProtocolHeader() {
-        @Override
-        public int dispatchRequest(HttpRequest http_request) {
-
-            // ---------------- WebSocket ---------------- //
-
-            //if (http_request.hasOption("Connection")) {
-            //    //System.out.println("option \"Connection\" found.");
-            //    String[] opts = http_request.getOptionSplit("Connection");
-            //    if (Util.inArray(opts, "Upgrade")) {  // can be: "keep-alive, Upgrade"
-            //        System.out.println("option \"Connection\" has \"Upgrade\".");
-            //        //...
-            //    }
-            //}
-
-
-            if (http_request.hasOption("Upgrade")) {
-                if (http_request.getOption("Upgrade").equals("websocket")) {
-
-                    // -------- check 'Sec-WebSocket-Version' -------- //
-                    if (!http_request.hasOption("Sec-WebSocket-Version")) {
-                        System.out.println("defaultHeaderDispatcher. error. option \"Sec-WebSocket-Version\" not found.");
-                    }
-
-
-                    // -------- check 'Sec-WebSocket-Key' -------- //
-                    if (http_request.hasOption("Sec-WebSocket-Key")) {
-                        System.out.println("option \"Sec-WebSocket-Key\" present.");
-
-                        ws_key = http_request.getOption("Sec-WebSocket-Key");
-
-                        // ---- validate auth ---- //
-                        int iResult;
-                        if (callback_protocol_server_event != null)  iResult = callback_protocol_server_event.websocketHeaderReceived(http_request);
-                        else  iResult = -1;
-
-                        if (iResult < 0) {
-                            //Http_SendReferenceWsResponseAuthFail(http);  // into called custom processor
-                            return -1;
-                        }
-
-                        state = HTTP_STATE_WS_SERVER;
-
-                        Http_SendReferenceWsResponseOk();
-
-                        // set-up websocket server
-                        // callback: websocket server
-
-                        // ---- prepare for data exchange ---- //
-    //todo                    http->message = Expandable_Create();
-    //todo                    http->ws_prev_fin = 1;
-
-    //todo                    if (http->cbWsReady)  http->cbWsReady(http->cbInstance, http);
-
-                        return 1;
-                    }  // "Sec-WebSocket-Key"
-                }  // "websocket"
-            }  // "Upgrade: "
-
-
-
-            // ---------------- Audio Cast ---------------- //
-
-            if (http_request.hasOption("Icy-MetaData")) {
-
-                    //todo            int metadata = atoi(opt->value);
-    //todo            DebugIVerbose_(http, "found \"icy-metadata: #\". use mode \"audio cast\". ");  di(metadata);  dcd();
-
-                state = HTTP_STATE_CAST_SERVER;
-
-    //todo            Http_SendStandardCastResponse(http);
-
-                // set-up audio cast (after payload receive)
-                // callback: audio cast (after payload receive)
-
-    //todo            if (http->cbCastReady)  http->cbCastReady(http->cbInstance, http);
-
-                return 1;
-            }  // "Icy-MetaData: "
-
-
-
-
-            //System.out.println("no special options found, work as plain standard http server.");
-
-            // ---------------- casual http request ---------------- //
-            state = HTTP_STATE_HTTP_SERVER;
-
-            int result2 = 0;
-            if (callback_protocol_server_event != null)  result2 = callback_protocol_server_event.httpHeaderReceived(http_request);
-
-
-            return 1;
-        }
-    };
 
 
 
@@ -731,7 +517,7 @@ public class ProtocolDispatcher {
 
 
 
-    private void Http_SendReferenceWsResponseOk() {
+    public static byte[] Http_SendReferenceWsResponseOk(String ws_key) {
         HttpResponse rs = new HttpResponse();
 
         // HTTP/1.1 101 Switching Protocols
@@ -781,7 +567,8 @@ public class ProtocolDispatcher {
         //DebugInfo("Http_SendStandardWsResponseOk(). calling HttpResponse_Stringify()...");
         //Str szResponse = HttpResponse_Stringify(rs);
         //Http_SendStr(http, szResponse);
-        Http_Send(rs.stringify());
+//r        Http_Send(rs.stringify());
+        return rs.stringify();
         //byte[] tmp = rs.stringify();
         //System.out.println(new String(tmp));
         //Http_Send(tmp);
@@ -801,10 +588,10 @@ public class ProtocolDispatcher {
     }
 
 
-    private OutputStream getOutputStream() {
-        if (callback_transport_control != null)  return callback_transport_control.getOutputStream();
-        return null;
-    }
+//x    private OutputStream getOutputStream() {
+//x        if (callback_transport_control != null)  return callback_transport_control.getOutputStream();
+//x        return null;
+//x    }
 
 
 }

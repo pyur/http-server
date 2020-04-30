@@ -15,7 +15,7 @@ public class Transport {
 
     public interface CallbackTransportControl {
         int send(byte[] bytes);
-        OutputStream getOutputStream();
+        //OutputStream getOutputStream();
     }
 
 

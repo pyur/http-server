@@ -18,11 +18,18 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_0;
+
 public class ServerSsl {
 
     private ExecutorService service;
 
     private int port;
+
+//    private HttpSession http_session;
+
+//    private WebsocketSession ws_session;
+
 
 
     public ServerSsl(int port) {
@@ -45,7 +52,7 @@ public class ServerSsl {
             for(;;) {
                 Socket socket = server_socket.accept();  // thread locking
 
-                service.execute(new TransportSsl(socket));
+                service.execute(new TransportSsl(socket, cb_protocol_server_event));
             }
 
         } catch (Exception e) {
@@ -59,7 +66,8 @@ public class ServerSsl {
 
 
 
-    // ----
+    // -------------------------------- SSL specific -------------------------------- //
+
     // https://stackoverflow.com/questions/2138940/import-pem-into-java-key-store
 
     public static SSLServerSocketFactory createSSLFactory(File privateKeyPem, File certificatePem, String password) throws Exception {
@@ -145,6 +153,117 @@ public class ServerSsl {
         final CertificateFactory factory = CertificateFactory.getInstance("X.509");
         return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
     }
+
+
+
+
+    // -------------------------------- Protocol callback -------------------------------- //
+
+    private ProtocolDispatcher.CallbackProtocolServerEvent cb_protocol_server_event = new ProtocolDispatcher.CallbackProtocolServerEvent() {
+//        @Override
+//        public int httpHeaderReceived(HttpRequest http_request) {
+//            http_session = new HttpSession();
+//            http_session.setRequest(http_request);
+//
+//            return 1;
+//        }
+
+
+//        @Override
+//        public DispatchedData dispatchRequest(HttpRequest http_request byte[] payload) {
+//            return http_session.dispatch(payload);
+//        }
+
+
+        @Override
+        public byte[] http(HttpRequest http_request, InputStream is, OutputStream os) {
+            HttpSession http_session = new HttpSession();
+            http_session.setRequest(http_request);
+
+            // todo: receive payload
+            byte[] payload = new byte[0];
+            try {
+                payload = ProtocolDispatcher.receivePayload(is, http_request);
+            } catch (Exception e) { e.printStackTrace(); }
+
+            DispatchedData feedback = http_session.dispatch(payload);
+
+            // ---- compose response ---- //
+            HttpResponse response = new HttpResponse();
+            response.setConnectionClose();
+            response.setVersion(HTTP_VERSION_1_0);
+
+            if (feedback != null) {
+                response.setCode(feedback.code);
+
+                response.addOptions(feedback.options);
+
+                //todo "Server: string"
+
+                if (feedback.payload != null) {
+                    response.appendPayload(feedback.payload);
+                }
+            }
+
+            return response.stringify();
+        }
+
+
+
+//        @Override
+//        public int websocketHeaderReceived(HttpRequest http_request) {
+//            ws_session = new WebsocketSession();
+//            int result = ws_session.validate(http_request);
+//            //WsDispatcher ws_dispatcher = ws_session.getDispatcher();
+//            ws_session.setRequest(http_request);
+//
+//            return 1;  // ws_dispatcher
+//        }
+
+
+//        @Override
+//        public void dispatchStreams(InputStream is, OutputStream os) {
+//
+//            try {
+//                ws_session.dispatch(is, os);
+//            } catch (Exception e) { e.printStackTrace(); }
+//
+//        }
+
+
+        @Override
+        public void websocket(HttpRequest http_request, InputStream is, OutputStream os) {
+            WebsocketSession ws_session = new WebsocketSession();
+            int result = ws_session.validate(http_request);
+            if (result == -1) {
+//todo            Http_SendReferenceWsResponseFailed();
+                return;
+            }
+
+            // maybe move it to 'WebsocketSession'
+            String ws_key;
+            try {
+                ws_key = http_request.getOption("Sec-WebSocket-Key");
+            } catch (Exception e) { e.printStackTrace(); return; }
+
+            byte[] response = ProtocolDispatcher.Http_SendReferenceWsResponseOk(ws_key);
+
+            try {
+                os.write(response);
+                os.flush();
+            } catch (Exception e) { e.printStackTrace(); }
+            // end-move
+
+
+            ws_session.setRequest(http_request);
+
+            try {
+                ws_session.dispatch(is, os);
+            } catch (Exception e) { e.printStackTrace(); }
+
+        }
+
+    };
 
 
 

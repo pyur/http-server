@@ -68,7 +68,7 @@ public abstract class HttpHeader {
 
 
 
-    public String getOption(String name) {  // throw Exception
+    public String getOption(String name) throws Exception {
         String name_low = name.toLowerCase();
         //System.out.println("searching for \"" + name_low + "\"...");
 
@@ -81,15 +81,18 @@ public abstract class HttpHeader {
         }
 
         //System.out.println("......not found.");
-        //throw("option missing.");
-        return null;
+        throw new Exception("missing header option \"" + name + "\".");
+        //return null;
     }
 
 
 
-    public String[] getOptionSplit(String name) {
-        String value = getOption(name);
-        if (value == null)  return null;
+    public String[] getOptionSplit(String name) {  // throws Exception
+        String value;
+        try {
+            value = getOption(name);
+        } catch (Exception e) { e.printStackTrace(); return null; }
+
 
         String[] values = Util.explode(',', value);
         //maybe trim each value

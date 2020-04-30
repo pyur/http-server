@@ -23,7 +23,6 @@ public class ActionButton {
     public ActionButton(String icon, String description) {
         this.icon = icon;
         this.description = description;
-//x        this.action = action;
     }
 
 

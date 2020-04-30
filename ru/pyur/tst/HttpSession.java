@@ -1,6 +1,8 @@
 package ru.pyur.tst;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 
@@ -93,6 +95,8 @@ public class HttpSession {
     // --------------------------------------------------------------------------------
 
     public DispatchedData dispatch(byte[] payload) {
+//    public DispatchedData dispatch(InputStream is, OutputStream os) {
+
 
         // ---------------- dispatch Host ---------------- //
 
@@ -244,7 +248,7 @@ public class HttpSession {
                 response_options.add(new PStr("Content-Encoding", "gzip"));
             }
 */
-            return new DispatchedData(contents, response_options);
+            return new DispatchedData(contents, response_options, 200);
         }
 
 

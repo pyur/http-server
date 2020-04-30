@@ -62,7 +62,6 @@ public class Md_TableView extends HttpModule {
 
         ResultSet rs = stmt.executeQuery(query);
 
-//x            int row_id = 0;
         while(rs.next()) {
             String column_name = rs.getString(1);
             String data_type = rs.getString(2);
@@ -86,7 +85,6 @@ public class Md_TableView extends HttpModule {
             tr.add(new Td(default_value));
             tr.add(new Td(extra));
 
-//x                row_id++;
             }
 
 //        } catch (SQLException se) {

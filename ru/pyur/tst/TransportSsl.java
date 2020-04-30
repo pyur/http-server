@@ -13,16 +13,12 @@ public class TransportSsl extends Transport implements Runnable {
 
     private OutputStream output_stream;
 
-    private HttpSession http_session;
-
-    private WebsocketSession ws_session;
-
 
 
     //public TransportSsl() {}
 
 
-    public TransportSsl(Socket socket) {
+    public TransportSsl(Socket socket, ProtocolDispatcher.CallbackProtocolServerEvent cb_protocol_server_event) {
         this.socket = socket;
         protocol_dispatcher = new ProtocolDispatcher(callback_transport_control);
         protocol_dispatcher.setStateServer(cb_protocol_server_event);
@@ -81,7 +77,7 @@ public class TransportSsl extends Transport implements Runnable {
 
         // ---- 2. receive payload ---- //
 
-        protocol_dispatcher.processData_v2(is, header);
+        protocol_dispatcher.processData_v2(header, is, output_stream);
 
 
 
@@ -109,10 +105,10 @@ public class TransportSsl extends Transport implements Runnable {
             return Send(bytes);
         }
 
-        @Override
-        public OutputStream getOutputStream() {
-            return output_stream;
-        }
+//        @Override
+//        public OutputStream getOutputStream() {
+//            return output_stream;
+//        }
     };
 
 
@@ -129,52 +125,6 @@ public class TransportSsl extends Transport implements Runnable {
 
         return 0;
     }
-
-
-
-
-    // -------------------------------- Protocol callback -------------------------------- //
-    // todo: it's not 'transport's job. move somewhere else
-
-    private ProtocolDispatcher.CallbackProtocolServerEvent cb_protocol_server_event = new ProtocolDispatcher.CallbackProtocolServerEvent() {
-        @Override
-        public int httpHeaderReceived(HttpRequest http_request) {
-            http_session = new HttpSession();
-            http_session.setRequest(http_request);
-
-            return 1;
-        }
-
-
-        @Override
-        public DispatchedData dispatchRequest(byte[] payload) {
-            return http_session.dispatch(payload);
-        }
-
-
-
-        @Override
-        public int websocketHeaderReceived(HttpRequest http_request) {
-            ws_session = new WebsocketSession();
-            int result = ws_session.validate(http_request);
-            //WsDispatcher ws_dispatcher = ws_session.getDispatcher();
-            ws_session.setRequest(http_request);
-
-            return 1;  // ws_dispatcher
-        }
-
-
-        @Override
-        public void dispatchStreams(InputStream is, OutputStream os) {
-
-            try {
-                ws_session.dispatch(is, os);
-            } catch (Exception e) { e.printStackTrace(); }
-
-        }
-
-    };
-
 
 
 }
