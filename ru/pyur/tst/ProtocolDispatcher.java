@@ -61,7 +61,7 @@ public class ProtocolDispatcher {
     public interface CallbackProtocolServerEvent {
         //int httpHeaderReceived(HttpRequest http_request);
         //DispatchedData dispatchRequest(byte[] payload);
-        byte[] http(HttpRequest http_request, InputStream is, OutputStream os);
+        void http(HttpRequest http_request, InputStream is, OutputStream os);
 
         //int websocketHeaderReceived(HttpRequest http_request);
         //void dispatchStreams(InputStream is, OutputStream os);
@@ -285,9 +285,10 @@ public class ProtocolDispatcher {
             if (callback_protocol_server_event != null) {
                 //maybe here spawn session, call, and dispose
 //r                DispatchedData feedback = callback_protocol_server_event.dispatchRequest(payload);
-                byte[] osb = callback_protocol_server_event.http(http_request, is, os);
+//r                byte[] osb = callback_protocol_server_event.http(http_request, is, os);
+                callback_protocol_server_event.http(http_request, is, os);
 
-                Http_Send(osb);
+//r                //Http_Send(osb);
             }
 
         }

@@ -9,6 +9,7 @@ public class DispatchedData {
     public byte[] payload;
 
     public DispatchedData(byte[] payload) {
+        this.code = 200;
         this.payload = payload;
     }
 

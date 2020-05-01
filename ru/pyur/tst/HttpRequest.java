@@ -13,8 +13,8 @@ public class HttpRequest extends HttpHeader {
     private int method;
     private int version;
 
-    private String szPath;  // reserved
-    public String[] lsPath;
+    private String szPath;  // parse, stringify
+    public String[] lsPath;  // parse
 
     private String szQuery;  // reserved
     private ArrayList<PStr> lsQuery;
@@ -72,7 +72,7 @@ public class HttpRequest extends HttpHeader {
     }
 
 
-
+/*
     public void parse(byte[] bytes) throws Exception {
         //System.out.println("HttpRequest. parse()");
         if (bytes.length == 0)  throw new Exception("header zero length");
@@ -124,7 +124,7 @@ public class HttpRequest extends HttpHeader {
         //System.out.println("----------------------------------------------------------------");
 
     }
-
+*/
 
 
 
@@ -235,6 +235,12 @@ public class HttpRequest extends HttpHeader {
     }
 
 
+    public String getPath() { return szPath; }
+
+
+
+
+    // ---------------- base class ------------------------------------------------
 
     @Override
     public void setFirstLine(String first_line) throws Exception {
