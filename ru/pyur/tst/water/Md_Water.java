@@ -12,7 +12,7 @@ public class Md_Water extends HtmlContent {
 
 
     public void makeContent() {
-        b("Hello from Md_Water!");
+        text("Hello from Md_Water!");
     }
 
 

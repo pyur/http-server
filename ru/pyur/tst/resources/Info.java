@@ -1,5 +1,6 @@
 package ru.pyur.tst.resources;
 
+import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.ModuleInfo;
@@ -26,32 +27,48 @@ public class Info extends ModuleInfo {
     public String ModuleName() { return NAME; }
 
 
+
+    @Override
     public HtmlContent getHtml() {
-        HtmlContent md = null;
+        HtmlContent hc = null;
 
         if (action.isEmpty()) {
-            md = new Md_ResList(session);
+            hc = new Md_ResList(session);
         }
 
         else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_ACTION)) {
-            md = new Md_MakeSpriteActions(session);
+            hc = new Md_MakeSpriteActions(session);
+        }
+
+
+        else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_MODULE)) {
+            hc = new Md_MakeSpriteModules(session);
+        }
+
+
+        return hc;
+    }
+
+
+
+    @Override
+    public ApiContent getApi() {
+        ApiContent api_content = null;
+
+        if (action.isEmpty()) {
+            //api_content = new Api_Default(session);
         }
 
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_ACTION)) {
-            md = new Md_GetSpriteActions(session);
-        }
-
-        else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_MODULE)) {
-            md = new Md_MakeSpriteModules(session);
+            api_content = new Api_GetSpriteActions(session);
         }
 
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_MODULE)) {
-            md = new Md_GetSpriteModules(session);
+            api_content = new Api_GetSpriteModules(session);
         }
 
 
-
-        return md;
+        return api_content;
     }
 
 

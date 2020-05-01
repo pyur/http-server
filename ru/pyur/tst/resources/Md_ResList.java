@@ -18,10 +18,10 @@ public class Md_ResList extends HtmlContent {
     @Override
     public void makeContent() {
 
-        b("Список таблиц конфига");
+        text("Список таблиц конфига");
 
         Table table = new Table();
-        b(table);
+        tag(table);
 
         table.addColumn("Имя", 200);
 

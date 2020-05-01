@@ -21,11 +21,11 @@ public class Md_DbList extends HtmlContent {
     @Override
     public void makeContent() {
 
-        b("Базы данных");
+        text("Базы данных");
 
 
         Table table = new Table();
-        b(table);
+        tag(table);
 
         table.addColumn("Имя", 200);
 

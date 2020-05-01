@@ -23,7 +23,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
     @Override
     public void makeContent() {
 
-        b("Генерация спрайта...");
+        text("Генерация спрайта...");
 
 
         File directory = new File("./resources/action_icon/");
@@ -32,7 +32,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
 
         if (files == null) {
             //System.out.println("directory.files == null");
-            b("Failed. directory not exists.");
+            text("Failed. directory not exists.");
             return;
         }
 
@@ -75,12 +75,12 @@ public class Md_MakeSpriteActions extends HtmlContent {
                 img = ImageIO.read(file);
             } catch (Exception e) {
                 e.printStackTrace();
-                b("Failed. read image " + file.getAbsoluteFile());
+                text("Failed. read image " + file.getAbsoluteFile());
                 return;
             }
 
             if (img.getWidth() != 16 || img.getHeight() != 16) {
-                b("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
+                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
                 return;
             }
 
@@ -159,7 +159,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
         }
 
 
-        b("OK");
+        text("OK");
     }
 
 

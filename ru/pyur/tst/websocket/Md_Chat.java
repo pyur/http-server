@@ -30,7 +30,7 @@ public class Md_Chat extends HtmlContent {
     @Override
     public void makeContent() {
 
-        b("Тестовый websocket чат");
+        text("Тестовый websocket чат");
 
 
         Div div_msg_container = new Div();
@@ -42,23 +42,23 @@ public class Md_Chat extends HtmlContent {
         div_msg_container.addStyle("overflow-y", "scroll");
         div_msg_container.addStyle("background-color", "#eee");
 
-        b(div_msg_container);
+        tag(div_msg_container);
 
-        b("<div style=\"width: 300px; height: 50px; margin: 0 auto; border: 1px solid #000;\">");
-        b("<textarea id=\"msg_input\" style=\"width: 250px; height: 44px; margin: 0 auto; border: 1px solid #000;\" autofocus></textarea>");
-        b("<input id=\"msg_send\" type=\"button\" style=\"width: 44px; height: 50px; vertical-align: top;\" value=\"&gt;\">");
-        b("</div>");
+        text("<div style=\"width: 300px; height: 50px; margin: 0 auto; border: 1px solid #000;\">");
+        text("<textarea id=\"msg_input\" style=\"width: 250px; height: 44px; margin: 0 auto; border: 1px solid #000;\" autofocus></textarea>");
+        text("<input id=\"msg_send\" type=\"button\" style=\"width: 44px; height: 50px; vertical-align: top;\" value=\"&gt;\">");
+        text("</div>");
 
 
-        b("<script>");
+        text("<script>");
         File script_file = new File("inline_script_websocket.js");
         try {
             FileInputStream fis = new FileInputStream(script_file);
             byte[] script = new byte[fis.available()];
             int readed = fis.read(script);
-            b(new String(script));
+            text(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
-        b("</script>");
+        text("</script>");
 
     }
 

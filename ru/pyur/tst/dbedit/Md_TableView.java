@@ -28,7 +28,7 @@ public class Md_TableView extends HtmlContent {
 
 
         Table table = new Table("lmt");  // todo: lst
-        b(table);
+        tag(table);
 
         table.addColumn("Имя", 150);
         table.addColumn("Тип", 200);

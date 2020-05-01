@@ -33,7 +33,7 @@ public class Md_MakeSpriteModules extends HtmlContent {
     @Override
     public void makeContent() {
 
-        b("Генерация спрайта...");
+        text("Генерация спрайта...");
 
 
         // ---- get list of installed modules ---- //
@@ -88,12 +88,12 @@ public class Md_MakeSpriteModules extends HtmlContent {
                 img = ImageIO.read(file);
             } catch (Exception e) {
                 e.printStackTrace();
-                b("Failed. read image " + file.getAbsoluteFile());
+                text("Failed. read image " + file.getAbsoluteFile());
                 return;
             }
 
             if (img.getWidth() != SPRITE_MODULE_ICON_SIZE || img.getHeight() != SPRITE_MODULE_ICON_SIZE) {
-                b("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
+                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
                 return;
             }
 
@@ -116,12 +116,12 @@ public class Md_MakeSpriteModules extends HtmlContent {
                 img = ImageIO.read(file);
             } catch (Exception e) {
                 e.printStackTrace();
-                b("Failed. read image " + file.getAbsoluteFile());
+                text("Failed. read image " + file.getAbsoluteFile());
                 return;
             }
 
             if (img.getWidth() != SPRITE_MODULE2_ICON_SIZE || img.getHeight() != SPRITE_MODULE2_ICON_SIZE) {
-                b("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
+                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
                 return;
             }
 
@@ -158,7 +158,7 @@ public class Md_MakeSpriteModules extends HtmlContent {
         configSet(CONFIG_MODULE_ICON_UPD, timestamp);
 
 
-        b("OK");
+        text("OK");
     }
 
 

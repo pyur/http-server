@@ -29,21 +29,21 @@ public class Md_Battleship extends HtmlContent {
     @Override
     public void makeContent() {
 
-        b("Морской бой");
+        text("Морской бой");
 
 
-        b("<script>");
-        b("var session = 0;");
-        b("var user = 0;");
+        text("<script>");
+        text("var session = 0;");
+        text("var user = 0;");
 
         File script_file = new File("inline_script_battleship.js");
         try {
             FileInputStream fis = new FileInputStream(script_file);
             byte[] script = new byte[fis.available()];
             int readed = fis.read(script);
-            b(new String(script));
+            text(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
-        b("</script>");
+        text("</script>");
 
     }
 

@@ -1,5 +1,6 @@
 package ru.pyur.tst.resources;
 
+import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 
@@ -10,20 +11,20 @@ import java.util.Base64;
 import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
 
 
-public class Md_GetSpriteActions extends HtmlContent {
+public class Api_GetSpriteActions extends ApiContent {
 
-    public Md_GetSpriteActions(HttpSession session) {
-        initJson(session);
+    public Api_GetSpriteActions(HttpSession session) {
+        init(session);
     }
 
 
 
     @Override
-    public void makeContent() {
+    public void makeContent() throws Exception {
 
         String ts = configGet(CONFIG_ACTION_ICON_UPD);
 
-        appendJson("ts", ts);
+        add("ts", ts);
 
         File sprite_file = new File("sprite_actions.png");
 
@@ -46,7 +47,7 @@ public class Md_GetSpriteActions extends HtmlContent {
 
         url_data.append(encoded);
 
-        appendJson("data", url_data.toString());
+        add("data", url_data.toString());
     }
 
 

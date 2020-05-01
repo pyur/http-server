@@ -22,7 +22,7 @@ public class Md_Elec extends HtmlContent {
     public void makeContent() {
 
         Div div = new Div();
-        b(div);
+        tag(div);
         div.put("Электричество");
         div.width(200);
         div.height(50);
@@ -30,7 +30,7 @@ public class Md_Elec extends HtmlContent {
 
 
         Table table = new Table();
-        b(table);
+        tag(table);
 
 
         try {

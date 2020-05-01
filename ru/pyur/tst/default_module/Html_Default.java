@@ -17,6 +17,8 @@ public class Html_Default extends HtmlContent {
     @Override
     public void makeContent() {
 
+        title("Добро пожаловать");
+
         heading("Reference Http Java Server");
 
 
