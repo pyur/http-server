@@ -1,6 +1,6 @@
 package ru.pyur.tst.elec;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 
 
 public class Info {
@@ -14,7 +14,7 @@ public class Info {
     //public int ModuleIcon() { return ICON; }
 
 
-    public HttpModule module() {
+    public HtmlContent module() {
         return new Md_Elec(null);
     }
 

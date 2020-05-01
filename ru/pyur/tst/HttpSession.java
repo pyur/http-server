@@ -6,22 +6,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_0;
-
 
 public class HttpSession {
 
     private HttpSession session;
 
     private HttpRequest request_header;
+    private byte[] payload;
 
     private InputStream input_stream;
     private OutputStream output_stream;
 
     private String host;
     private String prefix;  // a - api, i - image, e - embed, etc
-    public String module;
-    public String action;
+    private String module;
+    private String action;
     private String last_argument;
 
     private final String doc_root = "files";
@@ -74,17 +73,22 @@ public class HttpSession {
         return request_header.getQuery();
     }
 
+    public String getModule() { return module; }
+
+    public String getAction() { return action; }
+
+    public byte[] getPayload() { return payload; }
+
 
 
 
 
     // --------------------------------------------------------------------------------
 
-    //public DispatchedData dispatch(byte[] payload) {
     public void dispatch() throws Exception {
 
-        // maybe dispatch path before receiving possibly huge payload
-        byte[] payload = ProtocolDispatcher.receivePayload(input_stream, request_header);
+        // maybe getHtml path before receiving possibly huge payload
+        payload = ProtocolDispatcher.receivePayload(input_stream, request_header);
 
 
         getHost();
@@ -119,6 +123,7 @@ public class HttpSession {
 
 
 
+    //maybe create class Host, VirtualHost
     private void dispatchDefaultHost() throws Exception {
 
         try {
@@ -130,33 +135,23 @@ public class HttpSession {
 
 
 
-        // ---- dispatch file ---- //
+        // ---- getHtml file ---- //
 
         if (!last_argument.isEmpty()) {
-            //if (request_header.lsPath[1].equals("favicon.ico")) {
-                //System.out.println("must return favicon");
-            byte[] bytes = null;
-
             try {
                 //System.out.println("user dir: " + System.getProperty("user.dir"));
                 File file = new File(doc_root + request_header.getPath());
                 if (file.exists()) {
                     FileInputStream fis = new FileInputStream(file);
-                    bytes = new byte[fis.available()];
+                    byte[] bytes = new byte[fis.available()];
                     fis.read(bytes);
+                    fis.close();
 
                     ArrayList<PStr> opts = new ArrayList<>();
                     opts.add(new PStr("Content-Type", "image/x-icon"));
                     //Last-Modified: Wed, 21 Jan 2015 12:50:06 GMT
                     //ETag: "47e-50d28feb5fca8"
                     response200(bytes, opts);
-
-//x                    bytes = new byte[131072];
-//x                    int read_length;
-//x                    while ((read_length = fis.read(bytes)) != -1) {
-//x                        output_stream.write(bytes, 0, read_length);
-//x                    }
-//x                    output_stream.flush();
                 }
                 else {
                     System.out.println("file not exists: " + file.getPath());
@@ -167,21 +162,18 @@ public class HttpSession {
                 response404("file i/o error.");
             }
 
-            //return new DispatchedData(bytes);
             return;
         }
 
 
-        // ---- dispatch prefix ---- //
-
-        //if (module.isEmpty())  module = "default";
+        // ---- getHtml prefix ---- //
 
         if (prefix.isEmpty()) {
             processHtml();
         }
 
         else if (prefix.equals("a")) {
-            processJson();
+            processApi();
         }
 
         else if (prefix.equals("i")) {
@@ -199,6 +191,7 @@ public class HttpSession {
         else {
             // unknown prefix
             // throw error 400
+            response404("unknown prefix");
         }
 
 
@@ -277,28 +270,47 @@ public class HttpSession {
 
 
 
-/*
-    private void composeResponse() {
-        // ---- compose response ---- //
-        HttpResponse response = new HttpResponse();
-        response.setConnectionClose();
-        response.setVersion(HTTP_VERSION_1_0);
 
-        if (feedback != null) {
-            response.setCode(feedback.code);
+    private ModuleInfo getModuleInfo() {
+        ModuleInfo module_info = null;
 
-            response.addOptions(feedback.options);
-
-            //todo "Server: string"
-
-            if (feedback.payload != null) {
-                response.appendPayload(feedback.payload);
-            }
+        if (module.isEmpty()) {
+            //todo: default page
+            module_info = new ru.pyur.tst.default_module.Info(session);
         }
 
-        return response.stringify();
+        else if (module.equals("elec")) {
+            //mi = new ru.pyur.tst.elec.Info();
+            //html_content = new ru.pyur.tst.elec.Md_Elec(session);  // rewrite
+        }
+
+        else if (module.equals("water")) {
+            //mi = new ru.pyur.tst.water.Info();
+            //html_content = new ru.pyur.tst.water.Md_Water(session);  // rewrite
+        }
+
+        else if (module.equals("db")) {
+            module_info = new ru.pyur.tst.dbedit.Info(session);
+        }
+
+        else if (module.equals("res")) {
+            module_info = new ru.pyur.tst.resources.Info(session);
+        }
+
+        else if (module.equals("ws")) {
+            module_info = new ru.pyur.tst.websocket.Info(session);
+        }
+
+        else if (module.equals("battleship")) {
+            module_info = new ru.pyur.tst.battleship.Info(session);
+        }
+
+        //else if (module.equals("ext")) {
+        //    module_info = new ru.pyur.tst.extsample.ExtMod();
+        //}
+
+        return module_info;
     }
-*/
 
 
 
@@ -306,78 +318,77 @@ public class HttpSession {
     // -------------------------------- Html module -------------------------------- //
 
     private void processHtml() {
-        HttpModule md = null;
+        ModuleInfo module_info = getModuleInfo();
 
-        if (module.isEmpty()) {
-            //todo: default page
+        if (module_info == null) {
+            response404("no such module \"" + module + "\".");
+            return;
         }
 
-        else if (module.equals("elec")) {
-            //mi = new ru.pyur.tst.elec.Info();
-            md = new ru.pyur.tst.elec.Md_Elec(session);
+
+        HtmlContent html_content = module_info.getHtml();
+
+        if (html_content == null) {
+            response404("module \"" + module + "\" lack html support");
+            return;
         }
 
-        else if (module.equals("water")) {
-            //mi = new ru.pyur.tst.water.Info();
-            md = new ru.pyur.tst.water.Md_Water(session);
-        }
 
-        else if (module.equals("db")) {
-            md = new ru.pyur.tst.dbedit.Info(session).dispatch();
-        }
+        byte[] content = html_content.getContent();
+        byte[] compressed_content = null;
 
-        else if (module.equals("res")) {
-            md = new ru.pyur.tst.resources.Info(session).dispatch();
-        }
-
-        else if (module.equals("ws")) {
-            md = new ru.pyur.tst.websocket.Info(session).dispatch();
-        }
-
-        else if (module.equals("battleship")) {
-            md = new ru.pyur.tst.battleship.Info(session).dispatch();
-        }
-
-        //else if (module.equals("ext")) {
-        //    new ru.pyur.tst.extsample.ExtMod();
-        //}
-
-
-        if (md != null) {
-            byte[] contents = md.getContents();
-            byte[] compressed_contents = null;
-
-            ArrayList<PStr> response_options = md.getOptions();
+        ArrayList<PStr> response_options = html_content.getOptions();
 /*
-            // compression
-            //if (header has "Accept-Encoding: gzip, deflate, br") {
+        // compression
+        //if (header has "Accept-Encoding: gzip, deflate, br") {
 
-            try {
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                GZIPOutputStream gos = new GZIPOutputStream(os);
-                gos.write(contents);
-                gos.close();
-                compressed_contents = os.toByteArray();
-            } catch (Exception e) { e.printStackTrace(); }
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            GZIPOutputStream gos = new GZIPOutputStream(os);
+            gos.write(contents);
+            gos.close();
+            compressed_contents = os.toByteArray();
+        } catch (Exception e) { e.printStackTrace(); }
 
-            if (compressed_contents != null) {
-                contents = compressed_contents;
-                response_options.add(new PStr("Content-Encoding", "gzip"));
-            }
-*/
-            //return new DispatchedData(contents, response_options, 200);
-            response200(contents, response_options);
+        if (compressed_contents != null) {
+            contents = compressed_contents;
+            response_options.add(new PStr("Content-Encoding", "gzip"));
         }
-
+*/
+        response200(content, response_options);
+        //response(content, code, response_options);
     }
 
 
 
 
-    // -------------------------------- Json module -------------------------------- //
+    // -------------------------------- Api module -------------------------------- //
 
-    private void processJson() {
+    private void processApi() {
+        ModuleInfo module_info = getModuleInfo();
 
+        if (module_info == null) {
+            response404("no such module \"" + module + "\".");
+            return;
+        }
+
+
+        ApiContent api_content = module_info.getApi();
+
+        if (api_content == null) {
+            response404("module \"" + module + "\" lack html support");
+            return;
+        }
+
+
+        byte[] content = api_content.getContent();  // put payload in passed arguments
+        byte[] compressed_content = null;
+
+        ArrayList<PStr> response_options = api_content.getOptions();
+
+
+        response200(content, response_options);
+        //response(content, code, response_options);
     }
 
 

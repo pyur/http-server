@@ -1,15 +1,13 @@
 package ru.pyur.tst;
 
 import java.util.ArrayList;
-import ru.pyur.tst.DummyProtCallback;
-import ru.pyur.tst.DummyModCallback;
 
 
 public abstract class ModuleInfo {
     public abstract String ModuleName();
     //public abstract int ModuleIcon();
 
-    protected HttpSession session;
+    protected HttpSession session;  // todo: passing whole session seems redundant, passing request header seems enough
     protected WebsocketSession websocket_session;
 
     protected String action;
@@ -36,13 +34,14 @@ public abstract class ModuleInfo {
 
     public void setHttpSession(HttpSession http_session) {
         this.session = http_session;
-        action = http_session.action;
+        action = http_session.getAction();
         lsQuery = http_session.getQuery();
     }
 
-//    public abstract Module module();
 
-    public HttpModule dispatch() { return null; }
+    public HtmlContent getHtml() { return null; }
+
+    public ApiContent getApi() { return null; }
 
 
 

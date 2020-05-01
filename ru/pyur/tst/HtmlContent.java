@@ -12,7 +12,7 @@ import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
 import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
-public abstract class HttpModule {
+public abstract class HtmlContent {
 
     protected HttpSession session;
 
@@ -100,9 +100,9 @@ public abstract class HttpModule {
 
 
 
-    protected String getModule() { return session.module; }
+    protected String getModule() { return session.getModule(); }
 
-    protected String getAction() { return session.action; }
+    protected String getAction() { return session.getAction(); }
 
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
@@ -118,7 +118,7 @@ public abstract class HttpModule {
 
 
 
-    public byte[] getContents() {
+    public byte[] getContent() {
         byte[] content = null;
 
         switch (module_type) {

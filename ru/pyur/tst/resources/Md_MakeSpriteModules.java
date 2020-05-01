@@ -1,6 +1,6 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 
 import javax.imageio.ImageIO;
@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 
-public class Md_MakeSpriteModules extends HttpModule {
+public class Md_MakeSpriteModules extends HtmlContent {
 
     public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 

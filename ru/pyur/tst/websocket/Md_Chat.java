@@ -1,14 +1,14 @@
 package ru.pyur.tst.websocket;
 
 import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.Div;
 
 import java.io.File;
 import java.io.FileInputStream;
 
 
-public class Md_Chat extends HttpModule {
+public class Md_Chat extends HtmlContent {
 
     //public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 

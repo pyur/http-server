@@ -1,7 +1,7 @@
 package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.*;
@@ -10,7 +10,7 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_ACTION_DB;
 import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
 
 
-public class Md_DbList extends HttpModule {
+public class Md_DbList extends HtmlContent {
 
     public Md_DbList(HttpSession session) {
         initHtml(session);

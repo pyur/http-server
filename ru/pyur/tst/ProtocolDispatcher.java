@@ -97,7 +97,7 @@ public class ProtocolDispatcher {
 
 
 
-    // ---------------------------- Parse/dispatch header v2 ---------------------------- //
+    // ---------------------------- Parse/getHtml header v2 ---------------------------- //
 
     public HttpHeader processHeader_v2(InputStream is) throws Exception {
         final int MAX_LINE = 2048;
@@ -305,7 +305,7 @@ public class ProtocolDispatcher {
         }
 
 
-        // ---- WS SERVER, WS CLIENT - dispatch incoming messages, quit on 'close' message ---- //
+        // ---- WS SERVER, WS CLIENT - getHtml incoming messages, quit on 'close' message ---- //
         else if (state == HTTP_STATE_WS_CLIENT || state == HTTP_STATE_WS_SERVER) {
             //WebsocketInputStream wis = new WebsocketInputStream(is);
             //WebsocketOutputStream wos = new WebsocketOutputStream(os);

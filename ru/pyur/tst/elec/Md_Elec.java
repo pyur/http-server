@@ -1,6 +1,6 @@
 package ru.pyur.tst.elec;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.tags.Div;
 import ru.pyur.tst.tags.Table;
@@ -10,7 +10,7 @@ import ru.pyur.tst.tags.Tr;
 import java.sql.*;
 
 
-public class Md_Elec extends HttpModule {
+public class Md_Elec extends HtmlContent {
 
 
     public Md_Elec(HttpSession session) {

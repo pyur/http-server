@@ -1,7 +1,7 @@
 package ru.pyur.tst.resources;
 
 import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +10,7 @@ import java.util.Base64;
 import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
-public class Md_GetSpriteModules extends HttpModule {
+public class Md_GetSpriteModules extends HtmlContent {
 
     public Md_GetSpriteModules(HttpSession session) {
         initJson(session);

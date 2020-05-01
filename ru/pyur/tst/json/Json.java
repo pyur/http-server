@@ -353,6 +353,7 @@ public class Json {
     // ------------------------------------------------------------------------ //
 
     public Json parse(String json_string) throws Exception {
+        if (json_string.length() == 0)  throw new Exception("can't parse empty string.");
         src = json_string;
         off = 0;
 

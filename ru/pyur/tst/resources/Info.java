@@ -1,6 +1,6 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.ModuleInfo;
 
@@ -26,8 +26,8 @@ public class Info extends ModuleInfo {
     public String ModuleName() { return NAME; }
 
 
-    public HttpModule dispatch() {
-        HttpModule md = null;
+    public HtmlContent getHtml() {
+        HtmlContent md = null;
 
         if (action.isEmpty()) {
             md = new Md_ResList(session);

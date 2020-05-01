@@ -1,6 +1,6 @@
 package ru.pyur.tst.dbedit;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.ModuleInfo;
 import ru.pyur.tst.HttpSession;
 
@@ -29,8 +29,8 @@ public class Info extends ModuleInfo {
     //public int ModuleIcon() { return ICON; }
 
 
-    public HttpModule dispatch() {
-        HttpModule md = null;
+    public HtmlContent getHtml() {
+        HtmlContent md = null;
 
         if (action.isEmpty()) {
             md = new Md_DbList(session);

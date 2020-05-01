@@ -1,14 +1,13 @@
 package ru.pyur.tst.battleship;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.tags.Div;
 
 import java.io.File;
 import java.io.FileInputStream;
 
 
-public class Md_Battleship extends HttpModule {
+public class Md_Battleship extends HtmlContent {
 
     //public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 

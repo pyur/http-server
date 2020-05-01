@@ -30,8 +30,8 @@ public class Info extends ModuleInfo {
     public String ModuleName() { return NAME; }
 
 
-    public HttpModule dispatch() {
-        HttpModule md = null;
+    public HtmlContent getHtml() {
+        HtmlContent md = null;
 
         if (action.isEmpty()) {
             md = new Md_Chat(session);

@@ -1,13 +1,13 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.tags.*;
 
 import java.sql.*;
 
 
-public class Md_ResList extends HttpModule {
+public class Md_ResList extends HtmlContent {
 
     public Md_ResList(HttpSession session) {
         initHtml(session);

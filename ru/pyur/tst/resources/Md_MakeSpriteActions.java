@@ -1,6 +1,6 @@
 package ru.pyur.tst.resources;
 
-import ru.pyur.tst.HttpModule;
+import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.Util;
 
@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 
-public class Md_MakeSpriteActions extends HttpModule {
+public class Md_MakeSpriteActions extends HtmlContent {
 
     public static final String CONFIG_ACTION_ICON_UPD = "action_icon_upd";
 

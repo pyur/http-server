@@ -83,7 +83,7 @@ public class WebsocketSession {
             request_header = http_request;
             request_payload = bytes;
 
-            return dispatch();
+            return getHtml();
         }
     };
 */
@@ -98,7 +98,7 @@ public class WebsocketSession {
 
     public void dispatch(InputStream is, OutputStream os) throws Exception {
 
-        // ---------------- dispatch Host ---------------- //
+        // ---------------- getHtml Host ---------------- //
 
         //ArrayList<PStr> options = request_header.getOptions();
         //host = null;
@@ -117,7 +117,7 @@ public class WebsocketSession {
 
 
 
-        // ---------------- dispatch URI ---------------- //
+        // ---------------- getHtml URI ---------------- //
 
         boolean isPrefixed = false;
 
@@ -172,7 +172,7 @@ public class WebsocketSession {
         }
 
 
-        // ---- dispatch 'module' ---- //
+        // ---- getHtml 'module' ---- //
 
         //if (module.isEmpty())  module = "default";
 
@@ -186,7 +186,7 @@ public class WebsocketSession {
             info = new ru.pyur.tst.websocket.Info(this);
             //ws_mod_cb = info.setGetWebsocketCallback();
             WebsocketModule wsm = info.getWs();
-            // todo: info.getWs(is, os).dispatch();
+            // todo: info.getWs(is, os).getHtml();
             //info.setWebsocketSession(this);
             wsm.setStreams(is, os);
             wsm.dispatch();
@@ -199,18 +199,18 @@ public class WebsocketSession {
             info = new ru.pyur.tst.battleship.Info(this);
             //ws_mod_cb = info.setGetWebsocketCallback();
             WebsocketModule wsm = info.getWs();
-            // todo: info.getWs(is, os).dispatch();
+            // todo: info.getWs(is, os).getHtml();
             //info.setWebsocketSession(this);
             wsm.setStreams(is, os);
             wsm.dispatch();
         }
 
 //        else if (module.equals("db")) {
-//            md = new ru.pyur.tst.dbedit.Info(session).dispatch();
+//            md = new ru.pyur.tst.dbedit.Info(session).getHtml();
 //        }
 //
 //        else if (module.equals("res")) {
-//            md = new ru.pyur.tst.resources.Info(session).dispatch();
+//            md = new ru.pyur.tst.resources.Info(session).getHtml();
 //        }
 
         //else if (module.equals("ext")) {
@@ -219,7 +219,7 @@ public class WebsocketSession {
 
 
 //        if (md != null) {
-//            byte[] contents = md.getContents();
+//            byte[] contents = md.getContent();
 //            byte[] compressed_contents = null;
 //
 //            ArrayList<PStr> response_options = md.getOptions();
