@@ -28,7 +28,7 @@ public class HttpRequest extends HttpHeader {
     //Str connection;
     //Str content_type;
 
-    private ArrayList<PStr> cookies;
+    private ArrayList<Cookie> cookies;
 
     private int content_length;
     private boolean dont_use_content_length;  // disabler
@@ -67,7 +67,7 @@ public class HttpRequest extends HttpHeader {
 
     public HttpRequest() {
         //options = new ArrayList<>();
-        cookies = new ArrayList<>();
+        //cookies = new ArrayList<>();
         payload = new ByteArrayOutputStream();
     }
 
@@ -236,6 +236,36 @@ public class HttpRequest extends HttpHeader {
 
 
     public String getPath() { return szPath; }
+
+
+
+
+    public Cookie getCookie(String name) throws Exception {
+
+        // ---- parse cookies ---- //
+        if (cookies == null) {
+            cookies = new ArrayList<>();
+            for (PStr opt : options_low_key) {
+                if (opt.key.equals("cookie")) {
+                    String[] ce = Util.explode(';', opt.value);
+                    for (String cook : ce) {
+                        //String trimmed = cook.trim();
+                        PStr cookie_pair = Util.split('=', cook);
+                        String name1 = cookie_pair.key.trim();
+                        String value = cookie_pair.key.trim();
+                        cookies.add(new Cookie(name1, value));
+                    }
+                }
+            }
+        }
+
+        // ---- get ---- //
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(name)) return cookie;
+        }
+
+        throw new Exception("cookie not found.");
+    }
 
 
 

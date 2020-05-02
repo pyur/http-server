@@ -82,60 +82,38 @@ public abstract class ContentBase {
     // -------------------------------- Database -------------------------------- //
     // -------------------------------------------------------------------------- //
 
-    protected void closeDb() {
-        if (m_connection != null) {
-            try {
-                m_connection.close();
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-    }
+//    protected void closeDb() {
+//        if (m_connection != null) {
+//            try {
+//                m_connection.close();
+//            } catch (Exception e) { e.printStackTrace(); }
+//        }
+//    }
 
 
 
-    protected Statement getDb() {
-        if (m_connection == null) {
-            try {
-                m_connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                //todo: use 'DataSource' class
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        Statement stmt = null;
-
-        try {
-            stmt = m_connection.createStatement();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return stmt;
-    }
-
-
-
-
-    // -------------------------------- Config -------------------------------- //
-
-    protected void getConfigDb() {
-        if (m_config == null) {
-            try {
-                m_config = DriverManager.getConnection(CONFIG_URL);
-                //todo: use 'DataSource' class
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    protected Statement getDb() {
+//        if (m_connection == null) {
+//            try {
+//                m_connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+//                //todo: use 'DataSource' class
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        Statement stmt = null;
+//
+//        try {
+//            stmt = m_connection.createStatement();
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        return stmt;
+//    }
 
 
 
-    protected void closeConfig() {
-        if (m_config != null) {
-            try {
-                m_config.close();
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-    }
+
 
 
 
@@ -205,7 +183,7 @@ public abstract class ContentBase {
         //String value = configGet(key);
         //return Integer.parseInt(value);
 
-        getConfigDb();
+//x        getConfigDb();
 
         int value = 0;
 
@@ -228,7 +206,7 @@ public abstract class ContentBase {
 
 
     protected String configGet(String key) {
-        getConfigDb();
+ //x       getConfigDb();
 
         String value = "";
 

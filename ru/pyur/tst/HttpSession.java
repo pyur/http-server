@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 
@@ -17,6 +20,8 @@ public class HttpSession {
     private InputStream input_stream;
     private OutputStream output_stream;
 
+    private Auth auth;
+
     private String host;
     private String prefix;  // a - api, i - image, e - embed, etc
     private String module;
@@ -24,6 +29,25 @@ public class HttpSession {
     private String last_argument;
 
     private final String doc_root = "files";
+
+
+
+    // ---------------- Database ---------------- //
+
+    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "1";
+
+    private Connection db_connection;
+
+
+
+    // -------- Config -------- //
+
+    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
+
+    private Connection db_config;
+
 
 
 
@@ -46,23 +70,6 @@ public class HttpSession {
 
     // --------------------------------------------------------------------------------
 
-//    public Transport.CallbackTransportEvents getTransportCallback() { return cb_transport; }
-//
-//    private Transport.CallbackTransportEvents cb_transport = new Transport.CallbackTransportEvents() {
-//        @Override
-//        public byte[] onConnected() {
-//            System.out.println("onConnected()");
-//            return null;
-//        }
-//
-//        @Override
-//        public void onFailed() {
-//            System.out.println("onFailed()");
-//        }
-//    };
-
-
-
 //    public void setRequest(HttpRequest http_request) {
 //        request_header = http_request;
 //    }
@@ -80,18 +87,34 @@ public class HttpSession {
     public byte[] getPayload() { return payload; }
 
 
+    public void setModule(String module) { this.module = module; }
+
+    public void setAction(String action) { this.action = action; }
 
 
 
-    // --------------------------------------------------------------------------------
-
-    public void dispatch() throws Exception {
-
-        // maybe getHtml path before receiving possibly huge payload
-        payload = ProtocolDispatcher.receivePayload(input_stream, request_header);
 
 
-        getHost();
+    // ---- entry point ------------------------------------------------------------
+
+    public void dispatch() {
+
+        try {
+            // maybe getHtml path before receiving possibly huge payload
+            payload = ProtocolDispatcher.receivePayload(input_stream, request_header);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        getConfigDb();
+        connectDb();
+
+        host = "";
+
+        //ArrayList<PStr> options = request_header.getOptions();
+        //if (request_header.hasOption("Host")) {
+        try {
+            host = request_header.getOption("Host");
+        } catch (Exception e) { }
+
 
         if (host.isEmpty()) {
             dispatchDefaultHost();
@@ -105,27 +128,17 @@ public class HttpSession {
             dispatchDefaultHost();
         }
 
-    }
-
-
-
-
-    private void getHost() {  // throws Exception
-        host = "";
-
-        //ArrayList<PStr> options = request_header.getOptions();
-        //if (request_header.hasOption("Host")) {
-        try {
-            host = request_header.getOption("Host");
-        } catch (Exception e) { }
+        closeDb();
+        closeConfig();
     }
 
 
 
 
     //maybe create class Host, VirtualHost
-    private void dispatchDefaultHost() throws Exception {
+    private void dispatchDefaultHost() {
 
+        // -------- determine module, action -------- //
         try {
             dispatchPath();
         } catch (Exception e) {
@@ -134,8 +147,26 @@ public class HttpSession {
         }
 
 
+        // -------- user authorization -------- //
 
-        // ---- getHtml file ---- //
+        auth = new Auth();
+        try {
+            auth.setDb(db_connection);
+            auth.setDbConfig(db_config);
+            auth.authByCookie(request_header);
+        } catch (Exception e) {
+            //response401();
+            //return;
+            // -- force redirect to auth form -- //
+            setModule("auth");
+            setAction("");
+        }
+
+        //modules = auth.getModules();
+
+
+
+        // -------- getHtml file -------- //
 
         if (!last_argument.isEmpty()) {
             try {
@@ -451,7 +482,7 @@ public class HttpSession {
 
 
 
-    private int send(byte[] bytes) {
+    private void send(byte[] bytes) {
         //System.out.println("---- HttpSession. Send -----------------------------------------");
         //System.out.println(new String(bytes));
         //System.out.println("----------------------------------------------------------------");
@@ -459,9 +490,67 @@ public class HttpSession {
         try {
             output_stream.write(bytes);
             output_stream.flush();
-        } catch (Exception e) { e.printStackTrace(); return -1; }
-
-        return 0;
+        } catch (Exception e) { e.printStackTrace(); }
     }
+
+
+
+
+    // -------------------------------- Database -------------------------------- //
+
+    private void connectDb() {
+        if (db_connection == null) {
+            try {
+                db_connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                //todo: use modern 'DataSource' class
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Statement stmt = null;
+        //
+        //try {
+        //    stmt = db_connection.createStatement();
+        //} catch (Exception e) { e.printStackTrace(); }
+        //
+        //return stmt;
+    }
+
+
+
+    private void closeDb() {
+        if (db_connection != null) {
+            try {
+                db_connection.close();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+
+
+
+    // -------------------------------- Config -------------------------------- //
+
+    private void getConfigDb() {
+        if (db_config == null) {
+            try {
+                db_config = DriverManager.getConnection(CONFIG_URL);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    private void closeConfig() {
+        if (db_config != null) {
+            try {
+                db_config.close();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
 
 }

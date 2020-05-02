@@ -92,7 +92,7 @@ public class Util {
         StringBuilder sb = new StringBuilder();
 
         boolean first = true;
-        for (String string: strings) {
+        for (String string : strings) {
             if (!first) sb.append(separator);
             sb.append(string);
             if (first) first = false;
