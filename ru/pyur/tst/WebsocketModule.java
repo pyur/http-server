@@ -284,7 +284,7 @@ public abstract class WebsocketModule {
     // -------------------------------- Config -------------------------------- //
 
 /*
-    protected void getConfigDb() {
+    protected void connectConfigDb() {
         if (m_config == null) {
             try {
                 m_config = DriverManager.getConnection(CONFIG_URL);
@@ -373,7 +373,7 @@ public abstract class WebsocketModule {
         //String value = configGet(key);
         //return Integer.parseInt(value);
 
-        getConfigDb();
+        connectConfigDb();
 
         int value = 0;
 
@@ -396,7 +396,7 @@ public abstract class WebsocketModule {
 
 
     protected String configGet(String key) {
-        getConfigDb();
+        connectConfigDb();
 
         String value = "";
 

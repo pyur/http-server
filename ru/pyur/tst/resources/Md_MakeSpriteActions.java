@@ -106,7 +106,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
 
         // ---------------- insert into db ---------------- //
 
-//x        getConfigDb();
+//x        connectConfigDb();
         Statement stmt = getConfigStatement();
 
         String query = "DELETE FROM `action_icon`";

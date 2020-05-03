@@ -3,6 +3,7 @@ package ru.pyur.tst;
 import java.sql.*;
 import java.util.ArrayList;
 
+
 public abstract class ContentBase {
 
     protected HttpSession session;
@@ -17,6 +18,8 @@ public abstract class ContentBase {
 
     // ---------------- Database ---------------- //
 
+    private DbManager db_manager;
+/*
     private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1";
@@ -30,13 +33,14 @@ public abstract class ContentBase {
     private static final String CONFIG_URL = "jdbc:sqlite:config.db";
 
     protected Connection m_config;
-
+*/
 
 
     //constructor
 
     protected void initCommon(HttpSession session) {
         this.session = session;
+        this.db_manager = session.getDbManager();
         lsQuery = session.getQuery();
     }
 
@@ -121,7 +125,7 @@ public abstract class ContentBase {
         Statement stmt = null;
 
         try {
-            stmt = m_config.createStatement();
+            stmt = db_manager.getConfigDb().createStatement();
         } catch (Exception e) { e.printStackTrace(); }
 
         return stmt;
@@ -133,7 +137,7 @@ public abstract class ContentBase {
         PreparedStatement ps = null;
 
         try {
-            ps = m_config.prepareStatement(query);
+            ps = db_manager.getConfigDb().prepareStatement(query);
         } catch (Exception e) { e.printStackTrace(); }
 
         return ps;
@@ -141,14 +145,14 @@ public abstract class ContentBase {
 
 
 
-    protected ResultSet runQuery(Statement stmt, String query) {
-        ResultSet rs = null;
-        try {
-            rs = stmt.executeQuery(query);
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return rs;
-    }
+//    protected ResultSet runQuery(Statement stmt, String query) {
+//        ResultSet rs = null;
+//        try {
+//            rs = stmt.executeQuery(query);
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        return rs;
+//    }
 
 
 
@@ -183,7 +187,7 @@ public abstract class ContentBase {
         //String value = configGet(key);
         //return Integer.parseInt(value);
 
-//x        getConfigDb();
+//x        connectConfigDb();
 
         int value = 0;
 
@@ -206,7 +210,7 @@ public abstract class ContentBase {
 
 
     protected String configGet(String key) {
- //x       getConfigDb();
+ //x       connectConfigDb();
 
         String value = "";
 

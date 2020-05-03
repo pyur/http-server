@@ -30,7 +30,7 @@ public class Md_ResList extends HtmlContent {
 //            String db_name = getQuery(DBEDIT_PARAM_DB);
 //            if (db_name == null)  throw new Exception("db absent");
 
-//x            getConfigDb();
+//x            connectConfigDb();
             Statement stmt = getConfigStatement();
 
 //            String query_1 = "USE `" + db_name + "`";

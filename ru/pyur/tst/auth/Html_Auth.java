@@ -3,6 +3,8 @@ package ru.pyur.tst.auth;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.tags.Div;
+import ru.pyur.tst.tags.Form;
+import ru.pyur.tst.tags.InputText;
 import ru.pyur.tst.tags.PlainText;
 
 
@@ -21,31 +23,49 @@ public class Html_Auth extends HtmlContent {
         heading("Авторизация");
 
 
-        text("<form id=\"save\" action=\"/a/\">");
+        Div container = new Div();
+        container.width(200);
+        container.addStyle("margin", "50px auto 0");
+        tag(container);
+
+//x        text("<form id=\"save\" action=\"/a/\">");
+        Form form = new Form();
+        form.setUrl("/a/");
+        container.add(form);
 
 
         Div div_login = new Div();
         div_login.addClass("edit_desc");
         div_login.add(new PlainText("Имя пользователя"));
-        tag(div_login);
+        form.add(div_login);
 
-        text("<input class=\"text\" name=\"login\" type=\"text\" value=\"\" style=\"width: 300px;\" autofocus>");
-        //InputText it_login = new InputText();
+//x        text("<input class=\"text\" name=\"login\" type=\"text\" value=\"\" style=\"width: 300px;\" autofocus>");
+        InputText it_login = new InputText();
+        it_login.addClass("text");
+        it_login.setName("login");
+        //it_login.setValue("");
+        it_login.width(200);
+        it_login.setAutofocus();
+        form.add(it_login);
 
 
         Div div_password = new Div();
         div_password.addClass("edit_desc");
         div_password.add(new PlainText("Пароль"));
-        tag(div_password);
+        form.add(div_password);
 
-        text("<input class=\"text\" name=\"password\" type=\"text\" value=\"\" style=\"width: 300px;\">");
-        //InputText it_password = new InputText();
+//x        text("<input class=\"text\" name=\"password\" type=\"text\" value=\"\" style=\"width: 300px;\">");
+        InputText it_password = new InputText();
+        it_password.addClass("text");
+        it_password.setName("login");
+        it_password.width(200);
+        form.add(it_password);
 
 
         // TODO: submit button
 
 
-        text("</form>");
+//x        text("</form>");
     }
 
 

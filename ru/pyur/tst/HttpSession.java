@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 
@@ -23,6 +20,8 @@ public class HttpSession {
     private InputStream input_stream;
     private OutputStream output_stream;
 
+    private DbManager db_manager;
+
     private Auth auth;
 
     private String host;
@@ -37,19 +36,6 @@ public class HttpSession {
 
     // ---------------- Database ---------------- //
 
-    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "1";
-
-    private Connection db_connection;
-
-
-
-    // -------- Config -------- //
-
-    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
-
-    private Connection db_config;
 
 
 
@@ -75,11 +61,11 @@ public class HttpSession {
 
 
 
-    public HttpSession() {
-        session = this;
-        //module = "";
-        //action = "";
-    }
+//    public HttpSession() {
+//        session = this;
+//        //module = "";
+//        //action = "";
+//    }
 
 
     public HttpSession(HttpRequest http_request, InputStream is, OutputStream os) {
@@ -87,6 +73,8 @@ public class HttpSession {
         request_header = http_request;
         input_stream = is;
         output_stream = os;
+
+        response_header.setVersion(HttpHeader.HTTP_VERSION_1_1);
     }
 
 
@@ -99,6 +87,7 @@ public class HttpSession {
 //    }
 
 
+    public DbManager getDbManager() { return db_manager; }
 
     public ArrayList<PStr> getQuery() {
         return request_header.getQuery();
@@ -119,7 +108,7 @@ public class HttpSession {
 
 
 
-    // ---- entry point ------------------------------------------------------------
+    // ---- Entry point ------------------------------------------------------------
 
     public void dispatch() {
 
@@ -128,8 +117,9 @@ public class HttpSession {
             payload = ProtocolDispatcher.receivePayload(input_stream, request_header);
         } catch (Exception e) { e.printStackTrace(); }
 
-        getConfigDb();
-        connectDb();
+        db_manager = new DbManager();
+        db_manager.connectDb();
+        db_manager.connectConfigDb();
 
         host = "";
 
@@ -152,8 +142,8 @@ public class HttpSession {
             dispatchDefaultHost();
         }
 
-        closeDb();
-        closeConfig();
+        db_manager.closeDb();
+        db_manager.closeConfig();
     }
 
 
@@ -173,10 +163,8 @@ public class HttpSession {
 
         // -------- user authorization -------- //
 
-        auth = new Auth(co_session);
+        auth = new Auth(db_manager, co_session);
         try {
-            auth.setDb(db_connection);
-            auth.setDbConfig(db_config);
             auth.authByCookie(request_header);
         } catch (Exception e) {
             //response401();
@@ -484,7 +472,7 @@ public class HttpSession {
 
 
 
-    // ---- responses ------------------------------------------------------------
+    // ---- Responses ------------------------------------------------------------
 
     private void response200(byte[] contents, ArrayList<PStr> response_options) {
 //x        HttpSessionResponse response = new HttpSessionResponse();
@@ -526,64 +514,6 @@ public class HttpSession {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-
-
-
-    // -------------------------------- Database -------------------------------- //
-
-    private void connectDb() {
-        if (db_connection == null) {
-            try {
-                db_connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                //todo: use modern 'DataSource' class
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        //Statement stmt = null;
-        //
-        //try {
-        //    stmt = db_connection.createStatement();
-        //} catch (Exception e) { e.printStackTrace(); }
-        //
-        //return stmt;
-    }
-
-
-
-    private void closeDb() {
-        if (db_connection != null) {
-            try {
-                db_connection.close();
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-    }
-
-
-
-
-    // -------------------------------- Config -------------------------------- //
-
-    private void getConfigDb() {
-        if (db_config == null) {
-            try {
-                db_config = DriverManager.getConnection(CONFIG_URL);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
-    private void closeConfig() {
-        if (db_config != null) {
-            try {
-                db_config.close();
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-    }
 
 
 }

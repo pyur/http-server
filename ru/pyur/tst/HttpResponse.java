@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class HttpResponse extends HttpHeader {
 
     private String szVersion;
-    private int version;  // todo
+    private int version;
 
     public int code;
     public String szDesc;

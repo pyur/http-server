@@ -3,7 +3,6 @@ package ru.pyur.tst;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -54,15 +53,15 @@ public class Auth {
 
     HttpRequest request_header;
 
-    private Connection db_connection;
-    private Connection db_config;
+    private DbManager db_manager;
 
 
 
     public Auth() {}
 
 
-    public Auth(HttpSession.ControlSession co_session) {
+    public Auth(DbManager dbm, HttpSession.ControlSession co_session) {
+        db_manager = dbm;
         this.co_session = co_session;
     }
 
@@ -70,16 +69,6 @@ public class Auth {
 
 
     // ---- setters, getters ---- //
-
-    public void setDb(Connection connection) {
-        db_connection = connection;
-    }
-
-
-    public void setDbConfig(Connection connection) {
-        db_config = connection;
-    }
-
 
     public int getSessionId() { return session_id; }
 
@@ -208,7 +197,7 @@ public class Auth {
         int claim_iat = Integer.parseInt(claim[2]);
 
 
-        DbFetch db_sess = new DbFetch(db_connection);
+        DbFetch db_sess = new DbFetch(db_manager.getDb());
         db_sess.table("sesst");  // todo: `sessta` - archived
         db_sess.col(new String[]{"id", "user", "tp", "tm"});
         db_sess.where("`id` = ?");  // `stat` = 0 . todo: make second table for archived sessions
@@ -288,7 +277,7 @@ public class Auth {
     public int newSession(int user_id) throws Exception {
         int current_time = (int)(System.currentTimeMillis() / 1000);
 
-        DbInsert db_sess = new DbInsert(db_connection);
+        DbInsert db_sess = new DbInsert(db_manager.getDb());
         db_sess.table("sesst");
 
         //skip "stat"
@@ -309,7 +298,7 @@ public class Auth {
     private void updateSession(int session_id, int prev_time) throws Exception {
         int current_time = (int)(System.currentTimeMillis() / 1000);
 
-        DbUpdate db_sess = new DbUpdate(db_connection);
+        DbUpdate db_sess = new DbUpdate(db_manager.getDb());
         db_sess.table("sesst");
         db_sess.where("`id` = ?");
         db_sess.wa(session_id);

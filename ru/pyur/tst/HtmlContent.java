@@ -277,7 +277,7 @@ public abstract class HtmlContent extends ContentBase {
         public ArrayList<ModuleBarItem> modules = new ArrayList<>();
 
         public ModuleBar() {
-//x            getConfigDb();
+//x            connectConfigDb();
             Statement stmt = getConfigStatement();
 
             String query = "SELECT `id`, `name`, `perm`, `desc`, `descb`, `pos`, `noauth`, `auth` FROM `module` ORDER BY `pos`, `desc`";
