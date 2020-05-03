@@ -32,8 +32,8 @@ public abstract class ApiContent extends ContentBase {
 
         byte[] content = makeJson();  // todo: move function here, inline
 
-        closeDb();
-        closeConfig();
+//x        closeDb();
+//x        closeConfig();
 
         return content;
     }
@@ -42,7 +42,7 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    // -------------------------------- Html -------------------------------- //
+    // -------------------------------- Api -------------------------------- //
 
     protected void init(HttpSession session) {
         initCommon(session);
@@ -53,35 +53,11 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    // ---- append to head: string, int, tags ---- //
 
-//    protected void h(String text) {
-//        head.add(new PlainText(text));
-//    }
-//
-//    protected void h(int number) {
-//        head.add(new PlainText("" + number));
-//    }
-//
-//    protected void h(Tag tag) {
-//        head.add(tag);
-//    }
-
-
-
-    // ---- append to body: string, int, tags ---- //
-
-//    protected void b(String text) {
-//        body.add(new PlainText(text));
-//    }
-//
-//    protected void b(int number) {
-//        body.add(new PlainText("" + number));
-//    }
-//
-//    protected void b(Tag tag) {
-//        body.add(tag);
-//    }
+    // ---- append to json answer ---- //
+    protected void put(String key, String value) throws Exception {
+        answer.add(key, value);
+    }
 
 
 
@@ -110,9 +86,6 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    protected void add(String key, String value) throws Exception {
-        answer.add(key, value);
-    }
 
 
 }

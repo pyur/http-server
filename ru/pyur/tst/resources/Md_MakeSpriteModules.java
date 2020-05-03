@@ -38,7 +38,7 @@ public class Md_MakeSpriteModules extends HtmlContent {
 
         // ---- get list of installed modules ---- //
 
-        getConfigDb();
+//x        getConfigDb();
         Statement stmt = getConfigStatement();
 
         String query = "SELECT `id`, `name` FROM `module`";

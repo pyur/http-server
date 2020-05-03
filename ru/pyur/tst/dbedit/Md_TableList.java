@@ -39,7 +39,7 @@ public class Md_TableList extends HtmlContent {
             String db_name = getQuery(DBEDIT_PARAM_DB);
             //if (db_name == null)  throw new Exception("db absent");
 
-            Statement stmt = getDb();
+            Statement stmt = null;  // TODO getDb();
 
             String query_1 = "USE `" + db_name + "`";
             //query('SET CHARACTER SET utf8');

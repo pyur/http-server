@@ -31,7 +31,7 @@ public class Md_DbList extends HtmlContent {
 
 
         try {
-            Statement stmt = getDb();
+            Statement stmt = null;  // TODO getDb();
 
             String query = "SHOW DATABASES";
 

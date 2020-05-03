@@ -14,9 +14,9 @@ public class Api_Default extends ApiContent {
     @Override
     public void makeContent() throws Exception {
 
-        add("heading", "Reference Http Java Server");
+        put("heading", "Reference Http Java Server");
 
-        add("time", "" + (System.currentTimeMillis() / 1000) );
+        put("time", "" + (System.currentTimeMillis() / 1000) );
 
     }
 

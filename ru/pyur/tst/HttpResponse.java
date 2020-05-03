@@ -353,4 +353,33 @@ public class HttpResponse extends HttpHeader {
     }
 
 
+
+
+    // -------- Cookie ----------------------------------------------------------------
+
+    // todo: move to inflater (inflater will take care of duplicates)
+    public void addCookie(String name, String value, int expires, String path) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(name);
+        sb.append("=");
+        sb.append(value);
+
+        sb.append(";");
+
+        sb.append("expires");
+        sb.append("=");
+        sb.append("todo");
+
+        sb.append(";");
+
+        sb.append("path");
+        sb.append("=");
+        sb.append(path);
+
+
+        addOption("Set-Cookie", sb.toString());
+    }
+
+
 }

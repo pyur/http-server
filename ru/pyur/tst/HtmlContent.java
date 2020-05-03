@@ -46,8 +46,8 @@ public abstract class HtmlContent extends ContentBase {
 
         byte[] content = makeHtml();
 
-        closeDb();
-        closeConfig();
+//x        closeDb();
+//x        closeConfig();
 
         return content;
     }
@@ -277,7 +277,7 @@ public abstract class HtmlContent extends ContentBase {
         public ArrayList<ModuleBarItem> modules = new ArrayList<>();
 
         public ModuleBar() {
-            getConfigDb();
+//x            getConfigDb();
             Statement stmt = getConfigStatement();
 
             String query = "SELECT `id`, `name`, `perm`, `desc`, `descb`, `pos`, `noauth`, `auth` FROM `module` ORDER BY `pos`, `desc`";

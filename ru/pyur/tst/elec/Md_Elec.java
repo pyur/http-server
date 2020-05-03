@@ -34,7 +34,7 @@ public class Md_Elec extends HtmlContent {
 
 
         try {
-            Statement stmt = getDb();
+            Statement stmt = null;  // TODO getDb();
 
             String sql = "SELECT `id`, `name`, `cat`, `login`, `dtx`, `idx` FROM `user`";
 

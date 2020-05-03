@@ -2,7 +2,6 @@ package ru.pyur.tst.resources;
 
 import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.HtmlContent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +23,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         String ts = configGet(CONFIG_MODULE_ICON_UPD);
 
-        add("ts", ts);
+        put("ts", ts);
 
 
         // ---------------- 1x size ---------------- //
@@ -43,7 +42,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         url_data.append(encoded);
 
-        add("data", url_data.toString());
+        put("data", url_data.toString());
 
 
         // ---------------- 2x size ---------------- //
@@ -62,7 +61,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         url_data.append(encoded);
 
-        add("data2", url_data.toString());
+        put("data2", url_data.toString());
     }
 
 

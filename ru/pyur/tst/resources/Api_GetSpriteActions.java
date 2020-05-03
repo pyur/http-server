@@ -1,7 +1,6 @@
 package ru.pyur.tst.resources;
 
 import ru.pyur.tst.ApiContent;
-import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
 
 import java.io.File;
@@ -24,7 +23,7 @@ public class Api_GetSpriteActions extends ApiContent {
 
         String ts = configGet(CONFIG_ACTION_ICON_UPD);
 
-        add("ts", ts);
+        put("ts", ts);
 
         File sprite_file = new File("sprite_actions.png");
 
@@ -47,7 +46,7 @@ public class Api_GetSpriteActions extends ApiContent {
 
         url_data.append(encoded);
 
-        add("data", url_data.toString());
+        put("data", url_data.toString());
     }
 
 

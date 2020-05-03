@@ -17,6 +17,9 @@ public class HttpSession {
     private HttpRequest request_header;
     private byte[] payload;
 
+    private HttpResponse response_header = new HttpResponse();
+    //private byte[] response_payload;
+
     private InputStream input_stream;
     private OutputStream output_stream;
 
@@ -47,6 +50,27 @@ public class HttpSession {
     private static final String CONFIG_URL = "jdbc:sqlite:config.db";
 
     private Connection db_config;
+
+
+
+
+    public interface ControlSession {
+        void setOption(String name, String value);
+        void setCookie(String name, String value, int expires, String path);
+    }
+
+    private ControlSession co_session = new ControlSession() {
+        @Override
+        public void setOption(String name, String value) {
+            response_header.addOption(name, value);
+        }
+
+        @Override
+        public void setCookie(String name, String value, int expires, String path) {
+            response_header.addCookie(name, value, expires, path);
+        }
+    };
+
 
 
 
@@ -149,7 +173,7 @@ public class HttpSession {
 
         // -------- user authorization -------- //
 
-        auth = new Auth();
+        auth = new Auth(co_session);
         try {
             auth.setDb(db_connection);
             auth.setDbConfig(db_config);
@@ -158,8 +182,8 @@ public class HttpSession {
             //response401();
             //return;
             // -- force redirect to auth form -- //
-            setModule("auth");
-            setAction("");
+            //setModule("auth");
+            //setAction("");
         }
 
         //modules = auth.getModules();
@@ -310,6 +334,10 @@ public class HttpSession {
             module_info = new ru.pyur.tst.default_module.Info(session);
         }
 
+        else if (module.equals("auth")) {
+            module_info = new ru.pyur.tst.auth.Info(session);
+        }
+
         else if (module.equals("elec")) {
             //mi = new ru.pyur.tst.elec.Info();
             //html_content = new ru.pyur.tst.elec.Md_Elec(session);  // rewrite
@@ -456,27 +484,32 @@ public class HttpSession {
 
 
 
-    private void response200(byte[] contents, ArrayList<PStr> response_options) {
-        HttpSessionResponse response = new HttpSessionResponse();
-        response.appendPayload(contents);
-        response.addOptions(response_options);
+    // ---- responses ------------------------------------------------------------
 
-        send(response.stringify());
+    private void response200(byte[] contents, ArrayList<PStr> response_options) {
+//x        HttpSessionResponse response = new HttpSessionResponse();
+        response_header.setCode(200);
+        response_header.appendPayload(contents);
+        response_header.addOptions(response_options);
+
+        send(response_header.stringify());
     }
 
 
 
     private void response400() {
-        HttpSessionResponse response = new HttpSessionResponse(400);
-        send(response.stringify());
+//x        HttpSessionResponse response = new HttpSessionResponse(400);
+        response_header.setCode(400);
+        send(response_header.stringify());
     }
 
 
 
     private void response404(String message) {
-        HttpSessionResponse response = new HttpSessionResponse(404);
-        response.appendPayload(message);
-        send(response.stringify());
+//x        HttpSessionResponse response = new HttpSessionResponse(404);
+        response_header.setCode(404);
+        response_header.appendPayload(message);
+        send(response_header.stringify());
     }
 
 

@@ -47,6 +47,8 @@ public class Auth {
 
     private final int AUTH_TOKEN_LIFE_TIME = 60;  // seconds
 
+    HttpSession.ControlSession co_session;
+
 
     // ---------------- //
 
@@ -57,9 +59,11 @@ public class Auth {
 
 
 
+    public Auth() {}
 
-    public Auth() {
 
+    public Auth(HttpSession.ControlSession co_session) {
+        this.co_session = co_session;
     }
 
 
@@ -198,16 +202,6 @@ public class Auth {
 
 
 
-    private void resetCookie() {
-//        header ("Cache-Control: no-cache, must-revalidate");
-//        header ("Expires: Thu, 17 Apr 1991 12:00:00 GMT");
-//        setcookie('t', '', time()-60*60, '/');
-        state = 4;
-    }
-
-
-
-
     private void refreshToken(String[] claim) throws Exception {
         int user_id = Integer.parseInt(claim[0]);
         int session_id = Integer.parseInt(claim[1]);
@@ -269,6 +263,7 @@ public class Auth {
 //+        header ("Cache-Control: no-cache, must-revalidate");
 //+        header ("Expires: Thu, 17 Apr 1991 12:00:00 GMT");  // Wed
 //+        setcookie ('t', $token, time()+60*60*24*30*12*5, '/');  // 5 years
+        setCookie(token);
     }
 
 
@@ -276,6 +271,7 @@ public class Auth {
 
     // --------------------------------------------------------------------------------------
 
+//    public static void newAuth(int user_id) throws Exception {
     public void newAuth(int user_id) throws Exception {
         int session_id = newSession(user_id);
         String token = genToken(user_id, session_id);
@@ -284,6 +280,7 @@ public class Auth {
 //+        header ("Cache-Control: no-cache, must-revalidate");
 //+        header ("Expires: Thu, 17 Apr 1991 12:00:00 GMT");  // Wed
 //+        setcookie ('t', $token, time()+60*60*24*30*12*5, '/');  // 5 years
+        setCookie(token);
     }
 
 
@@ -369,6 +366,28 @@ public class Auth {
         catch (InvalidKeyException e) { e.printStackTrace(); }
 
         return verify_signature;
+    }
+
+
+
+
+    // ---------------------------------------------------------------- //
+
+    private void setCookie(String value) {
+        int current_time = (int)(System.currentTimeMillis() / 1000);
+        int lifetime = 60 * 60 * 24 * 30 * 12 * 5;  // ~5 years
+        co_session.setCookie("t", value, current_time + lifetime, "/");
+    }
+
+
+    private void resetCookie() {
+//        header ("Cache-Control: no-cache, must-revalidate");  ??
+//        header ("Expires: Thu, 17 Apr 1991 12:00:00 GMT");    ??
+//        setcookie('t', '', time()-60*60, '/');
+
+        int current_time = (int)(System.currentTimeMillis() / 1000);
+        co_session.setCookie("t", "", current_time - 3600, "/");
+        state = 4;
     }
 
 

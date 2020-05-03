@@ -30,23 +30,23 @@ public class Info extends ModuleInfo {
 
     @Override
     public HtmlContent getHtml() {
-        HtmlContent hc = null;
+        HtmlContent html_content = null;
 
         if (action.isEmpty()) {
-            hc = new Md_ResList(session);
+            html_content = new Md_ResList(session);
         }
 
         else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_ACTION)) {
-            hc = new Md_MakeSpriteActions(session);
+            html_content = new Md_MakeSpriteActions(session);
         }
 
 
         else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_MODULE)) {
-            hc = new Md_MakeSpriteModules(session);
+            html_content = new Md_MakeSpriteModules(session);
         }
 
 
-        return hc;
+        return html_content;
     }
 
 

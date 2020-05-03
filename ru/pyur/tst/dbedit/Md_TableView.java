@@ -48,7 +48,7 @@ public class Md_TableView extends HtmlContent {
 //up            String table_name = getQuery(DBEDIT_PARAM_TABLE);
         //if (table_name == null)  throw new Exception("table absent");
 
-        Statement stmt = getDb();
+        Statement stmt = null;  // TODO getDb();
 
         String query_1 = "USE `" + db_name + "`";
 
