@@ -4,7 +4,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -46,7 +45,8 @@ public class Auth {
 
     private final int AUTH_TOKEN_LIFE_TIME = 60;  // seconds
 
-    HttpSession.ControlSession co_session;
+//    ControlSession co_session;
+    HttpSession session;
 
 
     // ---------------- //
@@ -57,12 +57,17 @@ public class Auth {
 
 
 
-    public Auth() {}
+//    public Auth() {}
 
 
-    public Auth(DbManager dbm, HttpSession.ControlSession co_session) {
-        db_manager = dbm;
-        this.co_session = co_session;
+//    public Auth(DbManager dbm, ControlSession co_session) {
+//        db_manager = dbm;
+//        this.co_session = co_session;
+//    }
+
+    public Auth(HttpSession session) {
+        this.session = session;
+        db_manager = session.getDbManager();
     }
 
 
@@ -167,7 +172,7 @@ public class Auth {
 
         // todo: is there signature check function?
         //byte[] verify_signature = hash_hmac('sha256', token_claim64, secret, true);
-        byte[] verify_signature = getSignature(token_claim64.getBytes());
+        byte[] verify_signature = makeSignature(token_claim64.getBytes());
 
 //        byte[] verify_signature = null;
 //        try {
@@ -246,7 +251,7 @@ public class Auth {
 
 
         updateSession(session_id, prev_time);
-        String token = genToken(user_id, session_id);
+        String token = makeToken(user_id, session_id);
 
         // -------- update COOKIE -------- //
 //+        header ("Cache-Control: no-cache, must-revalidate");
@@ -263,7 +268,7 @@ public class Auth {
 //    public static void newAuth(int user_id) throws Exception {
     public void newAuth(int user_id) throws Exception {
         int session_id = newSession(user_id);
-        String token = genToken(user_id, session_id);
+        String token = makeToken(user_id, session_id);
 
         // -------- set COOKIE -------- //
 //+        header ("Cache-Control: no-cache, must-revalidate");
@@ -319,7 +324,7 @@ public class Auth {
 
 
 
-    public String genToken(int user_id, int session_id) {
+    public String makeToken(int user_id, int session_id) {
         int curr_time = (int)(System.currentTimeMillis() / 1000);
 
         //String claim = user_id + "," + session_id + "," + curr_time;
@@ -332,7 +337,7 @@ public class Auth {
 
         byte[] token_claim64 = Base64.getEncoder().encode(sb.toString().getBytes());
 
-        byte[] signature = getSignature(token_claim64);
+        byte[] signature = makeSignature(token_claim64);
         byte[] signature64 = Base64.getEncoder().encode(signature);
 
         String token = new String(token_claim64) + "." + new String(signature64);
@@ -343,7 +348,7 @@ public class Auth {
 
 
 
-    private byte[] getSignature(byte[] data) {
+    private byte[] makeSignature(byte[] data) {
         byte[] verify_signature = null;
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -365,7 +370,7 @@ public class Auth {
     private void setCookie(String value) {
         int current_time = (int)(System.currentTimeMillis() / 1000);
         int lifetime = 60 * 60 * 24 * 30 * 12 * 5;  // ~5 years
-        co_session.setCookie("t", value, current_time + lifetime, "/");
+        session.setCookie("t", value, current_time + lifetime, "/");
     }
 
 
@@ -375,7 +380,7 @@ public class Auth {
 //        setcookie('t', '', time()-60*60, '/');
 
         int current_time = (int)(System.currentTimeMillis() / 1000);
-        co_session.setCookie("t", "", current_time - 3600, "/");
+        session.setCookie("t", "", current_time - 3600, "/");
         state = 4;
     }
 

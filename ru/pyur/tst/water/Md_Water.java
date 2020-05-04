@@ -11,7 +11,7 @@ public class Md_Water extends HtmlContent {
 
 
 
-    public void makeContent() {
+    public void makeHtml() {
         text("Hello from Md_Water!");
     }
 

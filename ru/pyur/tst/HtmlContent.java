@@ -36,20 +36,7 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    protected abstract void makeContent() throws Exception;
-
-
-
-
-    public byte[] getContent() {
-
-        byte[] content = makeHtml();
-
-//x        closeDb();
-//x        closeConfig();
-
-        return content;
-    }
+    protected abstract void makeHtml() throws Exception;
 
 
 
@@ -108,12 +95,13 @@ public abstract class HtmlContent extends ContentBase {
 
     // ---- compose (compile) page ---- //
 
-    private byte[] makeHtml() {
+    @Override
+    public byte[] makeContent() {
 
         makeModulesBar();
 
         try {
-            makeContent();
+            makeHtml();
         } catch (Exception e) {
             e.printStackTrace();
             Div div = new Div();

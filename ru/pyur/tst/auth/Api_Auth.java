@@ -13,19 +13,23 @@ public class Api_Auth extends ApiContent {
 
 
     @Override
-    public void makeContent() throws Exception {
+    public void makeJson() throws Exception {
 
         String login = getString("login");
         String password = getString("password");
         System.out.println("login: " + login + ", password: " + password);
 
-        // compare password
-        int user_id = 77;  // todo
+        // ---- compare password ---- //
+        int user_id = -1;
+
+        if (login.equals("user") && password.equals("1")) {
+            user_id = 65505;
+        }
 
 
-        if (true) {
-            Auth auth = new Auth();
-//            auth.newAuth(user_id);
+        if (user_id != -1) {
+            Auth auth = new Auth(session);
+            auth.newAuth(user_id);
             put("result", "ok");
         }
 

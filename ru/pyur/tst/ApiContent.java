@@ -1,16 +1,6 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.json.Json;
-import ru.pyur.tst.tags.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.sql.*;
-import java.util.ArrayList;
-
-import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
-import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
 public abstract class ApiContent extends ContentBase {
@@ -21,12 +11,13 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    protected abstract void makeContent() throws Exception;
+    protected abstract void makeJson() throws Exception;
 
 
 
 
-    public byte[] getContent() {
+    @Override
+    public byte[] makeContent() {
         request = new Json();
         try {
             request.parse(new String(session.getPayload()));
@@ -34,7 +25,7 @@ public abstract class ApiContent extends ContentBase {
 
         answer = new Json();
 
-        byte[] content = makeJson();  // todo: move function here, inline
+        byte[] content = makeCont();  // todo: move function here, inline
 
         return content;
     }
@@ -78,7 +69,7 @@ public abstract class ApiContent extends ContentBase {
 
     // -------------------------------- Api -------------------------------- //
 
-    public byte[] makeJson() {
+    public byte[] makeCont() {
         byte[] in_payload = session.getPayload();
 
         try {
@@ -89,7 +80,7 @@ public abstract class ApiContent extends ContentBase {
         }
 
         try {
-            makeContent();
+            makeJson();
         } catch (Exception e) {
             e.printStackTrace();
             //todo: append to 'answer' e.toString());

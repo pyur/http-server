@@ -219,7 +219,7 @@ public class WebsocketSession {
 
 
 //        if (md != null) {
-//            byte[] contents = md.getContent();
+//            byte[] contents = md.makeContent();
 //            byte[] compressed_contents = null;
 //
 //            ArrayList<PStr> response_options = md.getOptions();

@@ -16,7 +16,7 @@ public class Md_ResList extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
         text("Список таблиц конфига");
 

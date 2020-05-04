@@ -21,7 +21,7 @@ public class Md_TableView extends HtmlContent {
 
 
     @Override
-    public void makeContent() throws Exception {
+    public void makeHtml() throws Exception {
         String table_name = getQuery(DBEDIT_PARAM_TABLE);
 
         heading("Колонки таблицы – " + table_name);

@@ -12,7 +12,7 @@ public class Api_Default extends ApiContent {
 
 
     @Override
-    public void makeContent() throws Exception {
+    public void makeJson() throws Exception {
 
         put("heading", "Reference Http Java Server");
 

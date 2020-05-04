@@ -14,7 +14,7 @@ public class HttpSession {
     private HttpRequest request_header;
     private byte[] payload;
 
-    private HttpResponse response_header = new HttpResponse();
+    private HttpResponse response_header;
     //private byte[] response_payload;
 
     private InputStream input_stream;
@@ -34,28 +34,22 @@ public class HttpSession {
 
 
 
-    // ---------------- Database ---------------- //
+    // ---------------- session controller ---------------- //
 
-
-
-
-
-    public interface ControlSession {
-        void setOption(String name, String value);
-        void setCookie(String name, String value, int expires, String path);
-    }
-
-    private ControlSession co_session = new ControlSession() {
-        @Override
-        public void setOption(String name, String value) {
-            response_header.addOption(name, value);
-        }
-
-        @Override
-        public void setCookie(String name, String value, int expires, String path) {
-            response_header.addCookie(name, value, expires, path);
-        }
-    };
+//    private ControlSession co_session = new ControlSession() {
+//        @Override
+//        public void setCode(int code) { response_header.setCode(code); }
+//
+//        @Override
+//        public void addOption(String name, String value) {
+//            response_header.addOption(name, value);
+//        }
+//
+//        @Override
+//        public void setCookie(String name, String value, int expires, String path) {
+//            response_header.setCookie(name, value, expires, path);
+//        }
+//    };
 
 
 
@@ -74,7 +68,9 @@ public class HttpSession {
         input_stream = is;
         output_stream = os;
 
+        response_header = new HttpResponse();
         response_header.setVersion(HttpHeader.HTTP_VERSION_1_1);
+        response_header.setCode(200);
     }
 
 
@@ -104,6 +100,14 @@ public class HttpSession {
 
     public void setAction(String action) { this.action = action; }
 
+
+    // ---- for control response from modules ----------------
+
+    public void setCode(int code) { response_header.setCode(code); }
+
+    public void addOption(String name, String value) { response_header.addOption(name, value); }
+
+    public void setCookie(String name, String value, int expires, String path) { response_header.setCookie(name, value, expires, path); }
 
 
 
@@ -163,7 +167,8 @@ public class HttpSession {
 
         // -------- user authorization -------- //
 
-        auth = new Auth(db_manager, co_session);
+        //auth = new Auth(db_manager, co_session);
+        auth = new Auth(session);
         try {
             auth.authByCookie(request_header);
         } catch (Exception e) {
@@ -190,11 +195,12 @@ public class HttpSession {
                     fis.read(bytes);
                     fis.close();
 
-                    ArrayList<PStr> opts = new ArrayList<>();
-                    opts.add(new PStr("Content-Type", "image/x-icon"));
+                    //ArrayList<PStr> opts = new ArrayList<>();
+                    //opts.add(new PStr("Content-Type", "image/x-icon"));
+                    addOption("Content-Type", "image/x-icon");
                     //Last-Modified: Wed, 21 Jan 2015 12:50:06 GMT
                     //ETag: "47e-50d28feb5fca8"
-                    response200(bytes, opts);
+                    response(bytes);
                 }
                 else {
                     System.out.println("file not exists: " + file.getPath());
@@ -381,10 +387,9 @@ public class HttpSession {
         }
 
 
-        byte[] content = html_content.getContent();
+        byte[] content = html_content.makeContent();
         byte[] compressed_content = null;
 
-        ArrayList<PStr> response_options = html_content.getOptions();
 /*
         // compression
         //if (header has "Accept-Encoding: gzip, deflate, br") {
@@ -402,8 +407,7 @@ public class HttpSession {
             response_options.add(new PStr("Content-Encoding", "gzip"));
         }
 */
-        response200(content, response_options);
-        //response(content, code, response_options);
+        response(content);
     }
 
 
@@ -428,14 +432,11 @@ public class HttpSession {
         }
 
 
-        byte[] content = api_content.getContent();  // put payload in passed arguments
+        byte[] content = api_content.makeContent();
         byte[] compressed_content = null;
 
-        ArrayList<PStr> response_options = api_content.getOptions();
 
-
-        response200(content, response_options);
-        //response(content, code, response_options);
+        response(content);
     }
 
 
@@ -474,19 +475,14 @@ public class HttpSession {
 
     // ---- Responses ------------------------------------------------------------
 
-    private void response200(byte[] contents, ArrayList<PStr> response_options) {
-//x        HttpSessionResponse response = new HttpSessionResponse();
-        response_header.setCode(200);
+    private void response(byte[] contents) {
         response_header.appendPayload(contents);
-        response_header.addOptions(response_options);
-
         send(response_header.stringify());
     }
 
 
 
     private void response400() {
-//x        HttpSessionResponse response = new HttpSessionResponse(400);
         response_header.setCode(400);
         send(response_header.stringify());
     }
@@ -494,7 +490,6 @@ public class HttpSession {
 
 
     private void response404(String message) {
-//x        HttpSessionResponse response = new HttpSessionResponse(404);
         response_header.setCode(404);
         response_header.appendPayload(message);
         send(response_header.stringify());

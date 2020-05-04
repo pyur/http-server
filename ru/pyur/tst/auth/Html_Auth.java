@@ -13,7 +13,7 @@ public class Html_Auth extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
         title("Авторизация");  // аутентификация
 

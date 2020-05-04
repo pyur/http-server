@@ -19,9 +19,9 @@ public class Md_DbList extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() throws Exception {
 
-        text("Базы данных");
+        heading("Базы данных");
 
 
         Table table = new Table();
@@ -31,11 +31,12 @@ public class Md_DbList extends HtmlContent {
 
 
         try {
-            Statement stmt = null;  // TODO getDb();
+//x            Statement stmt = null;  // TODO getDb();
 
             String query = "SHOW DATABASES";
 
-            ResultSet rs = stmt.executeQuery(query);
+//x            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = query(query);
 
             while(rs.next()) {
                 String db_name = rs.getString(1);

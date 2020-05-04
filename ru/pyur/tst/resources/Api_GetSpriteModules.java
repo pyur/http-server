@@ -19,7 +19,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
 
     @Override
-    public void makeContent() throws Exception {
+    public void makeJson() throws Exception {
 
         String ts = configGet(CONFIG_MODULE_ICON_UPD);
 

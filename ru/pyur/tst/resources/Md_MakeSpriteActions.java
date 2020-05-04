@@ -21,7 +21,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
         text("Генерация спрайта...");
 

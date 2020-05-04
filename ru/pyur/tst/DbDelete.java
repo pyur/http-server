@@ -25,7 +25,7 @@ public class DbDelete {
 
 
 
-    public void table(String table) { this.table = "`" + table + "`"; }
+    public void table(String table) { this.table = table; }
 
 
     public void set(String column, int value) {

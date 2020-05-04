@@ -8,7 +8,8 @@ public class DbManager {
 
     // -------- Main DB -------- //
 
-    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
+    //private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
+    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/skdev";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1";
 

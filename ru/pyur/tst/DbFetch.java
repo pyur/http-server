@@ -116,11 +116,11 @@ public class DbFetch {
         for (Var wa : where_args) {
             switch (wa.getType()) {
                 case VAR_TYPE_INT:
-                    ps.setInt(i + 1, wa.getInt());
+                    ps.setInt(i, wa.getInt());
                     break;
 
                 case VAR_TYPE_STRING:
-                    ps.setString(i + 1, wa.getString());
+                    ps.setString(i, wa.getString());
                     break;
             }
             i++;

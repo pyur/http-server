@@ -26,7 +26,7 @@ public class DbUpdate {
 
 
 
-    public void table(String table) { this.table = "`" + table + "`"; }
+    public void table(String table) { this.table = table; }
 
 
     public void set(String column, int value) {
@@ -91,11 +91,11 @@ public class DbUpdate {
             Var val = value.value;
             switch (val.getType()) {
                 case VAR_TYPE_INT:
-                    ps.setInt(i + 1, val.getInt());
+                    ps.setInt(i, val.getInt());
                     break;
 
                 case VAR_TYPE_STRING:
-                    ps.setString(i + 1, val.getString());
+                    ps.setString(i, val.getString());
                     break;
             }
             i++;
@@ -105,11 +105,11 @@ public class DbUpdate {
         for (Var wa : where_args) {
             switch (wa.getType()) {
                 case VAR_TYPE_INT:
-                    ps.setInt(i + 1, wa.getInt());
+                    ps.setInt(i, wa.getInt());
                     break;
 
                 case VAR_TYPE_STRING:
-                    ps.setString(i + 1, wa.getString());
+                    ps.setString(i, wa.getString());
                     break;
             }
             i++;

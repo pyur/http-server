@@ -19,7 +19,7 @@ public class Api_GetSpriteActions extends ApiContent {
 
 
     @Override
-    public void makeContent() throws Exception {
+    public void makeJson() throws Exception {
 
         String ts = configGet(CONFIG_ACTION_ICON_UPD);
 

@@ -24,7 +24,7 @@ public class DbInsert {
 
 
 
-    public void table(String table) { this.table = "`" + table + "`"; }
+    public void table(String table) { this.table = table; }
 
 
     public void set(String column, int value) {
@@ -49,7 +49,7 @@ public class DbInsert {
         sb.append(table);
         sb.append("`");
 
-        sb.append(")");
+        sb.append(" (");
         ArrayList<String> names = new ArrayList<>();
         ArrayList<String> vals = new ArrayList<>();
         for (PVar value : values) {
@@ -75,11 +75,11 @@ public class DbInsert {
             Var val = value.value;
             switch (val.getType()) {
                 case VAR_TYPE_INT:
-                    ps.setInt(i + 1, val.getInt());
+                    ps.setInt(i, val.getInt());
                     break;
 
                 case VAR_TYPE_STRING:
-                    ps.setString(i + 1, val.getString());
+                    ps.setString(i, val.getString());
                     break;
             }
             i++;

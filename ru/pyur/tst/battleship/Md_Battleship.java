@@ -27,7 +27,7 @@ public class Md_Battleship extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
         text("Морской бой");
 

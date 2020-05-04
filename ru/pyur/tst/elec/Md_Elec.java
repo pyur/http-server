@@ -19,7 +19,7 @@ public class Md_Elec extends HtmlContent {
 
 
 
-    public void makeContent() {
+    public void makeHtml() {
 
         Div div = new Div();
         tag(div);

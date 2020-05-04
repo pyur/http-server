@@ -28,7 +28,7 @@ public class Md_Chat extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
         text("Тестовый websocket чат");
 

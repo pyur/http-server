@@ -15,7 +15,7 @@ public class Html_Default extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
         title("Добро пожаловать");
 

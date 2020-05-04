@@ -7,11 +7,10 @@ import java.util.ArrayList;
 public abstract class ContentBase {
 
     protected HttpSession session;
-
-    private ArrayList<PStr> lsQuery;
+//    protected ControlSession co_session;
 
     //https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-    private ArrayList<PStr> response_options = new ArrayList<>();
+//    private ArrayList<PStr> response_options = new ArrayList<>();
 
 
 
@@ -19,34 +18,36 @@ public abstract class ContentBase {
     // ---------------- Database ---------------- //
 
     private DbManager db_manager;
-/*
-    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "1";
-
-    protected Connection m_connection;
+    private Connection db_connection;
+    private Connection db_config;
 
 
 
-    // -------- Config -------- //
-
-    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
-
-    protected Connection m_config;
-*/
-
-
-    //constructor
+    // ---- constructor ----------------
 
     protected void initCommon(HttpSession session) {
         this.session = session;
         this.db_manager = session.getDbManager();
-        lsQuery = session.getQuery();
-        System.out.println("lsQuery: " + lsQuery);
+        db_connection = db_manager.getDb();
+        db_config = db_manager.getConfigDb();
     }
 
 
 
+    //public void setControlSession(ControlSession cos) { co_session = cos; }
+
+
+
+    // ---- declarations ------------------------------------------------
+
+    public abstract byte[] makeContent();
+
+
+
+
+    // ---- setters, getters ------------------------------------------------
+
+//    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager
 
     protected String getModule() { return session.getModule(); }
 
@@ -55,29 +56,35 @@ public abstract class ContentBase {
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
     protected String getQuery(String key) throws Exception {
+        ArrayList<PStr> lsQuery = session.getQuery();
+
         for (PStr pair : lsQuery) {
             if (pair.key.equals(key))  return pair.value;
         }
 
         throw new Exception("parameter \'" + key + "\' absent.");
-        //return null;
     }
 
 
 
-    public ArrayList<PStr> getOptions() {
-        return response_options;
+
+    protected void setCode(int code) {
+        session.setCode(code);
     }
 
+    protected void setContentType(String value) { session.addOption("Content-Type", value); }
 
-    protected void addOption(String name, String value) {
-        response_options.add(new PStr(name, value));
-    }
+    protected void setCookie(String name, String value, int expires, String path) { session.setCookie(name, value, expires, path); }
 
 
-    protected void setContentType(String value) {
-        response_options.add(new PStr("Content-Type", value));
-    }
+    // ---- response option ---- //
+    protected void addOption(String name, String value) { session.addOption(name, value); }
+
+
+    // ---- response options ---- //
+//    public ArrayList<PStr> getOptions() { return response_options; }
+
+
 
 
 
@@ -115,6 +122,13 @@ public abstract class ContentBase {
 //
 //        return stmt;
 //    }
+
+
+
+    protected ResultSet query(String query) throws Exception {
+        Statement stmt = db_connection.createStatement();
+        return stmt.executeQuery(query);
+    }
 
 
 

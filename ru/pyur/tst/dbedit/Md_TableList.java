@@ -24,9 +24,9 @@ public class Md_TableList extends HtmlContent {
 
 
     @Override
-    public void makeContent() {
+    public void makeHtml() {
 
-        text("Таблицы базы данных");
+        heading("Таблицы базы данных");
 
 
         Table table = new Table();
@@ -39,19 +39,21 @@ public class Md_TableList extends HtmlContent {
             String db_name = getQuery(DBEDIT_PARAM_DB);
             //if (db_name == null)  throw new Exception("db absent");
 
-            Statement stmt = null;  // TODO getDb();
+//x            Statement stmt = null;  // TODO getDb();
 
             String query_1 = "USE `" + db_name + "`";
             //query('SET CHARACTER SET utf8');
 
-            stmt.executeQuery(query_1);
+//x            stmt.executeQuery(query_1);
+            query(query_1);
 
 
             // ----
 
             String query = "SHOW TABLES";
 
-            ResultSet rs = stmt.executeQuery(query);
+//x            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = query(query);
 
             while(rs.next()) {
                 String table_name = rs.getString(1);
