@@ -55,7 +55,7 @@ public class Md_DbList extends HtmlContent {
                 //link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_DB + "/?" + DBEDIT_PARAM_DB + "=" + db_name);
                 link.setHref(href);
 
-                link.put(db_name);
+                link.text(db_name);
 
                 td_db_name.add(link);
                 tr.add(td_db_name);

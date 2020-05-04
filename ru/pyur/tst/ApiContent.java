@@ -28,12 +28,13 @@ public abstract class ApiContent extends ContentBase {
 
     public byte[] getContent() {
         request = new Json();
+        try {
+            request.parse(new String(session.getPayload()));
+        } catch (Exception e) { e.printStackTrace(); }
+
         answer = new Json();
 
         byte[] content = makeJson();  // todo: move function here, inline
-
-//x        closeDb();
-//x        closeConfig();
 
         return content;
     }
@@ -49,6 +50,19 @@ public abstract class ApiContent extends ContentBase {
         //setContentType("application/json; charset=utf-8");  // utf-8 redundant
         setContentType("application/json");
         //setContentType("application/javascript");  // for JSON-P
+    }
+
+
+
+
+    // ---- get from json request ---- //
+    protected String getString(String key) throws Exception {
+        return request.getString(key);
+    }
+
+
+    protected int getInt(String key) throws Exception {
+        return request.getInt(key);
     }
 
 

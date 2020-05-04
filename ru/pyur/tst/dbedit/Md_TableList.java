@@ -72,7 +72,7 @@ public class Md_TableList extends HtmlContent {
                 //link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_TABLE + "/?" + DBEDIT_PARAM_DB + "=" + db_name + "&" + DBEDIT_PARAM_TABLE + "=" + table_name);
                 link.setHref(href);
 
-                link.put(table_name);
+                link.text(table_name);
 
                 td_db_name.add(link);
                 tr.add(td_db_name);

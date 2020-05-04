@@ -15,8 +15,9 @@ public class Api_Auth extends ApiContent {
     @Override
     public void makeContent() throws Exception {
 
-        String login = getQuery("login");
-        String password = getQuery("password");
+        String login = getString("login");
+        String password = getString("password");
+        System.out.println("login: " + login + ", password: " + password);
 
         // compare password
         int user_id = 77;  // todo
@@ -24,7 +25,7 @@ public class Api_Auth extends ApiContent {
 
         if (true) {
             Auth auth = new Auth();
-            auth.newAuth(user_id);
+//            auth.newAuth(user_id);
             put("result", "ok");
         }
 

@@ -2,7 +2,6 @@ package ru.pyur.tst;
 
 import ru.pyur.tst.tags.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.*;
@@ -244,7 +243,7 @@ public abstract class HtmlContent extends ContentBase {
             Div div_desc = new Div();
             mod.add(div_desc);
             String desc = mbi.descb.isEmpty() ? mbi.desc : mbi.descb;
-            div_desc.put(desc);
+            div_desc.text(desc);
         }
 
     }

@@ -28,8 +28,6 @@ public class Table extends Tag {
     }
 
 
-//x    private boolean hasActions = false;
-
     private ArrayList<ActionButton> actions = new ArrayList<>();
 
 
@@ -74,6 +72,8 @@ public class Table extends Tag {
     }
 
 
+
+    // ---- before tag ------------------------------------------------
 
     @Override
     public String renderBeforeTag() {
@@ -209,6 +209,8 @@ public class Table extends Tag {
 
 
 
+    // ---- after tag ------------------------------------------------
+
     @Override
     public String renderAfterTag() {
         StringBuilder sb = new StringBuilder();
@@ -244,6 +246,8 @@ public class Table extends Tag {
 
 
 
+    // ---- before all rows ------------------------------------------------
+
     @Override
     public String renderNestedPre() {
         if (!hasHeader)  return "";
@@ -264,6 +268,9 @@ public class Table extends Tag {
     }
 
 
+
+
+    // ---- after each row ------------------------------------------------
 
     @Override
     public String renderPostTag() {

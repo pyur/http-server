@@ -42,6 +42,7 @@ public abstract class ContentBase {
         this.session = session;
         this.db_manager = session.getDbManager();
         lsQuery = session.getQuery();
+        System.out.println("lsQuery: " + lsQuery);
     }
 
 

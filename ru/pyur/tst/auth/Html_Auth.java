@@ -2,10 +2,7 @@ package ru.pyur.tst.auth;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.tags.Div;
-import ru.pyur.tst.tags.Form;
-import ru.pyur.tst.tags.InputText;
-import ru.pyur.tst.tags.PlainText;
+import ru.pyur.tst.tags.*;
 
 
 public class Html_Auth extends HtmlContent {
@@ -29,8 +26,8 @@ public class Html_Auth extends HtmlContent {
         tag(container);
 
 //x        text("<form id=\"save\" action=\"/a/\">");
-        Form form = new Form();
-        form.setUrl("/a/");
+        Form form = new Form("form");
+        form.setUrl("/a/" + getModule() + "/");
         container.add(form);
 
 
@@ -57,12 +54,18 @@ public class Html_Auth extends HtmlContent {
 //x        text("<input class=\"text\" name=\"password\" type=\"text\" value=\"\" style=\"width: 300px;\">");
         InputText it_password = new InputText();
         it_password.addClass("text");
-        it_password.setName("login");
+        it_password.setName("password");
         it_password.width(200);
         form.add(it_password);
 
 
-        // TODO: submit button
+        InputButton ib_submit = new InputButton();
+        //ib_submit.addClass("text");
+        ib_submit.setName("submit");
+        ib_submit.setValue("Войти");
+        ib_submit.addStyle("display", "block");
+        ib_submit.addStyle("margin", "20px auto 0");
+        form.add(ib_submit);
 
 
 //x        text("</form>");

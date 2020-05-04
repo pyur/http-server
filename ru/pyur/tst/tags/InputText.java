@@ -10,14 +10,6 @@ public class InputText extends Tag {
     }
 
 
-    public void setValue(String value) {
-        addAttribute("value", value);
-    }
-
-
-    public void setAutofocus() {
-        addAttribute("autofocus", null);
-    }
 
 
 }

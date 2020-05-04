@@ -78,7 +78,9 @@ public abstract class Tag {
     //}
 
 
-    public void put(String str) {
+    // ---- setters, getters ----------------------------------------------------------------
+
+    public void text(String str) {
         tags.add(new PlainText(str));
     }
 
@@ -103,39 +105,50 @@ public abstract class Tag {
     public void addStyle(String name, String value) { styles.add(new PStr(name, value)); }
 
 
-    public void width(int v) { styles.add(new PStr("width", v + "px")); }
-
-    public void height(int v) { styles.add(new PStr("height", v + "px")); }
-
-    public void border(String v) { styles.add(new PStr("border", v)); }
-
-
     public void addAttribute(String name, String value) {
         attributes.add(new PStr(name, value));
     }
 
-
-    public void addAttribute(PStr attribute) {
-        attributes.add(attribute);
-    }
+    //public void addAttribute(PStr attribute) { attributes.add(attribute); }
 
 
-    public void setUnselectable() { attributes.add(new PStr("unselectable", "on")); }
+
+    // ---- common attributes ----------------------------------------------------------------
+
+    public void setUnselectable() { addAttribute("unselectable", "on"); }
+
+    public void setValue(String value) { addAttribute("value", value); }
+
+    public void setAutofocus() { addAttribute("autofocus", null); }
 
 
-    public String renderBeforeTag() { return null; }
 
-    public String renderAfterTag() { return null; }
+    // ---- common styles ----------------------------------------------------------------
 
-    public String renderNestedPre() { return null; }
+    public void width(int v) { addStyle("width", v + "px"); }
 
-    public String renderNestedPost() { return null; }
+    public void height(int v) { addStyle("height", v + "px"); }
+
+    public void border(String v) { addStyle("border", v); }
+
+
+
+    // ---- tag specific additions ----------------------------------------------------------------
+
+    protected String renderBeforeTag() { return null; }
+
+    protected String renderAfterTag() { return null; }
+
+    protected String renderNestedPre() { return null; }
+
+    protected String renderNestedPost() { return null; }
 
     protected String renderPostTag() { return null; }  // for '<table>'
 
-    //protected ArrayList<PStr> tagAttributes() { return null; }
 
 
+
+    // ---- tag render ----------------------------------------------------------------
 
     @Override
     public String toString() {
@@ -283,6 +296,9 @@ public abstract class Tag {
     }
 
 
+
+
+    // ---- action icons ----------------------------------------------------------------
 
     private void fetchActionIcons() {
         if (m_config == null) {

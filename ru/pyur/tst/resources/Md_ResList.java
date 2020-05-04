@@ -63,7 +63,7 @@ public class Md_ResList extends HtmlContent {
 
                 link.setHref(href);
 
-                link.put(table_name);
+                link.text(table_name);
 
                 td_db_name.add(link);
                 tr.add(td_db_name);

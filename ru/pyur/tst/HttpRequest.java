@@ -295,9 +295,10 @@ public class HttpRequest extends HttpHeader {
         lsPath = Util.explode('/', szPath);
 
         szQuery = path_split.value;
+        lsQuery = new ArrayList<>();
         if (!szQuery.isEmpty()) {
             String[] explode_query = Util.explode('&', szQuery);
-            lsQuery = new ArrayList<>();
+//^            lsQuery = new ArrayList<>();
             for (String q : explode_query) {
                 lsQuery.add(Util.split('=', q));
             }

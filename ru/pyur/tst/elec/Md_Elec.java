@@ -23,7 +23,7 @@ public class Md_Elec extends HtmlContent {
 
         Div div = new Div();
         tag(div);
-        div.put("Электричество");
+        div.text("Электричество");
         div.width(200);
         div.height(50);
         div.border("1px solid #f99");

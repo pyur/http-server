@@ -62,6 +62,7 @@ public class Json {
     //}
 
 
+    // ---- cast type to JsonArray ---- //
     public Json array() {
         type = JSON_TYPE_ARRAY;
         return this;

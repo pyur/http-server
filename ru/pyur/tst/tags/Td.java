@@ -8,12 +8,12 @@ public class Td extends Tag {
 
     public Td(String text) {
         common_constructor();
-        put(text);
+        text(text);
     }
 
     public Td(int number) {
         common_constructor();
-        put("" + number);
+        text("" + number);
     }
 
 
