@@ -102,12 +102,14 @@ public class DbFetch {
         sb.append(Util.implode(", ", tables));
 
         if (where.size() != 0) {
+            sb.append(" WHERE ");
             sb.append(Util.implode(" AND ", where));
         }
 
         // todo: order, limit, group by
 
         String query = sb.toString();
+        //System.out.println("query: [" + query + "]");
 
 
         PreparedStatement ps = connection.prepareStatement(query);

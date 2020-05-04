@@ -26,7 +26,7 @@ public class Auth {
     // 4 - cookie (token) absent
     // 8 - `sess` for cookie (token) not exists, or not valid
 
-    private int state = AUTH_STATE_NONE;
+    public int state = AUTH_STATE_NONE;
 
     private ArrayList<String> permissions = new ArrayList<>();
 
@@ -88,11 +88,13 @@ public class Auth {
     //https://softwareengineering.stackexchange.com/questions/405038/result-object-vs-throwing-exceptions
 
     public void authByCookie(HttpRequest request_header) throws Exception {
+        System.out.println("authByCookie()");
         this.request_header = request_header;
 
         try {
             getAuthCookie();
         } catch (Exception e) {
+            e.printStackTrace();
             //resetCookie();
         }
 
@@ -116,11 +118,13 @@ public class Auth {
     // ------------------------------------ read COOKIE ------------------------------------- //
 
     public void getAuthCookie() throws Exception {
+        System.out.println("getAuthCookie()");
         //if (no_cookie) {
         //    throw new Exception("token cookie absent");
         //}
 
         String token_raw = request_header.getCookie("t").getValue();
+        //System.out.println("token_raw: " + token_raw);
         //String token = Cookie.replacePlus(token_raw);  // adhoc
         String token = token_raw;  // todo: replace
 
@@ -128,6 +132,7 @@ public class Auth {
         try {
             token_claim = validateSign(token);
         } catch (Exception e) {
+            e.printStackTrace();
             resetCookie();
             throw new Exception("token validation failed");
         }
@@ -141,6 +146,7 @@ public class Auth {
         }
 
 
+        System.out.println("token claim: " + claim[0] + ", " + claim[1] + ", " + claim[2]);
         int claim_time = Integer.parseInt(claim[2]);
 
         // check for token issued longer than life time
@@ -149,6 +155,7 @@ public class Auth {
             try {
                 refreshToken(claim);
             } catch (Exception e) {
+                e.printStackTrace();
                 resetCookie();
                 throw new Exception("token refresh failed.");
             }
@@ -163,8 +170,11 @@ public class Auth {
 
 
     private String validateSign(String token) throws Exception {
+        System.out.println("validateSign()");
+
+        System.out.println("explode: " + token);
         String[] token_e = Util.explode('.', token);
-        if (token_e.length != 2)  throw new Exception("token not 2 parts");
+        if (token_e.length != 2)  throw new Exception("token not 2 parts (" + token_e.length +")");
 
         String token_claim64 = token_e[0];
         String token_sign64 = token_e[1];
@@ -197,6 +207,7 @@ public class Auth {
 
 
     private void refreshToken(String[] claim) throws Exception {
+        System.out.println("refreshToken()");
         int user_id = Integer.parseInt(claim[0]);
         int session_id = Integer.parseInt(claim[1]);
         int claim_iat = Integer.parseInt(claim[2]);
@@ -204,7 +215,7 @@ public class Auth {
 
         DbFetch db_sess = new DbFetch(db_manager.getDb());
         db_sess.table("sesst");  // todo: `sessta` - archived
-        db_sess.col(new String[]{"id", "user", "tp", "tm"});
+        db_sess.col(new String[]{"user", "tp", "tm"});
         db_sess.where("`id` = ?");  // `stat` = 0 . todo: make second table for archived sessions
         db_sess.wa(session_id);
 

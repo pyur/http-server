@@ -13,7 +13,7 @@ public class HttpResponse extends HttpHeader {
     public String szDesc;
 
 
-    private ArrayList<Cookie> set_cookie;
+    private ArrayList<Cookie> set_cookies = new ArrayList<>();
 
     public int content_length;
 
@@ -193,6 +193,9 @@ public class HttpResponse extends HttpHeader {
 
         //'Set-Cookie'
         //rs->cookies = Http_ParseCookies(rs->options);
+        //for (PStr opt : options) {
+        //  if (opt.key.equals("Set-Cookie")) { set_cookies.add(opt.value); }
+        //  }
 
     }
 
@@ -200,21 +203,14 @@ public class HttpResponse extends HttpHeader {
 
 
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+    public void setVersion(int version) { this.version = version; }
 
 
-    public void setCode(int code) {
-        this.code = code;
-    }
+    public void setCode(int code) { this.code = code; }
 
 
 
-    public void setConnectionClose() {
-        PStr opt = new PStr("Connection", "close");
-        options.add(opt);
-    }
+    public void setConnectionClose() { addOption("Connection", "close"); }
 
 
 
@@ -238,43 +234,55 @@ public class HttpResponse extends HttpHeader {
 
         // ---------------- first line ---------------- //
 
-        //r Expandable_AppendString(exResponse, szHttpVersion[rs->version]);
-        //r sb.append("HTTP/1.1");
         sb.append(szHttpVersion[version]);
         // if '0', try raw.
 
-        //r Expandable_AppendString(exResponse, " ");
         sb.append(" ");
 
-        //r Expandable_AppendString(exResponse, String_FromInt(rs->code));
-        sb.append("" + code);
+        sb.append(code);
 
-        //r Expandable_AppendString(exResponse, " ");
         sb.append(" ");
 
-        //r Expandable_AppendString(exResponse, rs->szDesc);
         szDesc = findCodeDesc(code);
         sb.append(szDesc);
 
-        //r Expandable_AppendString(exResponse, "\r\n");
         sb.append("\r\n");
+
+
+        // ---------------- Cookies ---------------- //
+
+        for (Cookie cookie : set_cookies) {
+            //lame implode. rewrite with Util.implode
+            StringBuilder cook = new StringBuilder();
+
+            cook.append(cookie.name);
+            cook.append("=");
+            cook.append(cookie.value);
+
+            cook.append(";");
+
+            cook.append("expires");
+            cook.append("=");
+            cook.append(cookie.getStringExpires());
+
+            cook.append(";");
+
+            cook.append("path");
+            cook.append("=");
+            cook.append(cookie.path);
+
+            addOption("Set-Cookie", cook.toString());
+        }
 
 
         // ---------------- options ---------------- //
 
         if (options != null && options.size() > 0) {
-            //Str szFlat;
-
-            //for (Ui idx = 0; rs->options[idx]; idx++) {
             for (PStr opt : options) {
-                //r szFlat = Pair_Join(rs->options[idx], ": ");
                 sb.append(opt.key);
                 sb.append(": ");
                 sb.append(opt.value);
 
-                //r Expandable_AppendString(exResponse, szFlat);
-                //r String_Destroy(szFlat);
-                //r Expandable_AppendString(exResponse, "\r\n");
                 sb.append("\r\n");
             }
         }
@@ -282,15 +290,10 @@ public class HttpResponse extends HttpHeader {
 
 
         if (payload != null && payload.size() > 0) {
-            //r Expandable_AppendString(exResponse, "Content-Length: ");
-            //r Expandable_AppendString(exResponse, String_FromInt(strlen(rs->szPayload)));
-            //r Expandable_AppendString(exResponse, "\r\n");
             sb.append("Content-Length: ");
             sb.append(payload.size());
             sb.append("\r\n");
         }
-
-        //else if (other types of payload) {}
 
         // Content-Length: 0
 
@@ -298,7 +301,6 @@ public class HttpResponse extends HttpHeader {
 
         // ---------------- header end ---------------- //
 
-        //r Expandable_AppendString(exResponse, "\r\n");
         sb.append("\r\n");
 
         try { os.write(sb.toString().getBytes()); } catch (Exception e) { e.printStackTrace(); }
@@ -308,15 +310,12 @@ public class HttpResponse extends HttpHeader {
         // ---------------- payload ---------------- //
 
         if (payload != null && payload.size() > 0) {
-            //r Expandable_AppendString(exResponse, rs->szPayload);
             try { os.write(payload.toByteArray()); } catch (Exception e) { e.printStackTrace(); }
         }
 
 
         // ---------------- inflate ---------------- //
 
-        //r Str szResponse = Expandable_ConvertToString(&exResponse);
-        //r return szResponse;
         return os.toByteArray();
     }
 
@@ -359,26 +358,7 @@ public class HttpResponse extends HttpHeader {
 
     // todo: move to inflater (inflater will take care of duplicates)
     public void setCookie(String name, String value, int expires, String path) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(name);
-        sb.append("=");
-        sb.append(value);
-
-        sb.append(";");
-
-        sb.append("expires");
-        sb.append("=");
-        sb.append("todo");
-
-        sb.append(";");
-
-        sb.append("path");
-        sb.append("=");
-        sb.append(path);
-
-
-        addOption("Set-Cookie", sb.toString());
+        set_cookies.add(new Cookie(name, value, expires, path));
     }
 
 

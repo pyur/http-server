@@ -78,6 +78,7 @@ public class DbUpdate {
 
 
         if (where.size() != 0) {
+            sb.append(" WHERE ");
             sb.append(Util.implode(" AND ", where));
         }
 

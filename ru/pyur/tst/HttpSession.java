@@ -172,12 +172,14 @@ public class HttpSession {
         try {
             auth.authByCookie(request_header);
         } catch (Exception e) {
+            e.printStackTrace();
             //response401();
             //return;
             // -- force redirect to auth form -- //
             //setModule("auth");
             //setAction("");
         }
+        System.out.println("auth state: " + auth.state);
 
         //modules = auth.getModules();
 

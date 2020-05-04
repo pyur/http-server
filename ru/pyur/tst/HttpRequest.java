@@ -252,7 +252,7 @@ public class HttpRequest extends HttpHeader {
                         //String trimmed = cook.trim();
                         PStr cookie_pair = Util.split('=', cook);
                         String name1 = cookie_pair.key.trim();
-                        String value = cookie_pair.key.trim();
+                        String value = cookie_pair.value.trim();
                         cookies.add(new Cookie(name1, value));
                     }
                 }
