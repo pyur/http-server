@@ -7,10 +7,8 @@ import java.util.ArrayList;
 public abstract class ContentBase {
 
     protected HttpSession session;
-//    protected ControlSession co_session;
+    //protected ControlSession co_session;
 
-    //https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-//    private ArrayList<PStr> response_options = new ArrayList<>();
 
 
 
@@ -38,7 +36,7 @@ public abstract class ContentBase {
 
 
 
-    // ---- declarations ------------------------------------------------
+    // ---- prototypes ------------------------------------------------
 
     public abstract byte[] makeContent();
 
@@ -94,37 +92,6 @@ public abstract class ContentBase {
     // -------------------------------- Database -------------------------------- //
     // -------------------------------------------------------------------------- //
 
-//    protected void closeDb() {
-//        if (m_connection != null) {
-//            try {
-//                m_connection.close();
-//            } catch (Exception e) { e.printStackTrace(); }
-//        }
-//    }
-
-
-
-//    protected Statement getDb() {
-//        if (m_connection == null) {
-//            try {
-//                m_connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-//                //todo: use 'DataSource' class
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        Statement stmt = null;
-//
-//        try {
-//            stmt = m_connection.createStatement();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return stmt;
-//    }
-
-
-
     protected ResultSet query(String query) throws Exception {
         Statement stmt = db_connection.createStatement();
         return stmt.executeQuery(query);
@@ -133,8 +100,7 @@ public abstract class ContentBase {
 
 
 
-
-
+    // -------------------------------- Config -------------------------------- //
 
     protected Statement getConfigStatement() {
         Statement stmt = null;

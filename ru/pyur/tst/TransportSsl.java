@@ -20,12 +20,13 @@ public class TransportSsl extends Transport implements Runnable {
 
     public TransportSsl(Socket socket, ProtocolDispatcher.CallbackProtocolServerEvent cb_protocol_server_event) {
         this.socket = socket;
-        protocol_dispatcher = new ProtocolDispatcher(callback_transport_control);
+        protocol_dispatcher = new ProtocolDispatcher();
         protocol_dispatcher.setStateServer(cb_protocol_server_event);
 
 //r        protocol_dispatcher.setWebsocketServerCallback(cb_protocol_server_event);
 
 //r        callback_transport_events = session.getTransportCallback();
+//todo        callback_transport_events = ?;
     }
 
 
@@ -33,7 +34,8 @@ public class TransportSsl extends Transport implements Runnable {
     public void createClient(String host, CallbackTransportEvents tc, ProtocolDispatcher.CallbackProtocolHttpClient cb_protocol_http_client) {
         callback_transport_events = tc;
 
-        protocol_dispatcher = new ProtocolDispatcher(callback_transport_control);
+//        protocol_dispatcher = new ProtocolDispatcher(callback_transport_control);
+        protocol_dispatcher = new ProtocolDispatcher();
         protocol_dispatcher.setStateHttpClient(cb_protocol_http_client);
 
         try {
@@ -99,17 +101,17 @@ public class TransportSsl extends Transport implements Runnable {
     // -------------------------------- Callbacks -------------------------------- //
     // --------------------------------------------------------------------------- //
 
-    private CallbackTransportControl callback_transport_control = new CallbackTransportControl() {
-        @Override
-        public int send(byte[] bytes) {
-            return Send(bytes);
-        }
+//    private CallbackTransportControl callback_transport_control = new CallbackTransportControl() {
+//        @Override
+//        public int send(byte[] bytes) {
+//            return Send(bytes);
+//        }
 
 //        @Override
 //        public OutputStream getOutputStream() {
 //            return output_stream;
 //        }
-    };
+//    };
 
 
 

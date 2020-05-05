@@ -16,27 +16,6 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    @Override
-    public byte[] makeContent() {
-        request = new Json();
-        try {
-            request.parse(new String(session.getPayload()));
-        } catch (Exception e) { e.printStackTrace(); }
-
-        answer = new Json();
-
-        byte[] content = makeCont();  // todo: move function here, inline
-
-        return content;
-    }
-
-
-
-
-
-    // -------------------------------- Api -------------------------------- //
-
-//    protected void init(HttpSession session) {
     protected void setSession(HttpSession session) {
         initCommon(session);
         //setContentType("application/json; charset=utf-8");  // utf-8 redundant
@@ -47,7 +26,8 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    // ---- get from json request ---- //
+    // ---------------- get from json request ---------------- //
+
     protected String getString(String key) throws Exception {
         return request.getString(key);
     }
@@ -90,17 +70,28 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    // -------------------------------- Api -------------------------------- //
+    // ------------------------ compose (compile) answer json ------------------------ //
 
-    public byte[] makeCont() {
-        byte[] in_payload = session.getPayload();
+    @Override
+    public byte[] makeContent() {
+        request = new Json();
+        answer = new Json();
+
+
+        // -------- parse request -------- //
 
         try {
-            request.parse(new String(in_payload));
+            request.parse(new String(session.getPayload()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ("{\"error\":\"request parse failed\"}").getBytes();
+            //return ("{\"error\":\"request parse failed\"}").getBytes();
+            put("result", "error");
+            put("error", "request parse failed");
+            return answer.stringify().getBytes();
         }
+
+
+        // -------- make answer -------- //
 
         try {
             makeJson();

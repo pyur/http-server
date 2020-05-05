@@ -29,20 +29,11 @@ public class ProtocolDispatcher {
 
 
 
-//joined    private String ws_key;
-
 
     // ---------------- Callbacks ---------------- //
 
-    private Transport.CallbackTransportControl callback_transport_control;
+//    private Transport.CallbackTransportControl callback_transport_control;
 
-
-
-//x    private CallbackProtocolHeader callback_protocol_header;
-//x
-//x    public interface CallbackProtocolHeader {
-//x        int dispatchRequest(HttpRequest http_request);
-//x    }
 
 
 
@@ -71,9 +62,9 @@ public class ProtocolDispatcher {
 
 
 
-    public ProtocolDispatcher(Transport.CallbackTransportControl callback_transport_control) {
-        this.callback_transport_control = callback_transport_control;
-    }
+//    public ProtocolDispatcher(Transport.CallbackTransportControl callback_transport_control) {
+//        this.callback_transport_control = callback_transport_control;
+//    }
 
 
 
@@ -81,7 +72,6 @@ public class ProtocolDispatcher {
     public void setStateServer(CallbackProtocolServerEvent cb_server_event) {
         state = HTTP_STATE_SERVER;
 
-//x        callback_protocol_header = defaultHeaderDispatcher;
         callback_protocol_server_event = cb_server_event;
     }
 
@@ -116,6 +106,8 @@ public class ProtocolDispatcher {
 
         line_size = nis.read(header_line);  // maybe replace with "Reader"
         if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header receive.");
+
+        System.out.println("---- Request ---------------------------------------------------");
         System.out.println(new String(header_line, 0, line_size));
 
         header.setFirstLine(new String(header_line, 0, line_size));
@@ -132,6 +124,7 @@ public class ProtocolDispatcher {
             System.out.println(new String(header_line, 0, line_size));
             header.addOption(new String(header_line, 0, line_size));
         }
+        System.out.println("----------------------------------------------------------------");
 
 
         // -------- Process header -------- //
@@ -142,7 +135,6 @@ public class ProtocolDispatcher {
         // http server, websocket server, cast server
         if (state == HTTP_STATE_SERVER) {
             HttpRequest http_request = (HttpRequest)header;
-//x            result = callback_protocol_header.dispatchRequest(http_request);
             try {
                 dispatchRequest(http_request);
             } catch (Exception e) { e.printStackTrace(); return header; }
@@ -210,25 +202,10 @@ public class ProtocolDispatcher {
                 if (http_request.hasOption("Sec-WebSocket-Key")) {
                     System.out.println("option \"Sec-WebSocket-Key\" present.");
 
-//joined                    ws_key = http_request.getOption("Sec-WebSocket-Key");
-
-//joined                    // ---- validate auth ---- //
-//joined                    int iResult = 0;
-//joined                    if (callback_protocol_server_event != null)  iResult = callback_protocol_server_event.websocketHeaderReceived(http_request);
-//joined                    else  iResult = -1;
-
-//joined                    if (iResult < 0) {
-                    //Http_SendReferenceWsResponseAuthFail(http);  // into called custom processor
-//joined                        return -1;
-//joined                    }
-
                     state = HTTP_STATE_WS_SERVER;
-
-//joined                    Http_SendReferenceWsResponseOk();
 
                     // set-up websocket server
                     // callback: websocket server
-
 
                     return;
                 }  // "Sec-WebSocket-Key"
@@ -241,7 +218,7 @@ public class ProtocolDispatcher {
 
         if (http_request.hasOption("Icy-MetaData")) {
 
-            //todo            int metadata = atoi(opt->value);
+//todo            int metadata = atoi(opt->value);
 //todo            DebugIVerbose_(http, "found \"icy-metadata: #\". use mode \"audio cast\". ");  di(metadata);  dcd();
 
             state = HTTP_STATE_CAST_SERVER;
@@ -264,9 +241,6 @@ public class ProtocolDispatcher {
         // ---------------- casual http request ---------------- //
         state = HTTP_STATE_HTTP_SERVER;
 
-//joined        int result2 = 0;
-//joined        if (callback_protocol_server_event != null)  result2 = callback_protocol_server_event.httpHeaderReceived(http_request);
-
     }
 
 
@@ -278,17 +252,11 @@ public class ProtocolDispatcher {
         int result = 0;
 
         if (state == HTTP_STATE_HTTP_SERVER) {
-//r            byte[] payload = receivePayload(is, header);
 
             HttpRequest http_request = (HttpRequest)header;
 
             if (callback_protocol_server_event != null) {
-                //maybe here spawn session, call, and dispose
-//r                DispatchedData feedback = callback_protocol_server_event.dispatchRequest(payload);
-//r                byte[] osb = callback_protocol_server_event.http(http_request, is, os);
                 callback_protocol_server_event.http(http_request, is, os);
-
-//r                //Http_Send(osb);
             }
 
         }
@@ -310,10 +278,8 @@ public class ProtocolDispatcher {
             //WebsocketInputStream wis = new WebsocketInputStream(is);
             //WebsocketOutputStream wos = new WebsocketOutputStream(os);
             //result = callback_ws.dataStream(wis, wos);
-//r            OutputStream os = getOutputStream();
 
             // start websocket dispatcher
-//r            if (callback_protocol_server_event != null)  result = callback_protocol_server_event.dispatchStreams(is, os);
 
             HttpRequest http_request = (HttpRequest)header;
             callback_protocol_server_event.websocket(http_request, is, os);
@@ -448,7 +414,6 @@ public class ProtocolDispatcher {
 
     // -------------------- default Websocket Client response dispatcher -------------------- //
 
-//x    private int Http_ProcessWsResponse() {
 //    private CallbackProtocolWsClient defaultWsClientDispatcher = new CallbackProtocolWsClient() {
 //        @Override
 //        public int dispatchResponse(HttpResponse http_response) {
@@ -517,7 +482,7 @@ public class ProtocolDispatcher {
 
 
 
-
+/*
     public static byte[] Http_SendReferenceWsResponseOk(String ws_key) {
         HttpResponse rs = new HttpResponse();
 
@@ -576,23 +541,17 @@ public class ProtocolDispatcher {
 
         //DebugInfo("Http_SendStandardWsResponseOk(). done...");
     }
-
+*/
 
 
 
     // --------------------------------------------------------------------------------------
 
-    private int Http_Send(byte[] bytes) {
-        // ---- redirect call to transport ---- //
-        if (callback_transport_control != null)  return callback_transport_control.send(bytes);
-        return 0;
-    }
-
-
-//x    private OutputStream getOutputStream() {
-//x        if (callback_transport_control != null)  return callback_transport_control.getOutputStream();
-//x        return null;
-//x    }
+//    private int Http_Send(byte[] bytes) {
+//        // ---- redirect call to transport ---- //
+//        if (callback_transport_control != null)  return callback_transport_control.send(bytes);
+//        return 0;
+//    }
 
 
 }

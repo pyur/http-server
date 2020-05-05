@@ -41,11 +41,11 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-//    protected void initHtml(HttpSession session) {
     public void setSession(HttpSession session) {
         initCommon(session);
         setContentType("text/html; charset=utf-8");
         //setContentType("text/plain");
+        // https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
     }
 
 
@@ -94,7 +94,7 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    // ---- compose (compile) page ---- //
+    // ------------------------ compose (compile) page ------------------------ //
 
     @Override
     public byte[] makeContent() {

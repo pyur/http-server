@@ -2,17 +2,19 @@ package ru.pyur.tst;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 
 
 public class WebsocketSession {
 
-//    private WebsocketSession session;
-
     private HttpRequest request_header;
+    private HttpResponse response_header;
 
-    public InputStream input_stream;
-    public OutputStream output_stream;
+    private InputStream input_stream;
+    private OutputStream output_stream;
 
     private DbManager db_manager;
 
@@ -20,23 +22,23 @@ public class WebsocketSession {
 
     private String host;  // option "Host" in http header
 
-//    private String prefix;  // a - api, i - image, e - embed, etc
     public String module;
     public String action;
 
-//    DummyModCallback ws_mod_cb;
+    private String ws_key;
 
 
 
 
-//    public WebsocketSession() {
+
     public WebsocketSession(HttpRequest http_request, InputStream is, OutputStream os) {
-//        session = this;
-//        module = "";
-//        action = "";
         request_header = http_request;
         input_stream = is;
         output_stream = os;
+
+        response_header = new HttpResponse();
+        response_header.setVersion(HttpHeader.HTTP_VERSION_1_1);
+        response_header.setCode(101);
     }
 
 
@@ -44,62 +46,7 @@ public class WebsocketSession {
 
     // --------------------------------------------------------------------------------
 
-    public Transport.CallbackTransportEvents getTransportCallback() { return cb_transport; }
-
-    private Transport.CallbackTransportEvents cb_transport = new Transport.CallbackTransportEvents() {
-        @Override
-        public byte[] onConnected() {
-            System.out.println("onConnected()");
-            return null;
-        }
-
-        @Override
-        public void onFailed() {
-            System.out.println("onFailed()");
-        }
-    };
-
-
-
-//    private ProtocolDispatcher.CallbackProtocolHeader cb_server = new ProtocolDispatcher.CallbackProtocolHeader() {
-//        @Override
-//        public int dispatchRequest(HttpRequest http_request) {
-//            System.out.println("----------- Request -----------");
-//            System.out.println("[" + http_request.szMethod + "] [" + http_request.szLocation + "] [" + http_request.szVersion + "]");
-//
-//            for (PStr option : http_request.options) { System.out.println("[" + option.key + "] : [" + option.value + "]"); }
-//            System.out.println("--------------------------------");
-//
-//            return 0;
-//        }
-//    };
-
-
-/*
-    public ProtocolDispatcher.CallbackSession getProtocolCallback() { return cb_session; }
-
-    private ProtocolDispatcher.CallbackSession cb_session = new ProtocolDispatcher.CallbackSession() {
-        @Override
-        public DispatchedData onReceived(HttpRequest http_request, byte[] bytes) {
-//            System.out.println("----------- Request -----------");
-//            System.out.println("[" + http_request.szMethod + "] [" + http_request.szLocation + "] [" + http_request.szVersion + "]");
-//
-//            for (PStr option : http_request.options) { System.out.println("[" + option.key + "] : [" + option.value + "]"); }
-//            System.out.println("--------------------------------");
-//
-//            System.out.println("----------- Payload ------------");
-//            System.out.println(new String(bytes));
-//            System.out.println("--------------------------------");
-
-            request_header = http_request;
-            request_payload = bytes;
-
-            return getHtml();
-        }
-    };
-*/
-
-//todo    public DbManager getDbManager() { return db_manager; }
+    public DbManager getDbManager() { return db_manager; }
 
     public String getAction() { return action; }
 
@@ -108,39 +55,130 @@ public class WebsocketSession {
     public OutputStream getOutputStream() { return output_stream; }
 
 
-//    public void setRequest(HttpRequest http_request) {
-//        request_header = http_request;
-//    }
 
 
+    // ---- Entry point ------------------------------------------------------------
 
-    // --------------------------------------------------------------------------------
+    public void dispatch() {  // throws Exception {
 
-//    public void dispatch(InputStream is, OutputStream os) throws Exception {
-    public void dispatch() throws Exception {
+        db_manager = new DbManager();
+        db_manager.connectDb();
+        db_manager.connectConfigDb();
 
-        // ---------------- getHtml Host ---------------- //
 
-        //ArrayList<PStr> options = request_header.getOptions();
-        //host = null;
-        //if (request_header.hasOption("Host")) {
-    //    host = request_header.getOption("Host");
+        host = "";
+
+        try {
+            host = request_header.getOption("Host");
+        } catch (Exception e) { }
+
+
+        if (host.isEmpty()) {
+            dispatchDefaultHost();
+        }
+
+        //else if (host.equals("mydomain.com")) {
+        //    dispatchSpecificHost();
         //}
 
+        else {
+            dispatchDefaultHost();
+        }
 
-        //if (host == null) {
-            // default
-        //}
-
-        //else if (host == "mydomain.com") {
-            // mydomain.com
-        //}
-
+        db_manager.closeDb();
+        db_manager.closeConfig();
+    }
 
 
-        // ---------------- getHtml URI ---------------- //
 
-//        boolean isPrefixed = false;
+
+    private void dispatchDefaultHost() {
+
+//        int result = validate();  // try/catch
+//        if (result == -1) {
+//            Http_SendReferenceWsResponseFailed();
+//            return;
+//        }
+
+
+        //String ws_key;
+        try {
+            ws_key = request_header.getOption("Sec-WebSocket-Key");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response404("missing websocket key");
+            return;
+        }
+
+//        byte[] response = ProtocolDispatcher.Http_SendReferenceWsResponseOk(ws_key);
+//
+//        try {
+//            os.write(response);
+//            os.flush();
+//        } catch (Exception e) { e.printStackTrace(); }
+
+
+
+        try {
+            dispatchPath();
+        } catch (Exception e) {
+            response404(e.getMessage());
+            return;
+        }
+
+
+        // -------- user authorization -------- //
+
+        auth = new Auth(db_manager, response_header);
+        try {
+            auth.authByCookie(request_header);
+        } catch (Exception e) {
+            e.printStackTrace();
+//todo            response401();
+//            return;
+            // -- force redirect to auth form -- //
+            //setModule("auth");
+            //setAction("");
+        }
+        //System.out.println("auth state: " + auth.state);
+
+        //modules = auth.getModules();
+
+
+
+        // -------- get module_info -------- //
+
+        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
+
+        if (module_info == null) {
+            response404("no such module \"" + module + "\".");
+            return;
+        }
+
+//        module_info.setWebsocketSession(this);
+
+
+        WebsocketDispatcher wsd = module_info.getWs(getAction());
+
+        if (wsd == null) {
+            response404("module \"" + module + "\" lack websocket support. or wrong action\"" + getAction() + "\"");
+            return;
+        }
+
+        wsd.setSession(this);
+
+
+        responseSwitchingOk();
+
+        // switch input and output streams to websocket protocol
+
+        wsd.dispatch();
+    }
+
+
+
+
+    private void dispatchPath() throws Exception {
         module = "";
         action = "";
 
@@ -151,29 +189,6 @@ public class WebsocketSession {
             // response 400
             throw new Exception("path length less than 2");
         }
-
-
-        // only '/'
-//        if (request_header.lsPath.length < 3) {
-            // root
-//        }
-
-        // '/module/'
-        // '/a/' api
-        // '/e/' embed
-        // '/i/' image
-        // '/k/' kiosk
-//        else {
-            //if (request_header.lsPath[1].equals("a")) { isPrefixed = true;  prefix = 1; }
-            //else if (request_header.lsPath[1].equals("e")) { isPrefixed = true;  prefix = 2; }
-            //else if (request_header.lsPath[1].equals("i")) { isPrefixed = true;  prefix = 3; }
-            //else if (request_header.lsPath[1].equals("k")) { isPrefixed = true;  prefix = 4; }
-
-//            if (request_header.lsPath[1].length() == 1) {
-//                isPrefixed = true;
-//                prefix = request_header.lsPath[1];
-//            }
-//        }
 
 
         // '/module/'
@@ -193,51 +208,71 @@ public class WebsocketSession {
         }
 
 
-
-        // ---- getHtml 'module' ---- //
-
-        //if (module.isEmpty())  module = "default";
-
-        //WsDispatcher md = null;
-        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
-
-        if (module_info == null) {
-//            response404("no such module \"" + module + "\".");
-            return;
-        }
-
-//        module_info.setWebsocketSession(this);
-
-
-        WebsocketDispatcher wsd = module_info.getWs(getAction());
-
-        if (wsd == null) {
-//            response404("module \"" + module + "\" lack html support");
-            return;
-        }
-
-        wsd.setSession(this);
-
-
-        //wsd.setStreams(is, os);
-        wsd.dispatch();
     }
 
 
 
 
-//    public ArrayList<PStr> getQuery() {
-//        return request_header.getQuery();
+//    public int validate() {
+//        System.out.println("WebsocketSession. validate()");
+//        return 1;
 //    }
 
 
 
 
-    public int validate() {
-        System.out.println("WebsocketSession. validate()");
+    // ---- Responses ------------------------------------------------------------
+
+    private void responseSwitchingOk() {
+        //response_header.appendPayload(contents);
+        response_header.addOption("Upgrade", "websocket");
+        response_header.addOption("Connection", "Upgrade");
+
+        // ---- calc hash ---- //
+        String ws_key_resp = ws_key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+        byte[] sha1 = null;
+        try {
+            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+            crypt.reset();
+            crypt.update(ws_key_resp.getBytes());  // getBytes("UTF-8")
+            sha1 = crypt.digest();
+        } catch(NoSuchAlgorithmException e) { e.printStackTrace(); }
+
+        String szKey64 = new String (Base64.getEncoder().encode(sha1));
+
+        response_header.addOption("Sec-WebSocket-Accept", szKey64);
+
+        send(response_header.stringify());
+    }
 
 
-        return 1;
+
+    private void response400() {
+        response_header.setCode(400);
+        send(response_header.stringify());
+    }
+
+
+
+    private void response404(String message) {
+        response_header.setCode(404);
+        response_header.appendPayload(message);
+        send(response_header.stringify());
+    }
+
+
+
+
+    private void send(byte[] bytes) {
+        //System.out.println("---- HttpSession. Send -----------------------------------------");
+        //System.out.println(new String(bytes));
+        //System.out.println("----------------------------------------------------------------");
+
+        try {
+            output_stream.write(bytes);
+            output_stream.flush();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 

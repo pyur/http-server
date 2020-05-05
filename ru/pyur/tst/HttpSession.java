@@ -9,13 +9,10 @@ import java.util.ArrayList;
 
 public class HttpSession {
 
-    private HttpSession session;
-
     private HttpRequest request_header;
     private byte[] payload;
 
     private HttpResponse response_header;
-    //private byte[] response_payload;
 
     private InputStream input_stream;
     private OutputStream output_stream;
@@ -54,16 +51,7 @@ public class HttpSession {
 
 
 
-
-//    public HttpSession() {
-//        session = this;
-//        //module = "";
-//        //action = "";
-//    }
-
-
     public HttpSession(HttpRequest http_request, InputStream is, OutputStream os) {
-        session = this;
         request_header = http_request;
         input_stream = is;
         output_stream = os;
@@ -78,16 +66,11 @@ public class HttpSession {
 
     // --------------------------------------------------------------------------------
 
-//    public void setRequest(HttpRequest http_request) {
-//        request_header = http_request;
-//    }
-
-
     public DbManager getDbManager() { return db_manager; }
 
-    public ArrayList<PStr> getQuery() {
-        return request_header.getQuery();
-    }
+    public ArrayList<PStr> getQuery() { return request_header.getQuery(); }
+
+    public HttpResponse getResponseHeader() { return response_header; }
 
     public String getModule() { return module; }
 
@@ -124,6 +107,7 @@ public class HttpSession {
         db_manager = new DbManager();
         db_manager.connectDb();
         db_manager.connectConfigDb();
+
 
         host = "";
 
@@ -167,8 +151,7 @@ public class HttpSession {
 
         // -------- user authorization -------- //
 
-        //auth = new Auth(db_manager, co_session);
-        auth = new Auth(session);
+        auth = new Auth(db_manager, response_header);
         try {
             auth.authByCookie(request_header);
         } catch (Exception e) {
@@ -179,7 +162,7 @@ public class HttpSession {
             //setModule("auth");
             //setAction("");
         }
-        System.out.println("auth state: " + auth.state);
+        //System.out.println("auth state: " + auth.state);
 
         //modules = auth.getModules();
 
@@ -342,7 +325,7 @@ public class HttpSession {
         HtmlContent html_content = module_info.getHtml(getAction());
 
         if (html_content == null) {
-            response404("module \"" + module + "\" lack html support");
+            response404("module \"" + module + "\" lack html support. or no action \"" + getAction() + "\"");
             return;
         }
 
@@ -399,8 +382,8 @@ public class HttpSession {
 
 
         byte[] content = api_content.makeContent();
-        byte[] compressed_content = null;
 
+        // compression
 
         response(content);
     }
@@ -474,7 +457,6 @@ public class HttpSession {
             output_stream.flush();
         } catch (Exception e) { e.printStackTrace(); }
     }
-
 
 
 }

@@ -26,10 +26,6 @@ public class ServerSsl {
 
     private int port;
 
-//    private HttpSession http_session;
-
-//    private WebsocketSession ws_session;
-
 
 
     public ServerSsl(int port) {
@@ -165,9 +161,9 @@ public class ServerSsl {
         public void http(HttpRequest http_request, InputStream is, OutputStream os) {
             HttpSession http_session = new HttpSession(http_request, is, os);
 
-            try {
+            //try {
                 http_session.dispatch();
-            } catch (Exception e) { e.printStackTrace(); }
+            //} catch (Exception e) { e.printStackTrace(); }
         }
 
 
@@ -175,36 +171,13 @@ public class ServerSsl {
         @Override
         public void websocket(HttpRequest http_request, InputStream is, OutputStream os) {
             WebsocketSession ws_session = new WebsocketSession(http_request, is, os);
-            int result = ws_session.validate();  // try/catch
-            if (result == -1) {
-//todo            Http_SendReferenceWsResponseFailed();
-                return;
-            }
 
-            // -- maybe move it to 'WebsocketSession' -- //
-            String ws_key;
-            try {
-                ws_key = http_request.getOption("Sec-WebSocket-Key");
-            } catch (Exception e) { e.printStackTrace(); return; }
-
-            byte[] response = ProtocolDispatcher.Http_SendReferenceWsResponseOk(ws_key);
-
-            try {
-                os.write(response);
-                os.flush();
-            } catch (Exception e) { e.printStackTrace(); }
-            // -- end-move -- //
-
-
-//            ws_session.setRequest(http_request);
-
-            try {
-//                ws_session.dispatch(is, os);
+//            try {
                 ws_session.dispatch();
-            } catch (Exception e) {
-                e.printStackTrace();
-                //maybe try send to 'OutputStream' close packet with reason
-            }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                //maybe try send to 'OutputStream' close packet with reason
+//            }
 
         }
 

@@ -1,6 +1,5 @@
 package ru.pyur.tst;
 
-import java.io.OutputStream;
 
 public class Transport {
 
@@ -13,10 +12,10 @@ public class Transport {
     }
 
 
-    public interface CallbackTransportControl {
-        int send(byte[] bytes);
-        //OutputStream getOutputStream();
-    }
+//    public interface CallbackTransportControl {
+//        int send(byte[] bytes);
+//        //OutputStream getOutputStream();
+//    }
 
 
 }

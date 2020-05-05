@@ -46,12 +46,10 @@ public class Auth {
     private final int AUTH_TOKEN_LIFE_TIME = 60;  // seconds
 
 //    ControlSession co_session;
-    HttpSession session;
+//    HttpSession session;
 
-
-    // ---------------- //
-
-    HttpRequest request_header;
+    private HttpRequest request_header;  // redundant. todo: fold
+    private HttpResponse response_header;
 
     private DbManager db_manager;
 
@@ -65,9 +63,14 @@ public class Auth {
 //        this.co_session = co_session;
 //    }
 
-    public Auth(HttpSession session) {
-        this.session = session;
-        db_manager = session.getDbManager();
+//    public Auth(HttpSession session) {
+//        this.session = session;
+//        db_manager = session.getDbManager();
+//    }
+
+    public Auth(DbManager dbm, HttpResponse response_header) {
+        db_manager = dbm;
+        this.response_header = response_header;
     }
 
 
@@ -265,9 +268,6 @@ public class Auth {
         String token = makeToken(user_id, session_id);
 
         // -------- update COOKIE -------- //
-//+        header ("Cache-Control: no-cache, must-revalidate");
-//+        header ("Expires: Thu, 17 Apr 1991 12:00:00 GMT");  // Wed
-//+        setcookie ('t', $token, time()+60*60*24*30*12*5, '/');  // 5 years
         setCookie(token);
     }
 
@@ -281,10 +281,6 @@ public class Auth {
         int session_id = newSession(user_id);
         String token = makeToken(user_id, session_id);
 
-        // -------- set COOKIE -------- //
-//+        header ("Cache-Control: no-cache, must-revalidate");
-//+        header ("Expires: Thu, 17 Apr 1991 12:00:00 GMT");  // Wed
-//+        setcookie ('t', $token, time()+60*60*24*30*12*5, '/');  // 5 years
         setCookie(token);
     }
 
@@ -381,7 +377,7 @@ public class Auth {
     private void setCookie(String value) {
         int current_time = (int)(System.currentTimeMillis() / 1000);
         int lifetime = 60 * 60 * 24 * 30 * 12 * 5;  // ~5 years
-        session.setCookie("t", value, current_time + lifetime, "/");
+        response_header.setCookie("t", value, current_time + lifetime, "/");
     }
 
 
@@ -391,7 +387,7 @@ public class Auth {
 //        setcookie('t', '', time()-60*60, '/');
 
         int current_time = (int)(System.currentTimeMillis() / 1000);
-        session.setCookie("t", "", current_time - 3600, "/");
+        response_header.setCookie("t", "", current_time - 3600, "/");
         state = 4;
     }
 

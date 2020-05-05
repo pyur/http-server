@@ -7,11 +7,6 @@ import ru.pyur.tst.HttpSession;
 
 public class Api_Auth extends ApiContent {
 
-
-//    public Api_Auth(HttpSession session) { init(session); }
-
-
-
     @Override
     public void makeJson() throws Exception {
 
@@ -28,7 +23,7 @@ public class Api_Auth extends ApiContent {
 
 
         if (user_id != -1) {
-            Auth auth = new Auth(session);
+            Auth auth = new Auth(session.getDbManager(), session.getResponseHeader());
             auth.newAuth(user_id);
             put("result", "ok");
         }
