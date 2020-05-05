@@ -5,9 +5,9 @@ import ru.pyur.tst.HttpSession;
 
 public class Md_Water extends HtmlContent {
 
-    public Md_Water(HttpSession session) {
-        initHtml(session);
-    }
+//x    public Md_Water(HttpSession session) {
+//x        initHtml(session);
+//x    }
 
 
 

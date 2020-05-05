@@ -8,7 +8,7 @@ import ru.pyur.tst.tags.*;
 public class Html_Auth extends HtmlContent {
 
 
-    public Html_Auth(HttpSession session) { initHtml(session); }
+//    public Html_Auth(HttpSession session) { initHtml(session); }
 
 
 

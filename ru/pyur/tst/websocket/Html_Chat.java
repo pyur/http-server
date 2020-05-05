@@ -8,12 +8,12 @@ import java.io.File;
 import java.io.FileInputStream;
 
 
-public class Md_Chat extends HtmlContent {
+public class Html_Chat extends HtmlContent {
 
     //public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-    public Md_Chat(HttpSession session) { initHtml(session); }
+//    public Html_Chat(HttpSession session) { initHtml(session); }
 
 
     private class ModuleDesc {

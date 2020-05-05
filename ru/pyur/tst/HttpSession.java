@@ -322,50 +322,6 @@ public class HttpSession {
 
 
 
-    private ModuleInfo getModuleInfo() {
-        ModuleInfo module_info = null;
-
-        if (module.isEmpty()) {
-            //todo: default page
-            module_info = new ru.pyur.tst.default_module.Info(session);
-        }
-
-        else if (module.equals("auth")) {
-            module_info = new ru.pyur.tst.auth.Info(session);
-        }
-
-        else if (module.equals("elec")) {
-            //mi = new ru.pyur.tst.elec.Info();
-            //html_content = new ru.pyur.tst.elec.Md_Elec(session);  // rewrite
-        }
-
-        else if (module.equals("water")) {
-            //mi = new ru.pyur.tst.water.Info();
-            //html_content = new ru.pyur.tst.water.Md_Water(session);  // rewrite
-        }
-
-        else if (module.equals("db")) {
-            module_info = new ru.pyur.tst.dbedit.Info(session);
-        }
-
-        else if (module.equals("res")) {
-            module_info = new ru.pyur.tst.resources.Info(session);
-        }
-
-        else if (module.equals("ws")) {
-            module_info = new ru.pyur.tst.websocket.Info(session);
-        }
-
-        else if (module.equals("battleship")) {
-            module_info = new ru.pyur.tst.battleship.Info(session);
-        }
-
-        //else if (module.equals("ext")) {
-        //    module_info = new ru.pyur.tst.extsample.ExtMod();
-        //}
-
-        return module_info;
-    }
 
 
 
@@ -373,20 +329,24 @@ public class HttpSession {
     // -------------------------------- Html module -------------------------------- //
 
     private void processHtml() {
-        ModuleInfo module_info = getModuleInfo();
+        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
 
         if (module_info == null) {
             response404("no such module \"" + module + "\".");
             return;
         }
 
+//        module_info.setHttpSession(session);
 
-        HtmlContent html_content = module_info.getHtml();
+
+        HtmlContent html_content = module_info.getHtml(getAction());
 
         if (html_content == null) {
             response404("module \"" + module + "\" lack html support");
             return;
         }
+
+        html_content.setSession(this);  // rename to init
 
 
         byte[] content = html_content.makeContent();
@@ -418,20 +378,24 @@ public class HttpSession {
     // -------------------------------- Api module -------------------------------- //
 
     private void processApi() {
-        ModuleInfo module_info = getModuleInfo();
+        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
 
         if (module_info == null) {
             response404("no such module \"" + module + "\".");
             return;
         }
 
+//        module_info.setHttpSession(session);
 
-        ApiContent api_content = module_info.getApi();
+
+        ApiContent api_content = module_info.getApi(getAction());
 
         if (api_content == null) {
             response404("module \"" + module + "\" lack html support");
             return;
         }
+
+        api_content.setSession(this);  // rename to init
 
 
         byte[] content = api_content.makeContent();

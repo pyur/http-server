@@ -13,31 +13,31 @@ public class Info extends ModuleInfo {
     //public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info() {}
+//x    public Info() {}
 
-    public Info(HttpSession http_session) {
+//x    public Info(HttpSession http_session) {
         //System.out.println("Info(Session)");
-        setHttpSession(http_session);
-    }
+//x        setHttpSession(http_session);
+//x    }
 
 
-    public Info(WebsocketSession websocket_session) {
+//x    public Info(WebsocketSession websocket_session) {
         //System.out.println("Info(Session)");
-        setWebsocketSession(websocket_session);
-    }
+//x        setWebsocketSession(websocket_session);
+//x    }
 
 
-    public String ModuleName() { return NAME; }
+//x    public String ModuleName() { return NAME; }
 
 
 
 
     @Override
-    public HtmlContent getHtml() {
+    public HtmlContent getHtml(String action) {
         HtmlContent html_content = null;
 
         if (action.isEmpty()) {
-            html_content = new Html_Default(session);
+            html_content = new Html_Default();
         }
 
         //else if (action.equals(WEBSOCKET_ACTION_GENERATE_SPRITE_ACTION)) {
@@ -51,11 +51,11 @@ public class Info extends ModuleInfo {
 
 
     @Override
-    public ApiContent getApi() {
+    public ApiContent getApi(String action) {
         ApiContent api_content = null;
 
         if (action.isEmpty()) {
-            api_content = new Api_Default(session);
+            api_content = new Api_Default();
         }
 
         //else if (action.equals(WEBSOCKET_ACTION_GENERATE_SPRITE_ACTION)) {
@@ -66,19 +66,6 @@ public class Info extends ModuleInfo {
         return api_content;
     }
 
-
-
-//    @Override
-//    public WebsocketModule getWs() {
-//        WebsocketModule websocket_module = null;
-//
-//        if (action.isEmpty()) {
-//            websocket_module = new Ws_Default();
-//            //wsm.setStreams();
-//        }
-//
-//        return websocket_module;
-//    }
 
 
 }

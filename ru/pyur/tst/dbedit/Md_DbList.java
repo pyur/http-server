@@ -12,9 +12,9 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
 
 public class Md_DbList extends HtmlContent {
 
-    public Md_DbList(HttpSession session) {
-        initHtml(session);
-    }
+//    public Md_DbList(HttpSession session) {
+//        initHtml(session);
+//    }
 
 
 

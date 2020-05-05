@@ -36,7 +36,8 @@ public abstract class ApiContent extends ContentBase {
 
     // -------------------------------- Api -------------------------------- //
 
-    protected void init(HttpSession session) {
+//    protected void init(HttpSession session) {
+    protected void setSession(HttpSession session) {
         initCommon(session);
         //setContentType("application/json; charset=utf-8");  // utf-8 redundant
         setContentType("application/json");
@@ -60,8 +61,30 @@ public abstract class ApiContent extends ContentBase {
 
 
     // ---- append to json answer ---- //
-    protected void put(String key, String value) throws Exception {
-        answer.add(key, value);
+    protected void putArray(Json array) {
+        if (!array.isArray())  return;  // throw new Exception("type not array");
+
+        try {
+            answer.addToObject(array);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+
+
+    protected void putObject(Json object) {
+        if (!object.isObject())  return;  // throw new Exception("type not object");
+
+        try {
+            answer.addToObject(object);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+
+
+    protected void put(String key, String value) {
+        try {
+            answer.add(key, value);
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 
@@ -83,14 +106,37 @@ public abstract class ApiContent extends ContentBase {
             makeJson();
         } catch (Exception e) {
             e.printStackTrace();
-            //todo: append to 'answer' e.toString());
+
+            // ---- append to 'answer' e.toString()); ---- //
+            // maybe reset answer before adding
+
+            try {
+                Json exc = new Json("exception");
+
+                //exc.add("result", "error");
+                exc.add("error", "makeJson failed");
+
+                exc.add("class", e.getClass().getName());
+                exc.add("desc", e.getMessage());
+
+                StackTraceElement[] stack_trace = e.getStackTrace();
+                Json jst = new Json("stack_trace").array();
+                for (StackTraceElement ste : stack_trace) {
+                    Json stl = new Json();  // anonymous object
+                    stl.add("class", ste.getClassName());
+                    stl.add("method", ste.getMethodName());
+                    stl.add("file", ste.getFileName());
+                    stl.add("line", ste.getLineNumber());
+                    jst.addToArray(stl);
+                }
+                //putArray(jst);
+                exc.addToObject(jst);
+                putObject(exc);
+            } catch (Exception e2) { e2.printStackTrace(); put("exception", "failed"); }
         }
 
         return answer.stringify().getBytes();
     }
-
-
-
 
 
 }

@@ -54,6 +54,13 @@ public class Json {
     }
 
 
+    public Json(String key) {
+        type = JSON_TYPE_OBJECT;
+        this.key = key;
+        lsJson = new ArrayList<>();
+    }
+
+
     // -------- without key -------- //
 
     //public Json(ArrayList<Json> arr) {
@@ -69,28 +76,28 @@ public class Json {
     }
 
 
-    public Json(int num) {
-        type = JSON_TYPE_INTEGER;
-        integer = num;
-    }
-
-
-    public Json(double num) {
-        type = JSON_TYPE_DOUBLE;
-        fractional = num;
-    }
-
-
-    public Json(String string) {
-        type = JSON_TYPE_STRING;
-        this.string = string;
-    }
-
-
-    public Json(boolean b) {
-        type = JSON_TYPE_BOOLEAN;
-        integer = b ? 1 : 0;
-    }
+//    public Json(int num) {
+//        type = JSON_TYPE_INTEGER;
+//        integer = num;
+//    }
+//
+//
+//    public Json(double num) {
+//        type = JSON_TYPE_DOUBLE;
+//        fractional = num;
+//    }
+//
+//
+//    public Json(String string) {
+//        type = JSON_TYPE_STRING;
+//        this.string = string;
+//    }
+//
+//
+//    public Json(boolean b) {
+//        type = JSON_TYPE_BOOLEAN;
+//        integer = b ? 1 : 0;
+//    }
 
 
     // -------- with key -------- //
@@ -258,13 +265,19 @@ public class Json {
 
     // -------------------------------- Object, Array adder -------------------------------- //
 
-    public void add(Json json) throws Exception {
-        if (type != JSON_TYPE_OBJECT && type != JSON_TYPE_ARRAY)  throw new Exception("type not object or array");
+    public void addToObject(Json json) throws Exception {
+        if (type != JSON_TYPE_OBJECT)  throw new Exception("type not object");
         lsJson.add(json);
     }
 
 
-    public void add(ArrayList<Json> json_list) throws Exception {
+    public void addToArray(Json json) throws Exception {
+        if (type != JSON_TYPE_ARRAY)  throw new Exception("type not array");
+        lsJson.add(json);
+    }
+
+
+    public void addList(ArrayList<Json> json_list) throws Exception {
         if (type != JSON_TYPE_OBJECT && type != JSON_TYPE_ARRAY) throw new Exception("type not object or array");
         for (Json json : json_list) {
             lsJson.add(json);
@@ -272,24 +285,67 @@ public class Json {
     }
 
 
+    // ---------------- add to object ---------------- //
+
     public void add(String key, int value) throws Exception {
-        add(new Json(key, value));
+        addToObject(new Json(key, value));
     }
 
 
     public void add(String key, double value) throws Exception {
-        add(new Json(key, value));
+        addToObject(new Json(key, value));
     }
 
 
     public void add(String key, String value) throws Exception {
-        add(new Json(key, value));
+        addToObject(new Json(key, value));
     }
 
 
     public void add(String key, boolean value) throws Exception {
-        add(new Json(key, value));
+        addToObject(new Json(key, value));
     }
+
+
+    // ---------------- add to array ---------------- //
+
+    public void add(int value) throws Exception {
+        addToObject(new Json(null, value));
+    }
+
+
+    public void add(double value) throws Exception {
+        addToObject(new Json(null, value));
+    }
+
+
+    public void add(String value) throws Exception {
+        addToObject(new Json(null, value));
+    }
+
+
+    public void add(boolean value) throws Exception {
+        addToObject(new Json(null, value));
+    }
+
+
+
+
+    // ---------------- type ---------------- //
+
+    public boolean isObject() { return  type == JSON_TYPE_OBJECT; }
+
+    public boolean isArray() { return  type == JSON_TYPE_ARRAY; }
+
+    public boolean isInt() { return  type == JSON_TYPE_INTEGER; }
+
+    public boolean isDouble() { return  type == JSON_TYPE_DOUBLE; }
+
+    public boolean isString() { return  type == JSON_TYPE_STRING; }
+
+    public boolean isBoolean() { return  type == JSON_TYPE_BOOLEAN; }
+
+    public boolean isNull() { return  type == JSON_TYPE_NULL; }
 
 
 

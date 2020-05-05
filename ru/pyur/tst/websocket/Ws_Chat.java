@@ -1,10 +1,10 @@
 package ru.pyur.tst.websocket;
 
-import ru.pyur.tst.WebsocketModule;
+import ru.pyur.tst.WebsocketDispatcher;
 import ru.pyur.tst.json.Json;
 
 
-public class Ws_Chat extends WebsocketModule {
+public class Ws_Chat extends WebsocketDispatcher {
 
 
     //@Override

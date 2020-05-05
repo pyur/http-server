@@ -13,28 +13,29 @@ public class Info extends ModuleInfo {
     //public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info() {}
+//x    public Info() {}
 
-    public Info(HttpSession http_session) {
-        //System.out.println("Info(Session)");
-        setHttpSession(http_session);
-    }
-
-
-    public Info(WebsocketSession websocket_session) {
-        //System.out.println("Info(Session)");
-        setWebsocketSession(websocket_session);
-    }
+//x    public Info(HttpSession http_session) {
+//x        //System.out.println("Info(Session)");
+//x        setHttpSession(http_session);
+//x    }
 
 
-    public String ModuleName() { return NAME; }
+//x    public Info(WebsocketSession websocket_session) {
+//x        //System.out.println("Info(Session)");
+//x        setWebsocketSession(websocket_session);
+//x    }
 
 
-    public HtmlContent getHtml() {
+//    public String ModuleName() { return NAME; }
+
+
+    @Override
+    public HtmlContent getHtml(String action) {
         HtmlContent md = null;
 
         if (action.isEmpty()) {
-            md = new Md_Battleship(session);
+            md = new Md_Battleship();
         }
 
         //else if (action.equals(WEBSOCKET_ACTION_GENERATE_SPRITE_ACTION)) {
@@ -49,8 +50,9 @@ public class Info extends ModuleInfo {
 
 
 
-    public WebsocketModule getWs() {
-        WebsocketModule wsm = null;
+    @Override
+    public WebsocketDispatcher getWs(String action) {
+        WebsocketDispatcher wsm = null;
 
         if (action.isEmpty()) {
             wsm = new Ws_Battleship();

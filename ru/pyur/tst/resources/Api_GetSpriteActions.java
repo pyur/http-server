@@ -12,9 +12,9 @@ import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
 
 public class Api_GetSpriteActions extends ApiContent {
 
-    public Api_GetSpriteActions(HttpSession session) {
-        init(session);
-    }
+//    public Api_GetSpriteActions(HttpSession session) {
+//        init(session);
+//    }
 
 
 

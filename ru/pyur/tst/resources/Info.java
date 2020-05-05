@@ -18,31 +18,31 @@ public class Info extends ModuleInfo {
     public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info(HttpSession session) {
+//    public Info(HttpSession session) {
         //System.out.println("Info(Session)");
-        setHttpSession(session);
-    }
+//        setHttpSession(session);
+//    }
 
 
-    public String ModuleName() { return NAME; }
+//    public String ModuleName() { return NAME; }
 
 
 
     @Override
-    public HtmlContent getHtml() {
+    public HtmlContent getHtml(String action) {
         HtmlContent html_content = null;
 
         if (action.isEmpty()) {
-            html_content = new Md_ResList(session);
+            html_content = new Md_ResList();
         }
 
         else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_ACTION)) {
-            html_content = new Md_MakeSpriteActions(session);
+            html_content = new Md_MakeSpriteActions();
         }
 
 
         else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_MODULE)) {
-            html_content = new Md_MakeSpriteModules(session);
+            html_content = new Md_MakeSpriteModules();
         }
 
 
@@ -52,7 +52,7 @@ public class Info extends ModuleInfo {
 
 
     @Override
-    public ApiContent getApi() {
+    public ApiContent getApi(String action) {
         ApiContent api_content = null;
 
         if (action.isEmpty()) {
@@ -60,11 +60,11 @@ public class Info extends ModuleInfo {
         }
 
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_ACTION)) {
-            api_content = new Api_GetSpriteActions(session);
+            api_content = new Api_GetSpriteActions();
         }
 
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_MODULE)) {
-            api_content = new Api_GetSpriteModules(session);
+            api_content = new Api_GetSpriteModules();
         }
 
 

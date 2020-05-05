@@ -12,9 +12,9 @@ import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 public class Api_GetSpriteModules extends ApiContent {
 
-    public Api_GetSpriteModules(HttpSession session) {
-        init(session);
-    }
+//    public Api_GetSpriteModules(HttpSession session) {
+//        init(session);
+//    }
 
 
 

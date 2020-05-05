@@ -19,29 +19,30 @@ public class Info extends ModuleInfo {
     public static final String DBEDIT_PARAM_TABLE = "table";
 
 
-    public Info(HttpSession session) {
+//x    public Info(HttpSession session) {
         //System.out.println("Info(Session)");
-        setHttpSession(session);
-    }
+//x        setHttpSession(session);
+//x    }
 
 
-    public String ModuleName() { return NAME; }
+//    public String ModuleName() { return NAME; }
     //public int ModuleIcon() { return ICON; }
 
 
-    public HtmlContent getHtml() {
+    @Override
+    public HtmlContent getHtml(String action) {
         HtmlContent md = null;
 
         if (action.isEmpty()) {
-            md = new Md_DbList(session);
+            md = new Md_DbList();
         }
 
         else if (action.equals(DBEDIT_ACTION_DB)) {
-            md = new Md_TableList(session);
+            md = new Md_TableList();
         }
 
         else if (action.equals(DBEDIT_ACTION_TABLE)) {
-            md = new Md_TableView(session);
+            md = new Md_TableView();
         }
 
 

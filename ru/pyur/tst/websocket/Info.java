@@ -13,28 +13,30 @@ public class Info extends ModuleInfo {
     //public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info() {}
+//x    public Info() {}
 
-    public Info(HttpSession http_session) {
+//x    public Info(HttpSession http_session) {
         //System.out.println("Info(Session)");
-        setHttpSession(http_session);
-    }
+//x        setHttpSession(http_session);
+//x    }
 
 
-    public Info(WebsocketSession websocket_session) {
+//x    public Info(WebsocketSession websocket_session) {
         //System.out.println("Info(Session)");
-        setWebsocketSession(websocket_session);
-    }
+//x        setWebsocketSession(websocket_session);
+//x    }
 
 
-    public String ModuleName() { return NAME; }
+//    public String ModuleName() { return NAME; }
 
 
-    public HtmlContent getHtml() {
-        HtmlContent md = null;
+    @Override
+    public HtmlContent getHtml(String action) {
+        HtmlContent html_content = null;
 
         if (action.isEmpty()) {
-            md = new Md_Chat(session);
+//            md = new Html_Chat(session);
+            html_content = new Html_Chat();
         }
 
         //else if (action.equals(WEBSOCKET_ACTION_GENERATE_SPRITE_ACTION)) {
@@ -44,20 +46,22 @@ public class Info extends ModuleInfo {
 
 
 
-        return md;
+        return html_content;
     }
 
 
 
-    public WebsocketModule getWs() {
-        WebsocketModule wsm = null;
+    @Override
+    public WebsocketDispatcher getWs(String action) {
+        WebsocketDispatcher wsd = null;
 
         if (action.isEmpty()) {
-            wsm = new Ws_Chat();
+            wsd = new Ws_Chat();
+            //wsm.setSession(websocket_session);
             //wsm.setStreams();
         }
 
-        return wsm;
+        return wsd;
     }
 
 

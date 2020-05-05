@@ -1,10 +1,10 @@
 package ru.pyur.tst.battleship;
 
-import ru.pyur.tst.WebsocketModule;
+import ru.pyur.tst.WebsocketDispatcher;
 import ru.pyur.tst.json.Json;
 
 
-public class Ws_Battleship extends WebsocketModule {
+public class Ws_Battleship extends WebsocketDispatcher {
 
     private BattleshipManager bs_manager;
     //private int user;

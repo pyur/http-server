@@ -10,22 +10,33 @@ public class WebsocketSession {
 //    private WebsocketSession session;
 
     private HttpRequest request_header;
-//    private byte[] request_payload;
+
+    public InputStream input_stream;
+    public OutputStream output_stream;
+
+    private DbManager db_manager;
+
+    private Auth auth;
+
     private String host;  // option "Host" in http header
 
-    private String prefix;  // a - api, i - image, e - embed, etc
+//    private String prefix;  // a - api, i - image, e - embed, etc
     public String module;
     public String action;
 
-    DummyModCallback ws_mod_cb;
+//    DummyModCallback ws_mod_cb;
 
 
 
 
-    public WebsocketSession() {
+//    public WebsocketSession() {
+    public WebsocketSession(HttpRequest http_request, InputStream is, OutputStream os) {
 //        session = this;
-        module = "";
-        action = "";
+//        module = "";
+//        action = "";
+        request_header = http_request;
+        input_stream = is;
+        output_stream = os;
     }
 
 
@@ -88,15 +99,25 @@ public class WebsocketSession {
     };
 */
 
-    public void setRequest(HttpRequest http_request) {
-        request_header = http_request;
-    }
+//todo    public DbManager getDbManager() { return db_manager; }
+
+    public String getAction() { return action; }
+
+    public InputStream getInputStream() { return input_stream; }
+
+    public OutputStream getOutputStream() { return output_stream; }
+
+
+//    public void setRequest(HttpRequest http_request) {
+//        request_header = http_request;
+//    }
 
 
 
     // --------------------------------------------------------------------------------
 
-    public void dispatch(InputStream is, OutputStream os) throws Exception {
+//    public void dispatch(InputStream is, OutputStream os) throws Exception {
+    public void dispatch() throws Exception {
 
         // ---------------- getHtml Host ---------------- //
 
@@ -119,57 +140,58 @@ public class WebsocketSession {
 
         // ---------------- getHtml URI ---------------- //
 
-        boolean isPrefixed = false;
+//        boolean isPrefixed = false;
+        module = "";
+        action = "";
+
+        int path_length = request_header.lsPath.length;
+
+
+        if (path_length < 2) {
+            // response 400
+            throw new Exception("path length less than 2");
+        }
+
 
         // only '/'
-        if (request_header.lsPath.length < 3) {
+//        if (request_header.lsPath.length < 3) {
             // root
-        }
+//        }
 
         // '/module/'
         // '/a/' api
         // '/e/' embed
         // '/i/' image
         // '/k/' kiosk
-        else {
+//        else {
             //if (request_header.lsPath[1].equals("a")) { isPrefixed = true;  prefix = 1; }
             //else if (request_header.lsPath[1].equals("e")) { isPrefixed = true;  prefix = 2; }
             //else if (request_header.lsPath[1].equals("i")) { isPrefixed = true;  prefix = 3; }
             //else if (request_header.lsPath[1].equals("k")) { isPrefixed = true;  prefix = 4; }
 
-            if (request_header.lsPath[1].length() == 1) {
-                isPrefixed = true;
-                prefix = request_header.lsPath[1];
-            }
+//            if (request_header.lsPath[1].length() == 1) {
+//                isPrefixed = true;
+//                prefix = request_header.lsPath[1];
+//            }
+//        }
+
+
+        // '/module/'
+        if (path_length == 3) {
+            module = request_header.lsPath[1];
         }
 
-
-        if (!isPrefixed) {
-            // '/module/'
-            if (request_header.lsPath.length == 3) {
-                module = request_header.lsPath[1];
-            }
-
-            // '/module/action/'
-            else if (request_header.lsPath.length == 4) {
-                module = request_header.lsPath[1];
-                action = request_header.lsPath[2];
-            }
-
+        // '/module/action/'
+        else if (path_length == 4) {
+            module = request_header.lsPath[1];
+            action = request_header.lsPath[2];
         }
 
         else {
-            // '/?/module/'
-            if (request_header.lsPath.length == 4) {
-                module = request_header.lsPath[2];
-            }
-
-            // '/?/module/action/'
-            else if (request_header.lsPath.length == 5) {
-                module = request_header.lsPath[2];
-                action = request_header.lsPath[3];
-            }
+            // response 400
+            throw new Exception("path length more than 4");
         }
+
 
 
         // ---- getHtml 'module' ---- //
@@ -177,73 +199,41 @@ public class WebsocketSession {
         //if (module.isEmpty())  module = "default";
 
         //WsDispatcher md = null;
-        ModuleInfo info = null;
+        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
 
-        //todo: attach dispatcher
-
-
-        if (module.isEmpty()) {
-            info = new ru.pyur.tst.websocket.Info(this);
-            //ws_mod_cb = info.setGetWebsocketCallback();
-            WebsocketModule wsm = info.getWs();
-            // todo: info.getWs(is, os).getHtml();
-            //info.setWebsocketSession(this);
-            wsm.setStreams(is, os);
-            wsm.dispatch();
+        if (module_info == null) {
+//            response404("no such module \"" + module + "\".");
+            return;
         }
 
-//        if (module.equals("ws")) {
-//        }
+//        module_info.setWebsocketSession(this);
 
-        else if (module.equals("battleship")) {
-            info = new ru.pyur.tst.battleship.Info(this);
-            //ws_mod_cb = info.setGetWebsocketCallback();
-            WebsocketModule wsm = info.getWs();
-            // todo: info.getWs(is, os).getHtml();
-            //info.setWebsocketSession(this);
-            wsm.setStreams(is, os);
-            wsm.dispatch();
+
+        WebsocketDispatcher wsd = module_info.getWs(getAction());
+
+        if (wsd == null) {
+//            response404("module \"" + module + "\" lack html support");
+            return;
         }
 
-//        else if (module.equals("db")) {
-//            md = new ru.pyur.tst.dbedit.Info(session).getHtml();
-//        }
-//
-//        else if (module.equals("res")) {
-//            md = new ru.pyur.tst.resources.Info(session).getHtml();
-//        }
-
-        //else if (module.equals("ext")) {
-        //    new ru.pyur.tst.extsample.ExtMod();
-        //}
+        wsd.setSession(this);
 
 
-//        if (md != null) {
-//            byte[] contents = md.makeContent();
-//            byte[] compressed_contents = null;
-//
-//            ArrayList<PStr> response_options = md.getOptions();
-//
-//            return new DispatchedData(contents, response_options);
-//        }
-
-
-
-
-        //return null;
+        //wsd.setStreams(is, os);
+        wsd.dispatch();
     }
 
 
 
 
-    public ArrayList<PStr> getQuery() {
-        return request_header.getQuery();
-    }
+//    public ArrayList<PStr> getQuery() {
+//        return request_header.getQuery();
+//    }
 
 
 
 
-    public int validate(HttpRequest http_request) {
+    public int validate() {
         System.out.println("WebsocketSession. validate()");
 
 

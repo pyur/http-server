@@ -8,7 +8,7 @@ import ru.pyur.tst.HttpSession;
 public class Api_Auth extends ApiContent {
 
 
-    public Api_Auth(HttpSession session) { init(session); }
+//    public Api_Auth(HttpSession session) { init(session); }
 
 
 
@@ -39,6 +39,7 @@ public class Api_Auth extends ApiContent {
             //maybe set response code 401
         }
 
+//        throw new Exception("some mess.");
     }
 
 }

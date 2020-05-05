@@ -1,21 +1,21 @@
 package ru.pyur.tst.elec;
 
 import ru.pyur.tst.HtmlContent;
+import ru.pyur.tst.ModuleInfo;
 
 
-public class Info {
+public class Info extends ModuleInfo {
 
     private static final String NAME = "elec";
-    //private static final int ICON = R.mipmap.elec;
-    //private static final Fragment UI = "Fm_Elec";
 
 
-    public String ModuleName() { return NAME; }
+//    public String ModuleName() { return NAME; }
     //public int ModuleIcon() { return ICON; }
 
 
-    public HtmlContent module() {
-        return new Md_Elec(null);
+    @Override
+    public HtmlContent getHtml(String action) {
+        return new Html_Elec();
     }
 
 }

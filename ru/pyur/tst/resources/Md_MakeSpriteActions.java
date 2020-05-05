@@ -16,7 +16,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
     public static final String CONFIG_ACTION_ICON_UPD = "action_icon_upd";
 
 
-    public Md_MakeSpriteActions(HttpSession session) { initHtml(session); }
+//    public Md_MakeSpriteActions(HttpSession session) { initHtml(session); }
 
 
 

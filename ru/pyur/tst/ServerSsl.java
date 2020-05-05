@@ -174,8 +174,8 @@ public class ServerSsl {
 
         @Override
         public void websocket(HttpRequest http_request, InputStream is, OutputStream os) {
-            WebsocketSession ws_session = new WebsocketSession();
-            int result = ws_session.validate(http_request);
+            WebsocketSession ws_session = new WebsocketSession(http_request, is, os);
+            int result = ws_session.validate();  // try/catch
             if (result == -1) {
 //todo            Http_SendReferenceWsResponseFailed();
                 return;
@@ -196,11 +196,15 @@ public class ServerSsl {
             // -- end-move -- //
 
 
-            ws_session.setRequest(http_request);
+//            ws_session.setRequest(http_request);
 
             try {
-                ws_session.dispatch(is, os);
-            } catch (Exception e) { e.printStackTrace(); }
+//                ws_session.dispatch(is, os);
+                ws_session.dispatch();
+            } catch (Exception e) {
+                e.printStackTrace();
+                //maybe try send to 'OutputStream' close packet with reason
+            }
 
         }
 

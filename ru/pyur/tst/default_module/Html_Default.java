@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 public class Html_Default extends HtmlContent {
 
 
-    public Html_Default(HttpSession session) { initHtml(session); }
+//    public Html_Default(HttpSession session) { initHtml(session); }
 
 
 
@@ -20,7 +20,6 @@ public class Html_Default extends HtmlContent {
         title("Добро пожаловать");
 
         heading("Reference Http Java Server");
-
 
     }
 

@@ -12,7 +12,7 @@ public class Md_Battleship extends HtmlContent {
     //public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-    public Md_Battleship(HttpSession session) { initHtml(session); }
+//    public Md_Battleship(HttpSession session) { initHtml(session); }
 
 
     private class ModuleDesc {

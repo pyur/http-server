@@ -16,22 +16,22 @@ public class Info extends ModuleInfo {
     //public static final String RESOURCES_PARAM_t = "t";
 
 
-    public Info(HttpSession session) {
+//x    public Info(HttpSession session) {
         //System.out.println("Info(Session)");
-        setHttpSession(session);
-    }
+//x        setHttpSession(session);
+//x    }
 
 
-    public String ModuleName() { return NAME; }
+//    public String ModuleName() { return NAME; }
 
 
 
     @Override
-    public HtmlContent getHtml() {
+    public HtmlContent getHtml(String action) {
         HtmlContent html_content = null;
 
         if (action.isEmpty()) {
-            html_content = new Html_Auth(session);
+            html_content = new Html_Auth();
         }
 
 //        else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_ACTION)) {
@@ -46,11 +46,11 @@ public class Info extends ModuleInfo {
 
 
     @Override
-    public ApiContent getApi() {
+    public ApiContent getApi(String action) {
         ApiContent api_content = null;
 
         if (action.isEmpty()) {
-            api_content = new Api_Auth(session);
+            api_content = new Api_Auth();
         }
 
         //else if (action.equals(WEBSOCKET_ACTION_GENERATE_SPRITE_ACTION)) {

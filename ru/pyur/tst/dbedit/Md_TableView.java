@@ -14,9 +14,9 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
 public class Md_TableView extends HtmlContent {
 
 
-    public Md_TableView(HttpSession session) {
-        initHtml(session);
-    }
+//    public Md_TableView(HttpSession session) {
+//        initHtml(session);
+//    }
 
 
 

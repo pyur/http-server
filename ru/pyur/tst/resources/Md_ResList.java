@@ -9,9 +9,9 @@ import java.sql.*;
 
 public class Md_ResList extends HtmlContent {
 
-    public Md_ResList(HttpSession session) {
-        initHtml(session);
-    }
+//    public Md_ResList(HttpSession session) {
+//        initHtml(session);
+//    }
 
 
 

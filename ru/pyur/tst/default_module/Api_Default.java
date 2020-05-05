@@ -7,7 +7,7 @@ import ru.pyur.tst.HttpSession;
 public class Api_Default extends ApiContent {
 
 
-    public Api_Default(HttpSession session) { init(session); }
+//    public Api_Default(HttpSession session) { init(session); }
 
 
 

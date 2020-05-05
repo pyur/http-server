@@ -41,7 +41,8 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    protected void initHtml(HttpSession session) {
+//    protected void initHtml(HttpSession session) {
+    public void setSession(HttpSession session) {
         initCommon(session);
         setContentType("text/html; charset=utf-8");
         //setContentType("text/plain");

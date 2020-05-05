@@ -17,9 +17,9 @@ public class Md_TableList extends HtmlContent {
 
 
 
-    public Md_TableList(HttpSession session) {
-        initHtml(session);
-    }
+//    public Md_TableList(HttpSession session) {
+//        initHtml(session);
+//    }
 
 
 

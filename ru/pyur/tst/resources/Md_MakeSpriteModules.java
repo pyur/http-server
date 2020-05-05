@@ -16,7 +16,7 @@ public class Md_MakeSpriteModules extends HtmlContent {
     public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-    public Md_MakeSpriteModules(HttpSession session) { initHtml(session); }
+//    public Md_MakeSpriteModules(HttpSession session) { initHtml(session); }
 
 
     private class ModuleDesc {

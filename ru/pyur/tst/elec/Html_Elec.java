@@ -10,15 +10,15 @@ import ru.pyur.tst.tags.Tr;
 import java.sql.*;
 
 
-public class Md_Elec extends HtmlContent {
+public class Html_Elec extends HtmlContent {
 
 
-    public Md_Elec(HttpSession session) {
-        initHtml(session);
-    }
+//    public Html_Elec(HttpSession session) {
+//        initHtml(session);
+//    }
 
 
-
+    @Override
     public void makeHtml() {
 
         Div div = new Div();
