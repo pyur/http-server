@@ -10,7 +10,6 @@ public class Info extends ModuleInfo {
 
 
 //    public String ModuleName() { return NAME; }
-    //public int ModuleIcon() { return ICON; }
 
 
     @Override

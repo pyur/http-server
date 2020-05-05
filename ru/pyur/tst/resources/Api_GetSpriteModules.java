@@ -2,6 +2,7 @@ package ru.pyur.tst.resources;
 
 import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HttpSession;
+import ru.pyur.tst.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,11 +29,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         // ---------------- 1x size ---------------- //
 
-        File sprite_file = new File("sprite_modules.png");
-
-        FileInputStream fis = new FileInputStream(sprite_file);
-        byte[] bytes = new byte[fis.available()];
-        int readed = fis.read(bytes);
+        byte[] bytes = Util.fetchFile("sprite_modules.png");
 
 
         StringBuilder url_data = new StringBuilder("data:image/png;base64,");
@@ -47,12 +44,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         // ---------------- 2x size ---------------- //
 
-        sprite_file = new File("sprite_modules_2.png");
-
-        fis = new FileInputStream(sprite_file);
-        bytes = new byte[fis.available()];
-        readed = fis.read(bytes);
-
+        bytes = Util.fetchFile("sprite_modules_2.png");
 
         url_data = new StringBuilder("data:image/png;base64,");
 

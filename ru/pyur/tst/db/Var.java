@@ -1,4 +1,4 @@
-package ru.pyur.tst;
+package ru.pyur.tst.db;
 
 public class Var {
     public static final int VAR_TYPE_INT = 0;

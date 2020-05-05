@@ -16,9 +16,6 @@ public class Md_MakeSpriteModules extends HtmlContent {
     public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
 
 
-//    public Md_MakeSpriteModules(HttpSession session) { initHtml(session); }
-
-
     private class ModuleDesc {
         public int id;
         public String name;
@@ -31,21 +28,20 @@ public class Md_MakeSpriteModules extends HtmlContent {
 
 
     @Override
-    public void makeHtml() {
+    public void makeHtml() throws Exception {
 
-        text("Генерация спрайта...");
+        heading("Генерация спрайта...");
 
 
         // ---- get list of installed modules ---- //
 
-//x        connectConfigDb();
         Statement stmt = getConfigStatement();
 
         String query = "SELECT `id`, `name` FROM `module`";
 
         ArrayList<ModuleDesc> modules = new ArrayList<>();
 
-        try {
+//        try {
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
@@ -54,7 +50,7 @@ public class Md_MakeSpriteModules extends HtmlContent {
 
                 modules.add(new ModuleDesc(id, name));
             }
-        } catch (Exception e) { e.printStackTrace(); }
+//        } catch (Exception e) { e.printStackTrace(); }
 
 
         // -------- make sprite -------- //
@@ -84,17 +80,18 @@ public class Md_MakeSpriteModules extends HtmlContent {
             if (!file.exists()) continue;
 
             BufferedImage img;
-            try {
+//            try {
                 img = ImageIO.read(file);
-            } catch (Exception e) {
-                e.printStackTrace();
-                text("Failed. read image " + file.getAbsoluteFile());
-                return;
-            }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                text("Failed. read image " + file.getAbsoluteFile());
+//                return;
+//            }
 
             if (img.getWidth() != SPRITE_MODULE_ICON_SIZE || img.getHeight() != SPRITE_MODULE_ICON_SIZE) {
-                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
-                return;
+//                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
+//                return;
+                throw new Exception("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
             }
 
             Raster raster = img.getData();
@@ -112,17 +109,18 @@ public class Md_MakeSpriteModules extends HtmlContent {
             if (!file.exists())  continue;
 
             BufferedImage img;
-            try {
+//            try {
                 img = ImageIO.read(file);
-            } catch (Exception e) {
-                e.printStackTrace();
-                text("Failed. read image " + file.getAbsoluteFile());
-                return;
-            }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                text("Failed. read image " + file.getAbsoluteFile());
+//                return;
+//            }
 
             if (img.getWidth() != SPRITE_MODULE2_ICON_SIZE || img.getHeight() != SPRITE_MODULE2_ICON_SIZE) {
-                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
-                return;
+//                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
+//                return;
+                throw new Exception("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
             }
 
             Raster raster = img.getData();
@@ -136,19 +134,19 @@ public class Md_MakeSpriteModules extends HtmlContent {
         ColorModel cm = ColorModel.getRGBdefault();
         BufferedImage image = new BufferedImage(cm, sprite, cm.isAlphaPremultiplied(), null);
 
-        try {
+//        try {
             File output_file = new File("sprite_modules.png");
             ImageIO.write(image, "png", output_file);
-        } catch (Exception e) { e.printStackTrace(); }
+//        } catch (Exception e) { e.printStackTrace(); }
 
 
         //ColorModel cm = ColorModel.getRGBdefault();
         BufferedImage image2 = new BufferedImage(cm, sprite_2, cm.isAlphaPremultiplied(), null);
 
-        try {
-            File output_file = new File("sprite_modules_2.png");
+//        try {
+            output_file = new File("sprite_modules_2.png");
             ImageIO.write(image2, "png", output_file);
-        } catch (Exception e) { e.printStackTrace(); }
+//        } catch (Exception e) { e.printStackTrace(); }
 
 
 

@@ -1,12 +1,9 @@
 package ru.pyur.tst.dbedit;
 
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import static ru.pyur.tst.dbedit.Info.DBEDIT_ACTION_TABLE;
 import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
@@ -15,16 +12,8 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
 
 public class Md_TableList extends HtmlContent {
 
-
-
-//    public Md_TableList(HttpSession session) {
-//        initHtml(session);
-//    }
-
-
-
     @Override
-    public void makeHtml() {
+    public void makeHtml() throws Exception {
 
         heading("Таблицы базы данных");
 
@@ -35,58 +24,42 @@ public class Md_TableList extends HtmlContent {
         table.addColumn("Имя", 200);
 
 
-        try {
-            String db_name = getQuery(DBEDIT_PARAM_DB);
-            //if (db_name == null)  throw new Exception("db absent");
+        String db_name = getParam(DBEDIT_PARAM_DB);
 
-//x            Statement stmt = null;  // TODO getDb();
+        String query = "USE `" + db_name + "`";
+        //query('SET CHARACTER SET utf8');
 
-            String query_1 = "USE `" + db_name + "`";
-            //query('SET CHARACTER SET utf8');
-
-//x            stmt.executeQuery(query_1);
-            query(query_1);
+        query(query);
 
 
-            // ----
+        // ----
 
-            String query = "SHOW TABLES";
+        query = "SHOW TABLES";
 
-//x            ResultSet rs = stmt.executeQuery(query);
-            ResultSet rs = query(query);
+        ResultSet rs = query(query);
 
-            while(rs.next()) {
-                String table_name = rs.getString(1);
+        while(rs.next()) {
+            String table_name = rs.getString(1);
 
-                Tr tr = new Tr();
-                table.add(tr);
+            Tr tr = new Tr();
+            table.add(tr);
 
-                Td td_db_name = new Td();
+            Td td_table = new Td();
+            tr.add(td_table);
 
-                A link = new A();
+            A link = new A();
 
-                Url href = new Url();
-                href.setModule(getModule());
-                href.setAction(DBEDIT_ACTION_TABLE);
-                href.addParameter(DBEDIT_PARAM_DB, db_name);
-                href.addParameter(DBEDIT_PARAM_TABLE, table_name);
+            Url url = new Url();
+            url.setModule(getModule());
+            url.setAction(DBEDIT_ACTION_TABLE);
+            url.addParameter(DBEDIT_PARAM_DB, db_name);
+            url.addParameter(DBEDIT_PARAM_TABLE, table_name);
 
-                //link.setLink("/" + getModule() + "/" + DBEDIT_ACTION_TABLE + "/?" + DBEDIT_PARAM_DB + "=" + db_name + "&" + DBEDIT_PARAM_TABLE + "=" + table_name);
-                link.setHref(href);
+            link.setHref(url);
 
-                link.text(table_name);
+            link.text(table_name);
 
-                td_db_name.add(link);
-                tr.add(td_db_name);
-            }
-
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        }
-
-        catch (Exception e) {
-            e.printStackTrace();
+            td_table.add(link);
         }
 
 

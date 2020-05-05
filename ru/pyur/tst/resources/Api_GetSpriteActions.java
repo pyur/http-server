@@ -2,6 +2,7 @@ package ru.pyur.tst.resources;
 
 import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HttpSession;
+import ru.pyur.tst.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,12 +13,6 @@ import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
 
 public class Api_GetSpriteActions extends ApiContent {
 
-//    public Api_GetSpriteActions(HttpSession session) {
-//        init(session);
-//    }
-
-
-
     @Override
     public void makeJson() throws Exception {
 
@@ -25,19 +20,7 @@ public class Api_GetSpriteActions extends ApiContent {
 
         put("ts", ts);
 
-        File sprite_file = new File("sprite_actions.png");
-
-        byte[] bytes;
-        try {
-            FileInputStream fis = new FileInputStream(sprite_file);
-            bytes = new byte[fis.available()];
-            int readed = fis.read(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            //b("Failed. read image " + sprite_file.getAbsoluteFile());
-            return;
-        }
-
+        byte[] bytes = Util.fetchFile("sprite_actions.png");
 
         StringBuilder url_data = new StringBuilder("data:image/png;base64,");
 

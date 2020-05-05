@@ -6,11 +6,6 @@ import ru.pyur.tst.HttpSession;
 
 public class Api_Default extends ApiContent {
 
-
-//    public Api_Default(HttpSession session) { init(session); }
-
-
-
     @Override
     public void makeJson() throws Exception {
 
@@ -19,6 +14,5 @@ public class Api_Default extends ApiContent {
         put("time", "" + (System.currentTimeMillis() / 1000) );
 
     }
-
 
 }

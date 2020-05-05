@@ -35,7 +35,7 @@ public class Info extends ModuleInfo {
         HtmlContent md = null;
 
         if (action.isEmpty()) {
-            md = new Md_Battleship();
+            md = new Html_Battleship();
         }
 
         //else if (action.equals(WEBSOCKET_ACTION_GENERATE_SPRITE_ACTION)) {

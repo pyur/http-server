@@ -1,4 +1,4 @@
-package ru.pyur.tst;
+package ru.pyur.tst.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

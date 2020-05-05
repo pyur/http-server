@@ -1,5 +1,7 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.db.DbManager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;

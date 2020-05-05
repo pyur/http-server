@@ -1,5 +1,7 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.db.DbManager;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -53,7 +55,7 @@ public abstract class ContentBase {
 
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-    protected String getQuery(String key) throws Exception {
+    protected String getParam(String key) throws Exception {
         ArrayList<PStr> lsQuery = session.getQuery();
 
         for (PStr pair : lsQuery) {

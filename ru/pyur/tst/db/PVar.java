@@ -1,6 +1,6 @@
-package ru.pyur.tst;
+package ru.pyur.tst.db;
 
-import java.util.ArrayList;
+import ru.pyur.tst.db.Var;
 
 
 public class PVar {

@@ -9,11 +9,6 @@ import java.io.FileInputStream;
 
 public class Html_Default extends HtmlContent {
 
-
-//    public Html_Default(HttpSession session) { initHtml(session); }
-
-
-
     @Override
     public void makeHtml() {
 

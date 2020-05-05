@@ -5,14 +5,9 @@ import ru.pyur.tst.HttpSession;
 
 public class Md_Water extends HtmlContent {
 
-//x    public Md_Water(HttpSession session) {
-//x        initHtml(session);
-//x    }
-
-
-
+    @Override
     public void makeHtml() {
-        text("Hello from Md_Water!");
+        heading("Hello from Md_Water!");
     }
 
 

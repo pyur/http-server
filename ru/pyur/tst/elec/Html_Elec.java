@@ -12,65 +12,42 @@ import java.sql.*;
 
 public class Html_Elec extends HtmlContent {
 
-
-//    public Html_Elec(HttpSession session) {
-//        initHtml(session);
-//    }
-
-
     @Override
-    public void makeHtml() {
+    public void makeHtml() throws Exception {
 
-        Div div = new Div();
-        tag(div);
-        div.text("Электричество");
-        div.width(200);
-        div.height(50);
-        div.border("1px solid #f99");
-
+        heading("Электричество");
 
         Table table = new Table();
         tag(table);
 
 
-        try {
-            Statement stmt = null;  // TODO getDb();
+        String query = "SELECT `id`, `name`, `cat`, `login`, `dtx`, `idx` FROM `user`";
 
-            String sql = "SELECT `id`, `name`, `cat`, `login`, `dtx`, `idx` FROM `user`";
+        ResultSet rs = query(query);
 
-            ResultSet rs = stmt.executeQuery(sql);
+        while(rs.next()) {
+            int id = rs.getInt(1);
+            String name = rs.getString(2);
+            int cat = rs.getInt(3);
+            String login = rs.getString(4);
+            String dtx = rs.getString(5);
+            int idx = rs.getInt(6);
 
-            while(rs.next()) {
-                int id = rs.getInt(1);
-                String name = rs.getString(2);
-                int cat = rs.getInt(3);
-                String login = rs.getString(4);
-                String dtx = rs.getString(5);
-                int idx = rs.getInt(6);
+            //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
+            Tr tr = new Tr();
+            table.add(tr);
 
-                //System.out.println(id + "  " + name + "  " + cat + "  " + login + "  " + dtx + "  " + idx);
-                Tr tr = new Tr();
-                table.add(tr);
+            tr.add(new Td(id));
 
-                tr.add(new Td(id));
+            tr.add(new Td(name));
 
-                tr.add(new Td(name));
+            tr.add(new Td(cat));
 
-                tr.add(new Td(cat));
+            tr.add(new Td(login));
 
-                tr.add(new Td(login));
+            tr.add(new Td(dtx));
 
-                tr.add(new Td(dtx));
-
-                tr.add(new Td(idx));
-            }
-
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
+            tr.add(new Td(idx));
         }
 
 

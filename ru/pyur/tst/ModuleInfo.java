@@ -42,7 +42,7 @@ public abstract class ModuleInfo {
 //    public void setHttpSession(HttpSession http_session) {
 //        this.session = http_session;
 //        action = http_session.getAction();
-//        lsQuery = http_session.getQuery();
+//        lsQuery = http_session.getParam();
 //    }
 
 
@@ -60,7 +60,7 @@ public abstract class ModuleInfo {
 //    public void setWebsocketSession(WebsocketSession websocket_session) {
 //        this.websocket_session = websocket_session;
 //        action = websocket_session.action;
-//        lsQuery = websocket_session.getQuery();
+//        lsQuery = websocket_session.getParam();
 //    }
 
 

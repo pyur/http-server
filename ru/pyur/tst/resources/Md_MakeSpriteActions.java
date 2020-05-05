@@ -16,14 +16,10 @@ public class Md_MakeSpriteActions extends HtmlContent {
     public static final String CONFIG_ACTION_ICON_UPD = "action_icon_upd";
 
 
-//    public Md_MakeSpriteActions(HttpSession session) { initHtml(session); }
-
-
-
     @Override
-    public void makeHtml() {
+    public void makeHtml() throws Exception {
 
-        text("Генерация спрайта...");
+        heading("Генерация спрайта...");
 
 
         File directory = new File("./resources/action_icon/");
@@ -71,17 +67,18 @@ public class Md_MakeSpriteActions extends HtmlContent {
         int i = 0;
         for (File file : files_2) {
             BufferedImage img;
-            try {
+//            try {
                 img = ImageIO.read(file);
-            } catch (Exception e) {
-                e.printStackTrace();
-                text("Failed. read image " + file.getAbsoluteFile());
-                return;
-            }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                text("Failed. read image " + file.getAbsoluteFile());
+//                return;
+//            }
 
             if (img.getWidth() != 16 || img.getHeight() != 16) {
-                text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
-                return;
+                //text("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
+                //return;
+                throw new Exception("Failed. wrong image dimensions " + img.getWidth() + " x " + img.getHeight() + ". " + file.getAbsoluteFile());
             }
 
             Raster raster = img.getData();
@@ -97,24 +94,23 @@ public class Md_MakeSpriteActions extends HtmlContent {
         ColorModel cm = ColorModel.getRGBdefault();
         BufferedImage image = new BufferedImage(cm, sprite, cm.isAlphaPremultiplied(), null);
 
-        try {
+//        try {
             File output_file = new File("sprite_actions.png");
             ImageIO.write(image, "png", output_file);
-        } catch (Exception e) { e.printStackTrace(); }
+//        } catch (Exception e) { e.printStackTrace(); }
 
 
 
         // ---------------- insert into db ---------------- //
 
-//x        connectConfigDb();
         Statement stmt = getConfigStatement();
 
         String query = "DELETE FROM `action_icon`";
 
-        try {
+//        try {
             int delete_result = stmt.executeUpdate(query);
             //System.out.println("delete result: " + delete_result);
-        } catch (Exception e) { e.printStackTrace(); }
+//        } catch (Exception e) { e.printStackTrace(); }
 
         int pos = 0;
         for (File file : files_2) {
@@ -129,10 +125,10 @@ public class Md_MakeSpriteActions extends HtmlContent {
 
             query = "INSERT INTO `action_icon` (`name`, `position`) VALUES ('" + name + "', " + pos + ")";
 
-            try {
+//            try {
                 int insert_result = stmt.executeUpdate(query);
                 //System.out.println("insert result: " + insert_result);
-            } catch (Exception e) { e.printStackTrace(); }
+//            } catch (Exception e) { e.printStackTrace(); }
 
             pos++;
         }
@@ -143,20 +139,22 @@ public class Md_MakeSpriteActions extends HtmlContent {
         int timestamp = (int)(timestamp_ms / 1000);
         //System.out.println("timestamp: " + timestamp);
 
-        query = "UPDATE `config` SET `value` = " + timestamp + " WHERE `key` = '" + CONFIG_ACTION_ICON_UPD + "'";
+        configSet(CONFIG_ACTION_ICON_UPD, timestamp);
 
-        int update_result = 0;
-        try {
-            update_result = stmt.executeUpdate(query);
-        } catch (Exception e) { e.printStackTrace(); }
+//        query = "UPDATE `config` SET `value` = " + timestamp + " WHERE `key` = '" + CONFIG_ACTION_ICON_UPD + "'";
 
-        if (update_result == 0) {
-            query = "INSERT INTO `config` (`key`, `value`) VALUES ('" + CONFIG_ACTION_ICON_UPD + "', " + timestamp + ")";
-            try {
-                int insert_result = stmt.executeUpdate(query);
+//        int update_result = 0;
+//        try {
+//            update_result = stmt.executeUpdate(query);
+//        } catch (Exception e) { e.printStackTrace(); }
+
+//        if (update_result == 0) {
+//            query = "INSERT INTO `config` (`key`, `value`) VALUES ('" + CONFIG_ACTION_ICON_UPD + "', " + timestamp + ")";
+//            try {
+//                int insert_result = stmt.executeUpdate(query);
                 //System.out.println("config insert result: " + insert_result);
-            } catch (Exception e) { e.printStackTrace(); }
-        }
+//            } catch (Exception e) { e.printStackTrace(); }
+//        }
 
 
         text("OK");

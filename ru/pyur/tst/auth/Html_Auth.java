@@ -7,11 +7,6 @@ import ru.pyur.tst.tags.*;
 
 public class Html_Auth extends HtmlContent {
 
-
-//    public Html_Auth(HttpSession session) { initHtml(session); }
-
-
-
     @Override
     public void makeHtml() {
 
@@ -25,7 +20,6 @@ public class Html_Auth extends HtmlContent {
         container.addStyle("margin", "50px auto 0");
         tag(container);
 
-//x        text("<form id=\"save\" action=\"/a/\">");
         Form form = new Form("form");
         form.setUrl("/a/" + getModule() + "/");
         container.add(form);
@@ -36,7 +30,6 @@ public class Html_Auth extends HtmlContent {
         div_login.add(new PlainText("Имя пользователя"));
         form.add(div_login);
 
-//x        text("<input class=\"text\" name=\"login\" type=\"text\" value=\"\" style=\"width: 300px;\" autofocus>");
         InputText it_login = new InputText();
         it_login.addClass("text");
         it_login.setName("login");
@@ -51,7 +44,6 @@ public class Html_Auth extends HtmlContent {
         div_password.add(new PlainText("Пароль"));
         form.add(div_password);
 
-//x        text("<input class=\"text\" name=\"password\" type=\"text\" value=\"\" style=\"width: 300px;\">");
         InputText it_password = new InputText();
         it_password.addClass("text");
         it_password.setName("password");
@@ -67,8 +59,6 @@ public class Html_Auth extends HtmlContent {
         ib_submit.addStyle("margin", "20px auto 0");
         form.add(ib_submit);
 
-
-//x        text("</form>");
     }
 
 

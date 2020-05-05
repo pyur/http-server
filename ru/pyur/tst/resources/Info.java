@@ -18,12 +18,6 @@ public class Info extends ModuleInfo {
     public static final String RESOURCES_PARAM_t = "t";
 
 
-//    public Info(HttpSession session) {
-        //System.out.println("Info(Session)");
-//        setHttpSession(session);
-//    }
-
-
 //    public String ModuleName() { return NAME; }
 
 
@@ -40,11 +34,9 @@ public class Info extends ModuleInfo {
             html_content = new Md_MakeSpriteActions();
         }
 
-
         else if (action.equals(RESOURCES_ACTION_GENERATE_SPRITE_MODULE)) {
             html_content = new Md_MakeSpriteModules();
         }
-
 
         return html_content;
     }
@@ -66,7 +58,6 @@ public class Info extends ModuleInfo {
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_MODULE)) {
             api_content = new Api_GetSpriteModules();
         }
-
 
         return api_content;
     }

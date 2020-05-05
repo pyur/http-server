@@ -2,6 +2,7 @@ package ru.pyur.tst.websocket;
 
 import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.HtmlContent;
+import ru.pyur.tst.Util;
 import ru.pyur.tst.tags.Div;
 
 import java.io.File;
@@ -10,27 +11,11 @@ import java.io.FileInputStream;
 
 public class Html_Chat extends HtmlContent {
 
-    //public static final String CONFIG_MODULE_ICON_UPD = "module_icon_upd";
-
-
-//    public Html_Chat(HttpSession session) { initHtml(session); }
-
-
-    private class ModuleDesc {
-        public int id;
-        public String name;
-
-        public ModuleDesc(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-    }
-
-
     @Override
-    public void makeHtml() {
+    public void makeHtml() throws Exception {
+        byte[] script = Util.fetchFile("inline_script_websocket.js");
 
-        text("Тестовый websocket чат");
+        heading("Тестовый websocket чат");
 
 
         Div div_msg_container = new Div();
@@ -51,13 +36,9 @@ public class Html_Chat extends HtmlContent {
 
 
         text("<script>");
-        File script_file = new File("inline_script_websocket.js");
-        try {
-            FileInputStream fis = new FileInputStream(script_file);
-            byte[] script = new byte[fis.available()];
-            int readed = fis.read(script);
-            text(new String(script));
-        } catch (Exception e) { e.printStackTrace(); }
+
+        text(new String(script));
+
         text("</script>");
 
     }

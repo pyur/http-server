@@ -1,5 +1,7 @@
 package ru.pyur.tst;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 
 public class Util {
@@ -124,6 +126,22 @@ public class Util {
         }
 
         return false;
+    }
+
+
+
+
+    // ---- File ----------------------------------------------------------------
+
+    public static byte[] fetchFile(String file_name) throws Exception {
+        File file = new File(file_name);
+        byte[] contents = null;
+        //try {
+            FileInputStream fis = new FileInputStream(file);
+            contents = new byte[fis.available()];
+            int readed = fis.read(contents);
+        //} catch (Exception e) { e.printStackTrace(); }
+        return contents;
     }
 
 

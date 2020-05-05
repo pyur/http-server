@@ -7,10 +7,6 @@ import ru.pyur.tst.json.Json;
 public class Ws_Chat extends WebsocketDispatcher {
 
 
-    //@Override
-    //protected void receivedText(String text) {}
-
-
     @Override
     protected void receivedBinary(byte[] data) {}
 

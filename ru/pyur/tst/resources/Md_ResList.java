@@ -9,16 +9,10 @@ import java.sql.*;
 
 public class Md_ResList extends HtmlContent {
 
-//    public Md_ResList(HttpSession session) {
-//        initHtml(session);
-//    }
-
-
-
     @Override
-    public void makeHtml() {
+    public void makeHtml() throws Exception {
 
-        text("Список таблиц конфига");
+        heading("Список таблиц конфига");
 
         Table table = new Table();
         tag(table);
@@ -26,56 +20,31 @@ public class Md_ResList extends HtmlContent {
         table.addColumn("Имя", 200);
 
 
-        try {
-//            String db_name = getQuery(DBEDIT_PARAM_DB);
-//            if (db_name == null)  throw new Exception("db absent");
+        Statement stmt = getConfigStatement();
 
-//x            connectConfigDb();
-            Statement stmt = getConfigStatement();
+        String query = "SELECT `name` FROM `sqlite_master`";
 
-//            String query_1 = "USE `" + db_name + "`";
-//            //query('SET CHARACTER SET utf8');
+        ResultSet rs = stmt.executeQuery(query);
 
-//            stmt.executeQuery(query_1);
+        while(rs.next()) {
+            String table_name = rs.getString(1);
 
+            Tr tr = new Tr();
+            table.add(tr);
 
-            // ----
+            Td td_db_name = new Td();
 
-            String query = "SELECT `name` FROM `sqlite_master`";
+            A link = new A();
 
-            ResultSet rs = stmt.executeQuery(query);
+            Url href = new Url();
+            href.setModule(getModule());
 
-            while(rs.next()) {
-                String table_name = rs.getString(1);
+            link.setHref(href);
 
-                Tr tr = new Tr();
-                table.add(tr);
+            link.text(table_name);
 
-                Td td_db_name = new Td();
-
-                A link = new A();
-
-                Url href = new Url();
-                href.setModule(getModule());
-//                href.setAction(DBEDIT_ACTION_TABLE);
-//                href.addParameter(DBEDIT_PARAM_DB, db_name);
-//                href.addParameter(DBEDIT_PARAM_TABLE, table_name);
-
-                link.setHref(href);
-
-                link.text(table_name);
-
-                td_db_name.add(link);
-                tr.add(td_db_name);
-            }
-
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        }
-
-        catch (Exception e) {
-            e.printStackTrace();
+            td_db_name.add(link);
+            tr.add(td_db_name);
         }
 
     }

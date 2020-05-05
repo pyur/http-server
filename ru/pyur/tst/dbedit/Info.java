@@ -8,8 +8,6 @@ import ru.pyur.tst.HttpSession;
 public class Info extends ModuleInfo {
 
     private static final String NAME = "db";
-    //private static final int ICON = R.mipmap.elec;
-    //private static final Fragment UI = "Fm_Elec";
 
     public static final String DBEDIT_ACTION_DB = "db";
     public static final String DBEDIT_ACTION_TABLE = "table";
@@ -19,14 +17,7 @@ public class Info extends ModuleInfo {
     public static final String DBEDIT_PARAM_TABLE = "table";
 
 
-//x    public Info(HttpSession session) {
-        //System.out.println("Info(Session)");
-//x        setHttpSession(session);
-//x    }
-
-
 //    public String ModuleName() { return NAME; }
-    //public int ModuleIcon() { return ICON; }
 
 
     @Override

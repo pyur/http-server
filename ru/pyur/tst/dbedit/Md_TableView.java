@@ -1,7 +1,6 @@
 package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.tags.*;
 
 import java.sql.ResultSet;
@@ -13,16 +12,9 @@ import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
 
 public class Md_TableView extends HtmlContent {
 
-
-//    public Md_TableView(HttpSession session) {
-//        initHtml(session);
-//    }
-
-
-
     @Override
     public void makeHtml() throws Exception {
-        String table_name = getQuery(DBEDIT_PARAM_TABLE);
+        String table_name = getParam(DBEDIT_PARAM_TABLE);
 
         heading("Колонки таблицы – " + table_name);
 
@@ -42,24 +34,18 @@ public class Md_TableView extends HtmlContent {
         table.addAbLocation("holly", "Ягодка", getModule(), "hly");  // some action 3
 
 
-        String db_name = getQuery(DBEDIT_PARAM_DB);
-        //if (db_name == null)  throw new Exception("db absent");
+        String db_name = getParam(DBEDIT_PARAM_DB);
 
-//up            String table_name = getQuery(DBEDIT_PARAM_TABLE);
-        //if (table_name == null)  throw new Exception("table absent");
+        String query = "USE `" + db_name + "`";
 
-        Statement stmt = null;  // TODO getDb();
-
-        String query_1 = "USE `" + db_name + "`";
-
-        stmt.executeQuery(query_1);
+        query(query);
 
 
         // ----
 
-        String query = "SHOW COLUMNS FROM `" + table_name + "`";
+        query = "SHOW COLUMNS FROM `" + table_name + "`";
 
-        ResultSet rs = stmt.executeQuery(query);
+        ResultSet rs = query(query);
 
         while(rs.next()) {
             String column_name = rs.getString(1);
@@ -84,11 +70,7 @@ public class Md_TableView extends HtmlContent {
             tr.add(new Td(default_value));
             tr.add(new Td(extra));
 
-            }
-
-//        } catch (SQLException se) {
-//            se.printStackTrace();
-//        }
+        }
 
     }
 

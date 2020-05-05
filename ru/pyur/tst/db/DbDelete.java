@@ -1,11 +1,13 @@
-package ru.pyur.tst;
+package ru.pyur.tst.db;
+
+import ru.pyur.tst.Util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
-import static ru.pyur.tst.Var.VAR_TYPE_INT;
-import static ru.pyur.tst.Var.VAR_TYPE_STRING;
+import static ru.pyur.tst.db.Var.VAR_TYPE_INT;
+import static ru.pyur.tst.db.Var.VAR_TYPE_STRING;
 
 public class DbDelete {
 

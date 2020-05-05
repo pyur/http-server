@@ -49,7 +49,7 @@ public abstract class WebsocketDispatcher {
 
 //    private void initCommon(WebsocketSession session) {
 //        this.session = session;
-//x        lsQuery = session.getQuery();
+//x        lsQuery = session.getParam();
 //    }
 
     public void setSession(WebsocketSession session) {
@@ -77,7 +77,7 @@ public abstract class WebsocketDispatcher {
 
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-//    protected String getQuery(String key) throws Exception {
+//    protected String getParam(String key) throws Exception {
 //        for (PStr pair : lsQuery) {
 //            if (pair.key.equals(key))  return pair.value;
 //        }
