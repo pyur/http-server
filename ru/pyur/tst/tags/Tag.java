@@ -1,8 +1,8 @@
 package ru.pyur.tst.tags;
 
-import ru.pyur.tst.Coordinate;
-import ru.pyur.tst.PStr;
-import ru.pyur.tst.Util;
+import ru.pyur.tst.sample_host.battleship.Coordinate;
+import ru.pyur.tst.util.PStr;
+import ru.pyur.tst.util.Util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,5 +1,8 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.util.PStr;
+import ru.pyur.tst.util.Util;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
@@ -253,25 +256,26 @@ public class HttpResponse extends HttpHeader {
 
         for (Cookie cookie : set_cookies) {
             //lame implode. rewrite with Util.implode
-            StringBuilder cook = new StringBuilder();
-
-            cook.append(cookie.name);
-            cook.append("=");
-            cook.append(cookie.value);
-
-            cook.append(";");
-
-            cook.append("expires");
-            cook.append("=");
-            cook.append(cookie.getStringExpires());
-
-            cook.append(";");
-
-            cook.append("path");
-            cook.append("=");
-            cook.append(cookie.path);
-
-            addOption("Set-Cookie", cook.toString());
+//            StringBuilder cook = new StringBuilder();
+//
+//            cook.append(cookie.name);
+//            cook.append("=");
+//            cook.append(cookie.value);
+//
+//            cook.append(";");
+//
+//            cook.append("expires");
+//            cook.append("=");
+//            cook.append(cookie.getStringExpires());
+//
+//            cook.append(";");
+//
+//            cook.append("path");
+//            cook.append("=");
+//            cook.append(cookie.path);
+//
+//            addOption("Set-Cookie", cook.toString());
+            addOption("Set-Cookie", cookie.toString());
         }
 
 

@@ -1,6 +1,6 @@
 package ru.pyur.tst.db;
 
-import ru.pyur.tst.Util;
+import ru.pyur.tst.util.Util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

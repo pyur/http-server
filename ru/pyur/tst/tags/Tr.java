@@ -1,9 +1,5 @@
 package ru.pyur.tst.tags;
 
-import ru.pyur.tst.PStr;
-
-import java.util.ArrayList;
-
 
 public class Tr extends Tag {
 

@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.*;
+import ru.pyur.tst.util.Util;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

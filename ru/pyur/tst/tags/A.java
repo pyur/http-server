@@ -10,7 +10,7 @@ public class A extends Tag {
 
 
 
-    public void setHref(Url href) {
+    public void setHref(ModuleUrl href) {
         //maybe check attribute for presence
         addAttribute("href", href.toString());
     }

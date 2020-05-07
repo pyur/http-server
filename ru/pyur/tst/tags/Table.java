@@ -1,6 +1,6 @@
 package ru.pyur.tst.tags;
 
-import ru.pyur.tst.Coordinate;
+import ru.pyur.tst.sample_host.battleship.Coordinate;
 
 import java.util.ArrayList;
 

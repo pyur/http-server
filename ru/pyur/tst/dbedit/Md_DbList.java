@@ -39,7 +39,7 @@ public class Md_DbList extends HtmlContent {
             A link = new A();
             td_database.add(link);
 
-            Url href = new Url();
+            ModuleUrl href = new ModuleUrl();
             href.setModule(getModule());
             href.setAction(DBEDIT_ACTION_DB);
             href.addParameter(DBEDIT_PARAM_DB, db_name);

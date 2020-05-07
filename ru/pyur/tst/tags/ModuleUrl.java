@@ -1,10 +1,10 @@
 package ru.pyur.tst.tags;
 
-import ru.pyur.tst.PStr;
+import ru.pyur.tst.util.PStr;
 
 import java.util.ArrayList;
 
-public class Url {
+public class ModuleUrl {
 
     //http://example.com:8080/module/action/?opt1=val1&opt2=val2
 
@@ -19,7 +19,7 @@ public class Url {
 
 
 
-    public Url() {}
+    public ModuleUrl() {}
 
 
 

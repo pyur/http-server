@@ -1,4 +1,6 @@
-package ru.pyur.tst;
+package ru.pyur.tst.util;
+
+import ru.pyur.tst.util.PStr;
 
 import java.io.File;
 import java.io.FileInputStream;

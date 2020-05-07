@@ -217,7 +217,7 @@ public abstract class HtmlContent extends ContentBase {
         for (ModuleBarItem mbi : module_bar.getModules()) {
             A mod = new A();
             div_modules_bar.add(mod);
-            Url link = new Url();
+            ModuleUrl link = new ModuleUrl();
             link.setModule(mbi.name);
             mod.setHref(link);
 

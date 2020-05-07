@@ -1,4 +1,4 @@
-package ru.pyur.tst;
+package ru.pyur.tst.util;
 
 public class Dump {
 

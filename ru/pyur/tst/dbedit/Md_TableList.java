@@ -49,7 +49,7 @@ public class Md_TableList extends HtmlContent {
 
             A link = new A();
 
-            Url url = new Url();
+            ModuleUrl url = new ModuleUrl();
             url.setModule(getModule());
             url.setAction(DBEDIT_ACTION_TABLE);
             url.addParameter(DBEDIT_PARAM_DB, db_name);

@@ -1,7 +1,7 @@
 package ru.pyur.tst.sample_host.resources;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.Util;
+import ru.pyur.tst.util.Util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.*;

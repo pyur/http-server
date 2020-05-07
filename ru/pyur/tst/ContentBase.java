@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbManager;
+import ru.pyur.tst.util.PStr;
 
 import java.sql.*;
 import java.util.ArrayList;

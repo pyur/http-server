@@ -35,7 +35,7 @@ public class Md_ResList extends HtmlContent {
 
             A link = new A();
 
-            Url href = new Url();
+            ModuleUrl href = new ModuleUrl();
             href.setModule(getModule());
 
             link.setHref(href);

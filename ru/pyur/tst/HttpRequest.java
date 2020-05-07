@@ -1,5 +1,8 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.util.PStr;
+import ru.pyur.tst.util.Util;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
@@ -39,16 +42,16 @@ public class HttpRequest extends HttpHeader {
     //size_t BinaryPayloadSize;
 
 
-    private final int HTTP_METHOD_Unknown = 0;
-    private final int HTTP_METHOD_GET = 1;
-    private final int HTTP_METHOD_POST = 2;
-    private final int HTTP_METHOD_HEAD = 3;
-    private final int HTTP_METHOD_OPTIONS = 4;
-    private final int HTTP_METHOD_PUT = 5;
-    private final int HTTP_METHOD_DELETE = 6;
-    private final int HTTP_METHOD_PATCH = 7;
-    private final int HTTP_METHOD_CONNECT= 8;
-    private final int HTTP_METHOD_TRACE = 9;
+    public final static int HTTP_METHOD_Unknown = 0;
+    public final static int HTTP_METHOD_GET = 1;
+    public final static int HTTP_METHOD_POST = 2;
+    public final static int HTTP_METHOD_HEAD = 3;
+    public final static int HTTP_METHOD_OPTIONS = 4;
+    public final static int HTTP_METHOD_PUT = 5;
+    public final static int HTTP_METHOD_DELETE = 6;
+    public final static int HTTP_METHOD_PATCH = 7;
+    public final static int HTTP_METHOD_CONNECT= 8;
+    public final static int HTTP_METHOD_TRACE = 9;
 
 
     private String szHttpMethod[] = {
@@ -128,13 +131,19 @@ public class HttpRequest extends HttpHeader {
 
 
 
-    public void defaultGet(String path, String host) {
-        method = HTTP_METHOD_GET;
-        szPath = path;
-        version = HTTP_VERSION_1_1;
+//    public void defaultGet(String path, String host) {
+//        method = HTTP_METHOD_GET;
+//        szPath = path;
+//        version = HTTP_VERSION_1_1;
+//
+//        options.add(new PStr("Host", host));
+//    }
 
-        options.add(new PStr("Host", host));
-    }
+    public void setMethod(int method) { this.method = method; }
+
+    public void setLocation(String location) { szLocation = location; }
+
+    public void setVersion(int version) { this.version = version; }
 
 
 
@@ -148,7 +157,8 @@ public class HttpRequest extends HttpHeader {
 
         sb.append(" ");
 
-        sb.append(szPath);
+        //sb.append(szPath);
+        sb.append(szLocation);
 
         sb.append(" ");
 
@@ -197,7 +207,9 @@ public class HttpRequest extends HttpHeader {
 
         // ---------------- Cookies ---------------- //
 
-        // todo
+        if (cookies != null) {
+            addOption("Cookie", Cookie.cookiesToString(cookies));
+        }
 
 
 
@@ -239,8 +251,8 @@ public class HttpRequest extends HttpHeader {
 
 
 
-
-    public Cookie getCookie(String name) throws Exception {
+    // todo: move to 'Cookie'
+    public Cookie getCookie(String name) throws Exception {  // todo: remove Exception
 
         // ---- parse cookies ---- //
         if (cookies == null) {

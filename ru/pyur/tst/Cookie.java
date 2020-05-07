@@ -5,11 +5,11 @@ package ru.pyur.tst;
 // https://tools.ietf.org/html/rfc6265
 
 // java.time - from Java 8
+import ru.pyur.tst.util.PStr;
+import ru.pyur.tst.util.Util;
+
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 
 public class Cookie {
@@ -21,7 +21,7 @@ public class Cookie {
 
     public String path;
     public String domain;
-    public int expires;
+    public int expires = -1;
     //max_age - not required
 
     public boolean secure;
@@ -38,6 +38,44 @@ public class Cookie {
     //Set-Cookie: t=;expires=Чт, 25 дек 1969 07:35:07 MSK;path=/
     //Set-Cookie: t=;expires=Thu, 25 Dec 1969 07:43:57 MSK;path=/
     //Set-Cookie: t=NjU1MDUsMzYsMTU4ODU5NzIxOQ==.jVX/uxlk8fGKxA6frikL+X+cjb1YXw04wSKT38L9KVE=;expires=Mon, 05 Jan 1970 04:08:16 GMT;path=/
+
+
+    public Cookie(String cookie) {
+        PStr split = Util.split(';', cookie);
+
+        PStr split2 = Util.split('=', split.key);
+        name = split2.key;
+        value = split2.value;
+
+        if (!split.value.isEmpty()) {
+            String[] expl = Util.explode(';', split.value);
+            for (String opt : expl) {
+                split = Util.split('=', opt);
+
+                if (split.key.toLowerCase().equals("expires")) {
+                    expires = parseExpires(split.value);
+                }
+
+                else if (split.key.toLowerCase().equals("path")) {
+                    path = split.value;
+                }
+
+                else if (split.key.toLowerCase().equals("domain")) {
+                    domain = split.value;
+                }
+
+                else if (split.key.toLowerCase().equals("secure")) {
+                    secure = true;
+                }
+
+                else if (split.key.toLowerCase().equals("httponly")) {
+                    http_only = true;
+                }
+
+            }
+        }
+
+    }
 
 
     public Cookie(String name, String value) {
@@ -84,6 +122,14 @@ public class Cookie {
 
 
 
+
+    private int parseExpires(String expires) {
+        // todo
+        return 0;
+    }
+
+
+
     // ---- utilities ---- //
     // or do it automatically on parse/stringify
 
@@ -91,4 +137,104 @@ public class Cookie {
         //todo: replace '+' > ' '
         return src;
     }
+
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(name);
+        sb.append("=");
+        sb.append(value);
+
+        if (expires != -1) {
+            sb.append(";");
+
+            sb.append("expires");
+            sb.append("=");
+            sb.append(getStringExpires());
+        }
+
+        if (path != null) {
+            sb.append(";");
+
+            sb.append("path");
+            sb.append("=");
+            sb.append(path);
+        }
+
+        if (domain != null) {
+            sb.append(";");
+
+            sb.append("domain");
+            sb.append("=");
+            sb.append(domain);
+        }
+
+        if (secure) {
+            sb.append(";");
+
+            sb.append("secure");
+        }
+
+        if (http_only) {
+            sb.append(";");
+
+            sb.append("httponly");
+        }
+
+        //addOption("Set-Cookie", cook.toString());
+        return sb.toString();
+    }
+
+
+
+
+    public static String cookiesToString(ArrayList<Cookie> cookies) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+
+        for (Cookie cookie : cookies) {
+            if (!first)  sb.append(";");
+            sb.append(cookie.name);
+            sb.append("=");
+            sb.append(cookie.value);
+            if (first)  first = false;
+        }
+
+        return sb.toString();
+    }
+
+
+
+/*
+    public static Cookie getCookie(String name) {  //throws Exception {
+
+        // ---- parse cookies ---- //
+        if (cookies == null) {
+            cookies = new ArrayList<>();
+            for (PStr opt : options_low_key) {
+                if (opt.key.equals("cookie")) {
+                    String[] ce = Util.explode(';', opt.value);
+                    for (String cook : ce) {
+                        //String trimmed = cook.trim();
+                        PStr cookie_pair = Util.split('=', cook);
+                        String name1 = cookie_pair.key.trim();
+                        String value = cookie_pair.value.trim();
+                        cookies.add(new Cookie(name1, value));
+                    }
+                }
+            }
+        }
+
+        // ---- get ---- //
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(name)) return cookie;
+        }
+
+        throw new Exception("cookie not found.");
+    }
+*/
+
 }

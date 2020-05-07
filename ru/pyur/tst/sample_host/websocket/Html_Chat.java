@@ -1,7 +1,7 @@
 package ru.pyur.tst.sample_host.websocket;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.Util;
+import ru.pyur.tst.util.Util;
 import ru.pyur.tst.tags.Div;
 
 
