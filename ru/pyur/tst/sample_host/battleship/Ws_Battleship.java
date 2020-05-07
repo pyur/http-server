@@ -1,4 +1,4 @@
-package ru.pyur.tst.battleship;
+package ru.pyur.tst.sample_host.battleship;
 
 import ru.pyur.tst.WebsocketDispatcher;
 import ru.pyur.tst.json.Json;

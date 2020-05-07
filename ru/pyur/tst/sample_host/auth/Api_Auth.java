@@ -1,8 +1,7 @@
-package ru.pyur.tst.auth;
+package ru.pyur.tst.sample_host.auth;
 
 import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.Auth;
-import ru.pyur.tst.HttpSession;
 
 
 public class Api_Auth extends ApiContent {

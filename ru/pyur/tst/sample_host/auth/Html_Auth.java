@@ -1,7 +1,6 @@
-package ru.pyur.tst.auth;
+package ru.pyur.tst.sample_host.auth;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.tags.*;
 
 

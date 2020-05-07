@@ -17,7 +17,7 @@ public class TestClient {
     }
 
 
-
+/*todo
     private Transport.CallbackTransportEvents cb_transport = new Transport.CallbackTransportEvents() {
         @Override
         public byte[] onConnected() {
@@ -58,6 +58,6 @@ public class TestClient {
             return 0;
         }
     };
-
+*/
 
 }

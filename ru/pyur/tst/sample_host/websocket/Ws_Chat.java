@@ -1,4 +1,4 @@
-package ru.pyur.tst.websocket;
+package ru.pyur.tst.sample_host.websocket;
 
 import ru.pyur.tst.WebsocketDispatcher;
 import ru.pyur.tst.json.Json;

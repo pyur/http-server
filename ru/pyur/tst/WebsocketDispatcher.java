@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public abstract class WebsocketDispatcher {
 
-    protected WebsocketSession session;
+    protected ModularHost session;
 
 //x    private ArrayList<PStr> lsQuery;
 
@@ -52,7 +52,7 @@ public abstract class WebsocketDispatcher {
 //x        lsQuery = session.getParam();
 //    }
 
-    public void setSession(WebsocketSession session) {
+    public void init(ModularHost session) {
         this.session = session;
 
 //        this.is = session.getInputStream();

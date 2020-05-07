@@ -10,7 +10,7 @@ import java.util.Base64;
 
 
 public class WebsocketSession {
-
+/*
     private HttpRequest request_header;
     private HttpResponse response_header;
 
@@ -276,5 +276,5 @@ public class WebsocketSession {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-
+*/
 }

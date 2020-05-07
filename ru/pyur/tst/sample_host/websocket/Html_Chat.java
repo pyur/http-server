@@ -1,12 +1,8 @@
-package ru.pyur.tst.websocket;
+package ru.pyur.tst.sample_host.websocket;
 
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.Util;
 import ru.pyur.tst.tags.Div;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 
 public class Html_Chat extends HtmlContent {

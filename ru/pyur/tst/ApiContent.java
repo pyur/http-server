@@ -16,7 +16,7 @@ public abstract class ApiContent extends ContentBase {
 
 
 
-    protected void setSession(HttpSession session) {
+    public void init(ModularHost session) {
         initCommon(session);
         //setContentType("application/json; charset=utf-8");  // utf-8 redundant
         setContentType("application/json");

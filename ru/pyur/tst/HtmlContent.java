@@ -7,8 +7,8 @@ import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
-import static ru.pyur.tst.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
-import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
+import static ru.pyur.tst.sample_host.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
+import static ru.pyur.tst.sample_host.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
 public abstract class HtmlContent extends ContentBase {
@@ -41,7 +41,8 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    public void setSession(HttpSession session) {
+//x    public void init(HttpSession session) {
+    public void init(ModularHost session) {
         initCommon(session);
         setContentType("text/html; charset=utf-8");
         //setContentType("text/plain");

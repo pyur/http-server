@@ -1,7 +1,6 @@
-package ru.pyur.tst.water;
+package ru.pyur.tst.sample_host.water;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.HttpSession;
 
 public class Md_Water extends HtmlContent {
 

@@ -1,12 +1,13 @@
-package ru.pyur.tst.elec;
+package ru.pyur.tst.sample_host.water;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.ModuleInfo;
+import ru.pyur.tst.sample_host.elec.Html_Elec;
 
 
 public class Info extends ModuleInfo {
 
-    private static final String NAME = "elec";
+    private static final String NAME = "water";
 
 
 //    public String ModuleName() { return NAME; }

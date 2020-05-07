@@ -1,6 +1,5 @@
 package ru.pyur.tst.dbedit;
 
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
@@ -35,8 +34,10 @@ public class Md_DbList extends HtmlContent {
             table.add(tr);
 
             Td td_database = new Td();
+            tr.add(td_database);
 
             A link = new A();
+            td_database.add(link);
 
             Url href = new Url();
             href.setModule(getModule());
@@ -47,8 +48,6 @@ public class Md_DbList extends HtmlContent {
 
             link.text(db_name);
 
-            td_database.add(link);
-            tr.add(td_database);
         }
 
     }

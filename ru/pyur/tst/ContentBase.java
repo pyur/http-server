@@ -8,7 +8,8 @@ import java.util.ArrayList;
 
 public abstract class ContentBase {
 
-    protected HttpSession session;
+//x    protected HttpSession session;
+    protected ModularHost session;
     //protected ControlSession co_session;
 
 
@@ -25,7 +26,8 @@ public abstract class ContentBase {
 
     // ---- constructor ----------------
 
-    protected void initCommon(HttpSession session) {
+//x    protected void initCommon(HttpSession session) {
+    protected void initCommon(ModularHost session) {
         this.session = session;
         this.db_manager = session.getDbManager();
         db_connection = db_manager.getDb();

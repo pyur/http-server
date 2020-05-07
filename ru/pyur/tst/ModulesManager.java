@@ -1,5 +1,8 @@
 package ru.pyur.tst;
 
+
+// can be placed in separate package, for easy update
+
 public class ModulesManager {
 
     public static ModuleInfo getModuleInfo(String module_name) {
@@ -11,15 +14,15 @@ public class ModulesManager {
         }
 
         else if (module_name.equals("auth")) {
-            module_info = new ru.pyur.tst.auth.Info();
+            module_info = new ru.pyur.tst.sample_host.auth.Info();
         }
 
         else if (module_name.equals("elec")) {
-            module_info = new ru.pyur.tst.elec.Info();
+            module_info = new ru.pyur.tst.sample_host.elec.Info();
         }
 
         else if (module_name.equals("water")) {
-            //module_info = new ru.pyur.tst.water.Info();
+            module_info = new ru.pyur.tst.sample_host.water.Info();
         }
 
         else if (module_name.equals("db")) {
@@ -27,15 +30,15 @@ public class ModulesManager {
         }
 
         else if (module_name.equals("res")) {
-            module_info = new ru.pyur.tst.resources.Info();
+            module_info = new ru.pyur.tst.sample_host.resources.Info();
         }
 
         else if (module_name.equals("ws")) {
-            module_info = new ru.pyur.tst.websocket.Info();
+            module_info = new ru.pyur.tst.sample_host.websocket.Info();
         }
 
         else if (module_name.equals("battleship")) {
-            module_info = new ru.pyur.tst.battleship.Info();
+            module_info = new ru.pyur.tst.sample_host.battleship.Info();
         }
 
         // todo: 'setup' for create 'config.db' and create default admin

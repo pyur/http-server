@@ -14,18 +14,18 @@ import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_1;
 public class ProtocolDispatcher {
 
 
-    private int state;
-    private final int HTTP_STATE_UNDEFINED = 0;
-    private final int HTTP_STATE_SERVER = 1;
-    private final int HTTP_STATE_HTTP_SERVER = 2;
-    private final int HTTP_STATE_HTTP_CLIENT = 3;
-
-    private final int HTTP_STATE_WS_SERVER = 4;  // websocket
-    private final int HTTP_STATE_WS_CLIENT = 5;
-    private final int HTTP_STATE_WS_CLOSED = 6;
-
-    private final int HTTP_STATE_CAST_SERVER = 7;  // media broadcast
-    private final int HTTP_STATE_CAST_CLIENT = 8;
+//    private int state;
+//    private final int HTTP_STATE_UNDEFINED = 0;
+//    private final int HTTP_STATE_SERVER = 1;
+//    private final int HTTP_STATE_HTTP_SERVER = 2;
+//    private final int HTTP_STATE_HTTP_CLIENT = 3;
+//
+//    private final int HTTP_STATE_WS_SERVER = 4;  // websocket
+//    private final int HTTP_STATE_WS_CLIENT = 5;
+//    private final int HTTP_STATE_WS_CLOSED = 6;
+//
+//    private final int HTTP_STATE_CAST_SERVER = 7;  // media broadcast
+//    private final int HTTP_STATE_CAST_CLIENT = 8;
 
 
 
@@ -37,27 +37,27 @@ public class ProtocolDispatcher {
 
 
 
-    private CallbackProtocolHttpClient callback_protocol_http_client;
-
-    public interface CallbackProtocolHttpClient {
-        int dispatchResponse(HttpResponse http_response);
-        int dispatchPayload(byte[] payload);
-    }
-
-
+//    private CallbackProtocolHttpClient callback_protocol_http_client;
+//
+//    public interface CallbackProtocolHttpClient {
+//        int dispatchResponse(HttpResponse http_response);
+//        int dispatchPayload(byte[] payload);
+//    }
 
 
-    private CallbackProtocolServerEvent callback_protocol_server_event;
 
-    public interface CallbackProtocolServerEvent {
-        //int httpHeaderReceived(HttpRequest http_request);
-        //DispatchedData dispatchRequest(byte[] payload);
-        void http(HttpRequest http_request, InputStream is, OutputStream os);
 
-        //int websocketHeaderReceived(HttpRequest http_request);
-        //void dispatchStreams(InputStream is, OutputStream os);
-        void websocket(HttpRequest http_request, InputStream is, OutputStream os);
-    }
+//    private CallbackProtocolServerEvent callback_protocol_server_event;
+//
+//    public interface CallbackProtocolServerEvent {
+//        //int httpHeaderReceived(HttpRequest http_request);
+//        //DispatchedData dispatchRequest(byte[] payload);
+//        void http(HttpRequest http_request, InputStream is, OutputStream os);
+//
+//        //int websocketHeaderReceived(HttpRequest http_request);
+//        //void dispatchStreams(InputStream is, OutputStream os);
+//        void websocket(HttpRequest http_request, InputStream is, OutputStream os);
+//    }
 
 
 
@@ -69,37 +69,37 @@ public class ProtocolDispatcher {
 
 
 
-    public void setStateServer(CallbackProtocolServerEvent cb_server_event) {
-        state = HTTP_STATE_SERVER;
-
-        callback_protocol_server_event = cb_server_event;
-    }
-
-
+//    public void setStateServer(CallbackProtocolServerEvent cb_server_event) {
+//        state = HTTP_STATE_SERVER;
+//
+//        callback_protocol_server_event = cb_server_event;
+//    }
 
 
-    public void setStateHttpClient(CallbackProtocolHttpClient chc) {
-        state = HTTP_STATE_HTTP_CLIENT;
 
-        callback_protocol_http_client = (chc != null) ? chc : defaultHttpClientDispatcher;
-    }
+
+//    public void setStateHttpClient(CallbackProtocolHttpClient chc) {
+//        state = HTTP_STATE_HTTP_CLIENT;
+//
+//        callback_protocol_http_client = (chc != null) ? chc : defaultHttpClientDispatcher;
+//    }
 
 
 
 
     // ---------------------------- Parse/getHtml header v2 ---------------------------- //
-
+/*
     public HttpHeader processHeader_v2(InputStream is) throws Exception {
         final int MAX_LINE = 2048;
         NewlineInputStream nis = new NewlineInputStream(is, MAX_LINE);  // maybe expand to 4096, because cookies max limit
 
         HttpHeader header;
 
-        if (state == HTTP_STATE_SERVER) {
+//!        if (state == HTTP_STATE_SERVER) {
             header = new HttpRequest();
-        } else {
-            header = new HttpResponse();
-        }
+//!        } else {
+//!            header = new HttpResponse();
+//!        }
 
         byte[] header_line = new byte[MAX_LINE];
         int line_size;
@@ -133,25 +133,25 @@ public class ProtocolDispatcher {
 
         // -- mode server. process request -- //
         // http server, websocket server, cast server
-        if (state == HTTP_STATE_SERVER) {
-            HttpRequest http_request = (HttpRequest)header;
-            try {
-                dispatchRequest(http_request);
-            } catch (Exception e) { e.printStackTrace(); return header; }
-        }
+//!        if (state == HTTP_STATE_SERVER) {
+//!            HttpRequest http_request = (HttpRequest)header;
+//!            try {
+//!                dispatchRequest(http_request);
+//!            } catch (Exception e) { e.printStackTrace(); return header; }
+//!        }
 
 
         // -- if client - process response -- //
-        else if (state == HTTP_STATE_HTTP_CLIENT) {
-            HttpResponse http_response = (HttpResponse)header;
-            result = callback_protocol_http_client.dispatchResponse(http_response);
-
-            if (result < 0)   throw new Exception("processing in callback 'dispatchResponse' failed");  // failed
-        }
+//!        else if (state == HTTP_STATE_HTTP_CLIENT) {
+//!            HttpResponse http_response = (HttpResponse)header;
+//!            result = callback_protocol_http_client.dispatchResponse(http_response);
+//!
+//!            if (result < 0)   throw new Exception("processing in callback 'dispatchResponse' failed");  // failed
+//!        }
 
 
         // -- if websocket client - process response -- //
-        else if (state == HTTP_STATE_WS_CLIENT) {
+//!        else if (state == HTTP_STATE_WS_CLIENT) {
 
             //todo  result = new HttpWsResponse(raw_header);
 
@@ -160,12 +160,12 @@ public class ProtocolDispatcher {
             //  http->ws_prev_fin = 1;
 
             //  if (http->cbWsReady)  http->cbWsReady(http->cbInstance, http);
-        }
+//!        }
 
 
         return header;
     }
-
+*/
 
 
 
@@ -174,7 +174,7 @@ public class ProtocolDispatcher {
     // --------------------------------------------------------------------------------- //
 
     // ------------------------ default Server request dispatcher ------------------------ //
-
+/*
     private void dispatchRequest(HttpRequest http_request) throws Exception {
 
         // ---------------- WebSocket ---------------- //
@@ -242,12 +242,12 @@ public class ProtocolDispatcher {
         state = HTTP_STATE_HTTP_SERVER;
 
     }
-
+*/
 
 
 
     // ---------------------------- Process data v2 ---------------------------- //
-
+/*
     public void processData_v2(HttpHeader header, InputStream is, OutputStream os) throws Exception {
         int result = 0;
 
@@ -263,7 +263,8 @@ public class ProtocolDispatcher {
 
 
         else if (state == HTTP_STATE_HTTP_CLIENT) {
-            byte[] payload = receivePayload(is, header);
+//todo            byte[] payload = receivePayload(is, header);
+            byte[] payload = new byte[0];
 
             HttpRequest http_request = (HttpRequest)header;
 
@@ -288,54 +289,10 @@ public class ProtocolDispatcher {
         }
 
     }
+*/
 
 
 
-
-    public static byte[] receivePayload(InputStream is, HttpHeader header) throws Exception {
-        byte[] payload = new byte[0];
-
-        if (header.hasOption("Content-Length")) {
-            String payload_length_s = header.getOption("Content-Length");
-            int payload_length = Integer.parseInt(payload_length_s);
-
-            int readed = 0;
-            payload = new byte[payload_length];
-
-            for(;;) {
-                if (readed >= payload_length)  break;
-                int readed1 = is.read(payload, readed, payload_length - readed);
-                if (readed1 == -1)  break;
-                readed += readed1;
-            }
-        }
-
-
-        else if (header.hasOption("Transfer-Encoding")) {
-            String[] transfer_encoding = header.getOptionSplit("Transfer-Encoding");
-            if (Util.inArray(transfer_encoding, "chunked")) {
-                ChunkedPayloadInputStream payload_is = new ChunkedPayloadInputStream(is);
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-                byte[] payload_fragment = new byte[65536];
-
-                for(;;) {
-                    int readed = payload_is.read(payload_fragment);
-                    if (readed == -1)  break;
-                    os.write(payload_fragment, 0, readed);
-                }
-
-                payload = os.toByteArray();
-            }
-        }
-
-
-        //else {
-            //try read until stream ends
-        //}
-
-        return payload;
-    }
 
 
 
@@ -365,9 +322,9 @@ public class ProtocolDispatcher {
 
     // -------------------- default Http Client response dispatcher -------------------- //
 
-    private CallbackProtocolHttpClient defaultHttpClientDispatcher = new CallbackProtocolHttpClient() {
-        @Override
-        public int dispatchResponse(HttpResponse http_response) {
+//!    private CallbackProtocolHttpClient defaultHttpClientDispatcher = new CallbackProtocolHttpClient() {
+//!        @Override
+//!        public int dispatchResponse(HttpResponse http_response) {
 
             // ---------------- grab cookies ---------------- //
 
@@ -387,19 +344,19 @@ public class ProtocolDispatcher {
         // CallbackTransportControl for process custom `options`
 
 
-        return 1;
-        }
+//!        return 1;
+//!        }
 
 
 
-        @Override
-        public int dispatchPayload(byte[] payload) {
+//!        @Override
+//!        public int dispatchPayload(byte[] payload) {
             // remote host sent answer payload
-            System.out.println(new String(payload));
+//!            System.out.println(new String(payload));
 
-            return 0;
-        }
-    };
+//!            return 0;
+//!        }
+//!    };
 
 
 

@@ -1,8 +1,7 @@
-package ru.pyur.tst.resources;
+package ru.pyur.tst.sample_host.resources;
 
 import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.ModuleInfo;
 
 

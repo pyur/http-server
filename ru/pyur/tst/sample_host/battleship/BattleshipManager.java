@@ -1,8 +1,8 @@
-package ru.pyur.tst.battleship;
+package ru.pyur.tst.sample_host.battleship;
 
 import java.util.ArrayList;
 
-import static ru.pyur.tst.battleship.BattleshipClient.*;
+import static ru.pyur.tst.sample_host.battleship.BattleshipClient.*;
 
 
 public class BattleshipManager {

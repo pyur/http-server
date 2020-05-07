@@ -48,7 +48,8 @@ public class ServerSsl {
             for(;;) {
                 Socket socket = server_socket.accept();  // thread locking
 
-                service.execute(new TransportSsl(socket, cb_protocol_server_event));
+//x                service.execute(new TransportSsl(socket, cb_protocol_server_event));
+                service.execute(new TransportSsl(socket));
             }
 
         } catch (Exception e) {
@@ -154,7 +155,7 @@ public class ServerSsl {
 
 
     // -------------------------------- Protocol callback -------------------------------- //
-
+/*
     private ProtocolDispatcher.CallbackProtocolServerEvent cb_protocol_server_event = new ProtocolDispatcher.CallbackProtocolServerEvent() {
 
         @Override
@@ -182,7 +183,7 @@ public class ServerSsl {
         }
 
     };
-
+*/
 
 
 

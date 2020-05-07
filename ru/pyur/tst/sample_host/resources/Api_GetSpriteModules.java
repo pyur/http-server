@@ -1,14 +1,11 @@
-package ru.pyur.tst.resources;
+package ru.pyur.tst.sample_host.resources;
 
 import ru.pyur.tst.ApiContent;
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.Util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Base64;
 
-import static ru.pyur.tst.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
+import static ru.pyur.tst.sample_host.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
 public class Api_GetSpriteModules extends ApiContent {

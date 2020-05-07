@@ -1,8 +1,6 @@
-package ru.pyur.tst.elec;
+package ru.pyur.tst.sample_host.elec;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.HttpSession;
-import ru.pyur.tst.tags.Div;
 import ru.pyur.tst.tags.Table;
 import ru.pyur.tst.tags.Td;
 import ru.pyur.tst.tags.Tr;

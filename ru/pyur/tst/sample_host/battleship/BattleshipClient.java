@@ -1,4 +1,4 @@
-package ru.pyur.tst.battleship;
+package ru.pyur.tst.sample_host.battleship;
 
 public class BattleshipClient {
 

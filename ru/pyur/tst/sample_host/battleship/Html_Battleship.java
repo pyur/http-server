@@ -1,11 +1,7 @@
-package ru.pyur.tst.battleship;
+package ru.pyur.tst.sample_host.battleship;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.HttpSession;
 import ru.pyur.tst.Util;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 
 public class Html_Battleship extends HtmlContent {
