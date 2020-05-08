@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 
 import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_0;
 
+
 public class ServerSsl {
 
     private ExecutorService service;
@@ -150,41 +151,6 @@ public class ServerSsl {
         final CertificateFactory factory = CertificateFactory.getInstance("X.509");
         return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
     }
-
-
-
-
-    // -------------------------------- Protocol callback -------------------------------- //
-/*
-    private ProtocolDispatcher.CallbackProtocolServerEvent cb_protocol_server_event = new ProtocolDispatcher.CallbackProtocolServerEvent() {
-
-        @Override
-        public void http(HttpRequest http_request, InputStream is, OutputStream os) {
-            HttpSession http_session = new HttpSession(http_request, is, os);
-
-            //try {
-                http_session.dispatch();
-            //} catch (Exception e) { e.printStackTrace(); }
-        }
-
-
-
-        @Override
-        public void websocket(HttpRequest http_request, InputStream is, OutputStream os) {
-            WebsocketSession ws_session = new WebsocketSession(http_request, is, os);
-
-//            try {
-                ws_session.dispatch();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                //maybe try send to 'OutputStream' close packet with reason
-//            }
-
-        }
-
-    };
-*/
-
 
 
 }

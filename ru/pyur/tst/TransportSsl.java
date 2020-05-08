@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 
-public class TransportSsl extends Transport implements Runnable {
+public class TransportSsl implements Runnable {
 
     private Socket socket;
 
@@ -69,46 +69,49 @@ public class TransportSsl extends Transport implements Runnable {
         InputStream input_stream = socket.getInputStream();
         OutputStream output_stream = socket.getOutputStream();
 
-        if (callback_transport_events != null) {
-//            byte[] bytes = callback_transport_events.onConnected();
-//            if (bytes != null)  Send(bytes);
-            callback_transport_events.onConnected(output_stream);
-        }
+//        if (callback_transport_events != null) {
+////            byte[] bytes = callback_transport_events.onConnected();
+////            if (bytes != null)  Send(bytes);
+//            callback_transport_events.onConnected(output_stream);
+//        }
 
 
         // ---- 1. receive header ---- //
 
 //x        HttpHeader header = protocol_dispatcher.processHeader_v2(is);
 
-        final int MAX_LINE = 2048;
-        NewlineInputStream nis = new NewlineInputStream(input_stream, MAX_LINE);  // maybe expand to 4096, because cookies max limit
+//x        final int MAX_LINE = 2048;
+        NewlineReader nr = new NewlineReader(input_stream);
 
         HttpRequest request_header;
 
         request_header = new HttpRequest();
 
-        byte[] header_line = new byte[MAX_LINE];
-        int line_size;
+//x        byte[] header_line = new byte[MAX_LINE];
+//x        int line_size;
 
-        line_size = nis.read(header_line);  // maybe replace with "Reader"
-        if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header receive.");
+//x        line_size = nr.read(header_line);  // maybe replace with "Reader"
+        byte[] header_line = nr.read();
+//x        if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header receive.");
 
         System.out.println("---- Request ---------------------------------------------------");
-        System.out.println(new String(header_line, 0, line_size));
+        System.out.println(new String(header_line));
 
-        request_header.setFirstLine(new String(header_line, 0, line_size));
+        request_header.setFirstLine(new String(header_line));
 
         // -------- feed options -------- //
         for(;;) {
-            header_line = new byte[MAX_LINE];
-            line_size = nis.read(header_line);  // maybe replace with "Reader"
+//x            header_line = new byte[MAX_LINE];
+//x            line_size = nr.read(header_line);  // maybe replace with "Reader"
+            header_line = nr.read();
             //System.out.println("line_size: " + line_size);
 
-            if (line_size == 0)  break;
-            if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header options receive.");
+//x            if (line_size == 0)  break;
+            if (header_line.length == 0)  break;
+//x            if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header options receive.");
 
-            System.out.println(new String(header_line, 0, line_size));
-            request_header.addOption(new String(header_line, 0, line_size));
+            System.out.println(new String(header_line));
+            request_header.addOption(new String(header_line));
         }
         System.out.println("----------------------------------------------------------------");
 

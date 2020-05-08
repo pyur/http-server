@@ -158,18 +158,18 @@ public abstract class Host {
         else if (request_header.hasOption("Transfer-Encoding")) {
             String[] transfer_encoding = request_header.getOptionSplit("Transfer-Encoding");
             if (Util.inArray(transfer_encoding, "chunked")) {
-                ChunkedPayloadInputStream payload_is = new ChunkedPayloadInputStream(input_stream);
-                ByteArrayOutputStream os_payload = new ByteArrayOutputStream();
+                ChunkedReader cr = new ChunkedReader(input_stream);
+//                ByteArrayOutputStream os_payload = new ByteArrayOutputStream();
+//
+//                byte[] payload_fragment = new byte[65536];
+//
+//                for(;;) {
+//                    int readed = payload_is.read(payload_fragment);
+//                    if (readed == -1)  break;
+//                    os_payload.write(payload_fragment, 0, readed);
+//                }
 
-                byte[] payload_fragment = new byte[65536];
-
-                for(;;) {
-                    int readed = payload_is.read(payload_fragment);
-                    if (readed == -1)  break;
-                    os_payload.write(payload_fragment, 0, readed);
-                }
-
-                payload = os_payload.toByteArray();
+                payload = cr.read();
             }
         }
 

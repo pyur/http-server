@@ -29,18 +29,18 @@ public class Main {
         //byte[] client_payload = client.fetch();
 
         // mode 2
-        SampleHtmlClient client = new SampleHtmlClient();
-        try {
-            client.fetch();
-            byte[] client_payload = client.getPayload();
-            System.out.println("---- Main. payload ----------------");
-            System.out.println(new String(client_payload));
-        } catch (Exception e) { e.printStackTrace(); }
+//        SampleHtmlClient client = new SampleHtmlClient();
+//        try {
+//            client.fetch();
+//            byte[] client_payload = client.getPayload();
+//            System.out.println("---- Main. payload ----------------");
+//            System.out.println(new String(client_payload));
+//        } catch (Exception e) { e.printStackTrace(); }
 
 
         //ServerTcp server = new ServerTcp(80);
-//!        ServerSsl server = new ServerSsl(443);
-//!        server.run();
+        ServerSsl server = new ServerSsl(443);
+        server.run();
 
     }
 

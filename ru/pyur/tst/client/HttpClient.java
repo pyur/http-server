@@ -6,10 +6,8 @@ import ru.pyur.tst.util.Util;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
 
 import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_1;
 import static ru.pyur.tst.HttpRequest.HTTP_METHOD_GET;
@@ -81,33 +79,36 @@ public abstract class HttpClient {
 
         // -------- receive answer -------- //
 
-        final int MAX_LINE = 2048;
-        NewlineInputStream nis = new NewlineInputStream(input_stream, MAX_LINE);  // maybe expand to 4096, because cookies max limit
+//x        final int MAX_LINE = 2048;
+        NewlineReader nr = new NewlineReader(input_stream);
 
         response_header = new HttpResponse();
 
-        byte[] header_line = new byte[MAX_LINE];
-        int line_size;
+//x        byte[] header_line = new byte[MAX_LINE];
+//x        int line_size;
 
-        line_size = nis.read(header_line);  // maybe replace with "Reader"
-        if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header receive.");
+//x        line_size = nr.read(header_line);  // maybe replace with "Reader"
+//x        if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header receive.");
+        byte[] header_line = nr.read();
 
         System.out.println("---- Response --------------------------------------------------");
-        System.out.println(new String(header_line, 0, line_size));
+        System.out.println(new String(header_line));
 
-        response_header.setFirstLine(new String(header_line, 0, line_size));
+        response_header.setFirstLine(new String(header_line));
 
         // -------- feed options -------- //
         for(;;) {
-            header_line = new byte[MAX_LINE];
-            line_size = nis.read(header_line);  // maybe replace with "Reader"
+//x            header_line = new byte[MAX_LINE];
+//x            line_size = nr.read(header_line);  // maybe replace with "Reader"
             //System.out.println("line_size: " + line_size);
+            header_line = nr.read();
 
-            if (line_size == 0)  break;
-            if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header options receive.");
+//x            if (line_size == 0)  break;
+//x            if (line_size == -1)  throw new Exception("input stream unexpectedly ends while header options receive.");
+            if (header_line.length == 0)  break;
 
-            System.out.println(new String(header_line, 0, line_size));
-            response_header.addOption(new String(header_line, 0, line_size));
+            System.out.println(new String(header_line));
+            response_header.addOption(new String(header_line));
         }
         System.out.println("----------------------------------------------------------------");
 
@@ -178,18 +179,19 @@ public abstract class HttpClient {
         else if (response_header.hasOption("Transfer-Encoding")) {
             String[] transfer_encoding = response_header.getOptionSplit("Transfer-Encoding");
             if (Util.inArray(transfer_encoding, "chunked")) {
-                ChunkedPayloadInputStream payload_is = new ChunkedPayloadInputStream(input_stream);
-                ByteArrayOutputStream os_payload = new ByteArrayOutputStream();
+                ChunkedReader cr = new ChunkedReader(input_stream);
+//x                ByteArrayOutputStream os_payload = new ByteArrayOutputStream();
 
-                byte[] payload_fragment = new byte[65536];
+//x                byte[] payload_fragment = new byte[65536];
 
-                for(;;) {
-                    int readed = payload_is.read(payload_fragment);
-                    if (readed == -1)  break;
-                    os_payload.write(payload_fragment, 0, readed);
-                }
+//x                for(;;) {
+//x                    int readed = payload_is.read(payload_fragment);
+//x                    if (readed == -1)  break;
+//x                    os_payload.write(payload_fragment, 0, readed);
+//x                }
 
-                payload = os_payload.toByteArray();
+//x                payload = os_payload.toByteArray();
+                payload = cr.read();
             }
         }
 
