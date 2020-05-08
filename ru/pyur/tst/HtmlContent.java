@@ -1,6 +1,7 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.tags.*;
+import ru.pyur.tst.util.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +42,6 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-//x    public void init(HttpSession session) {
     public void init(ModularHost session) {
         initCommon(session);
         setContentType("text/html; charset=utf-8");
@@ -166,11 +166,15 @@ public abstract class HtmlContent extends ContentBase {
 
         headText("\r\n<style>\r\n");
 
-        File style_file = new File("inline_style.css");
+//        File style_file = new File("inline_style.css");
+//        try {
+//            FileInputStream fis = new FileInputStream(style_file);
+//            byte[] style = new byte[fis.available()];
+//            int readed = fis.read(style);
+//            headText(new String(style));
+//        } catch (Exception e) { e.printStackTrace(); }
         try {
-            FileInputStream fis = new FileInputStream(style_file);
-            byte[] style = new byte[fis.available()];
-            int readed = fis.read(style);
+            byte[] style = Util.fetchFile("inline_style.css");
             headText(new String(style));
         } catch (Exception e) { e.printStackTrace(); }
 
@@ -189,11 +193,15 @@ public abstract class HtmlContent extends ContentBase {
         headText(tsSpriteModules);
         headText(";\r\n");
 
-        File script_file = new File("inline_script.js");
+//        File script_file = new File("inline_script.js");
+//        try {
+//            FileInputStream fis = new FileInputStream(script_file);
+//            byte[] script = new byte[fis.available()];
+//            int readed = fis.read(script);
+//            headText(new String(script));
+//        } catch (Exception e) { e.printStackTrace(); }
         try {
-            FileInputStream fis = new FileInputStream(script_file);
-            byte[] script = new byte[fis.available()];
-            int readed = fis.read(script);
+            byte[] script = Util.fetchFile("inline_script.js");
             headText(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
 
@@ -266,7 +274,6 @@ public abstract class HtmlContent extends ContentBase {
         public ArrayList<ModuleBarItem> modules = new ArrayList<>();
 
         public ModuleBar() {
-//x            connectConfigDb();
             Statement stmt = getConfigStatement();
 
             String query = "SELECT `id`, `name`, `perm`, `desc`, `descb`, `pos`, `noauth`, `auth` FROM `module` ORDER BY `pos`, `desc`";

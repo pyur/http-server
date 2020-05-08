@@ -2,6 +2,7 @@ package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbManager;
 
+
 public abstract class ModularHost extends Host {
 
     protected DbManager db_manager;

@@ -1,7 +1,6 @@
 package ru.pyur.tst.default_module;
 
 import ru.pyur.tst.ApiContent;
-import ru.pyur.tst.HttpSession;
 
 
 public class Api_Default extends ApiContent {

@@ -9,12 +9,11 @@ public class HttpSessionResponse extends HttpResponse {
 
 
     public HttpSessionResponse(int code) {
-        //this.code = code;
         setVersion(HTTP_VERSION_1_1);
         setCode(code);
 
         addOption("Server", "ReferenceHttpServer/1.0 (Java)");
-        setConnectionClose();
+        //setConnectionClose();  // not sure, because websocket answers
     }
 
 

@@ -1,14 +1,11 @@
 package ru.pyur.tst;
 
 import java.io.InputStream;
-import java.util.Arrays;
 
 
 public class NewlineReader extends ExpandableByteArray {
 
     private InputStream input_stream;
-
-
 
 
 
@@ -18,8 +15,9 @@ public class NewlineReader extends ExpandableByteArray {
 
 
 
+
     public byte[] read() throws Exception {
-        init();
+        reset();
 
         int received_size;
         byte[] recv = new byte[1];
@@ -42,22 +40,10 @@ public class NewlineReader extends ExpandableByteArray {
 
             if (count > 1) {
                 if (buf[count - 2] == '\r' && buf[count - 1] == '\n') {
-                    //int got_length = count - 2;
-                    //System.arraycopy(buf, 0, b, off, got_length);
-
-                    //truncate
-                    //buf = Arrays.copyOf(buf, got_length);
                     truncate(count - 2);
-
                     return buf;
                 }
             }
-
-
-//            if (count > (len - 2)) {  // todo: re-check len calculation!
-//                throw new IOException("new line not found within range");
-//                //return -1;
-//            }
 
         }  // for
 

@@ -2,7 +2,6 @@ package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.ModuleInfo;
-import ru.pyur.tst.HttpSession;
 
 
 public class Info extends ModuleInfo {

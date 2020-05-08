@@ -12,7 +12,7 @@ public abstract class ExpandableByteArray {
     private int grow_size;
 
 
-    protected void init() {
+    protected void reset() {
         buf = new byte[grow_size];
         count = 0;
         grow_size = 1024;

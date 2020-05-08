@@ -9,15 +9,7 @@ import java.util.ArrayList;
 
 public abstract class ContentBase {
 
-//x    protected HttpSession session;
     protected ModularHost session;
-    //protected ControlSession co_session;
-
-
-
-
-
-    // ---------------- Database ---------------- //
 
     private DbManager db_manager;
     private Connection db_connection;
@@ -27,17 +19,13 @@ public abstract class ContentBase {
 
     // ---- constructor ----------------
 
-//x    protected void initCommon(HttpSession session) {
     protected void initCommon(ModularHost session) {
         this.session = session;
+
         this.db_manager = session.getDbManager();
         db_connection = db_manager.getDb();
         db_config = db_manager.getConfigDb();
     }
-
-
-
-    //public void setControlSession(ControlSession cos) { co_session = cos; }
 
 
 

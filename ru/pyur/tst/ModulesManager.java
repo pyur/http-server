@@ -9,7 +9,6 @@ public class ModulesManager {
         ModuleInfo module_info = null;
 
         if (module_name.isEmpty()) {
-            //todo: default page
             module_info = new ru.pyur.tst.default_module.Info();
         }
 

@@ -1,11 +1,11 @@
 package ru.pyur.tst;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.Reader;
 
 
-public class WebsocketReader {  // extends Reader {
+public class WebsocketReader extends ExpandableByteArray {
+
+    //todo: read fragmented streams
 
     InputStream is;
 
@@ -26,8 +26,8 @@ public class WebsocketReader {  // extends Reader {
 
 
     public WebsocketPacket read() throws Exception {
-        //ByteArrayOutputStream os = new ByteArrayOutputStream();
 
+        //for(;;) {  todo: read multiple fragments
 
         int p1 = is.read();
         if (p1 == -1)  System.out.println("p1. stream end.");
@@ -73,12 +73,14 @@ public class WebsocketReader {  // extends Reader {
 
         byte[] payload = new byte[payload_length];
 
-        int off = 0;
-        for(;;) {
-            int readed = is.read(payload, off, payload_length - off);
-            off += readed;
-            if (off == payload_length)  break;
-        }
+//x        int off = 0;
+//x        for(;;) {
+//x            int readed = is.read(payload, off, payload_length - off);
+//x            off += readed;
+//x            if (off == payload_length)  break;
+//x        }
+        int readed = is.read(payload);
+        if (readed < payload_length)  throw new Exception("unexpected stream end.");
 
         //new Dump().dumpBinary(payload);
 
@@ -94,19 +96,6 @@ public class WebsocketReader {  // extends Reader {
 
         return new WebsocketPacket(opcode, payload);
     }
-
-
-
-
-
-    //@Override
-    //public long skip(long n) {
-    //}
-
-
-
-    //@Override
-    //public void close() {}
 
 
 }

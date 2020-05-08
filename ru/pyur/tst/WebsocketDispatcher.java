@@ -1,5 +1,6 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.db.DbManager;
 import ru.pyur.tst.json.Json;
 
 import java.io.*;
@@ -11,81 +12,24 @@ public abstract class WebsocketDispatcher {
 
     protected ModularHost session;
 
-//x    private ArrayList<PStr> lsQuery;
-
-//    private InputStream is;
-//    private OutputStream os;
     private WebsocketWriter websocket_writer;
 
     //protected String jact;  // json action
 
-
-
-    // ---------------- Database ---------------- //
-
-//    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
-//    private static final String DB_USER = "root";
-//    private static final String DB_PASSWORD = "1";
-//
-//    protected Connection m_connection;
+    private DbManager db_manager;
+    private Connection db_connection;
+    private Connection db_config;
 
 
 
-    // -------- Config -------- //
-
-//    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
-//
-//    protected Connection m_config;
-
-
-
-//    public WebsocketDispatcher() {}
-//    public WebsocketDispatcher(WebsocketSession session) {
-//        //initHtml(session);
-//        initCommon(session);
-//    }
-
-
-
-//    private void initCommon(WebsocketSession session) {
-//        this.session = session;
-//x        lsQuery = session.getParam();
-//    }
 
     public void init(ModularHost session) {
         this.session = session;
 
-//        this.is = session.getInputStream();
-//        this.os = session.output_stream;
+        this.db_manager = session.getDbManager();
+        db_connection = db_manager.getDb();
+        db_config = db_manager.getConfigDb();
     }
-
-
-//    public void setStreams(InputStream is, OutputStream os) {
-//        this.is = is;
-//        this.os = os;
-//    }
-
-
-
-//    protected abstract void makeHtml();
-
-
-
-//    protected String getModule() { return session.module; }
-
-//    protected String getAction() { return session.action; }
-
-
-    // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-//    protected String getParam(String key) throws Exception {
-//        for (PStr pair : lsQuery) {
-//            if (pair.key.equals(key))  return pair.value;
-//        }
-//
-//        throw new Exception("parameter \'" + key + "\' absent.");
-//        //return null;
-//    }
-
 
 
 
@@ -103,6 +47,8 @@ public abstract class WebsocketDispatcher {
 
         onDisconnect();
     }
+
+
 
     private void receiveLoop(WebsocketReader wr) throws Exception {
         WebsocketReader.WebsocketPacket packet;
@@ -153,6 +99,9 @@ public abstract class WebsocketDispatcher {
     }
 
 
+
+
+    // ---- prototypes ------------------------------------------------
 
     protected void onConnect() {}
 
@@ -212,7 +161,6 @@ public abstract class WebsocketDispatcher {
 
     protected void action(String action, Json other_params) {}
 
-    //protected String getParam(String key) {}
 
 
 
@@ -226,13 +174,14 @@ public abstract class WebsocketDispatcher {
 
     protected void sendText(String text) {
         try {
-            //wos.write(text);
             websocket_writer.write(text);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     protected void sendBinary(byte[] data) {
-        //wos.write(data);
+        try {
+            websocket_writer.write(data);
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 
@@ -248,5 +197,10 @@ public abstract class WebsocketDispatcher {
     // parse JSON. call appropriate prototypes.
 
 
+
+
+    // -------------------------------- Database -------------------------------- //
+
+    // todo
 
 }

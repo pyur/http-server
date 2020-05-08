@@ -3,7 +3,6 @@ package ru.pyur.tst;
 import ru.pyur.tst.util.PStr;
 import ru.pyur.tst.util.Util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
@@ -29,9 +28,10 @@ public abstract class Host {
         this.input_stream = input_stream;
         this.output_stream = output_stream;
 
-        response_header = new HttpResponse();
-        response_header.setVersion(HttpHeader.HTTP_VERSION_1_1);
-        response_header.setCode(200);
+//        response_header = new HttpResponse();
+//        response_header.setVersion(HttpHeader.HTTP_VERSION_1_1);
+//        response_header.setCode(200);
+        response_header = new HttpSessionResponse();
     }
 
 
@@ -80,39 +80,18 @@ public abstract class Host {
         //}
 
 
-//        if (request_header.hasOption("Upgrade")) {
-        //String option_upgrage;
 
-        //try {
         String option_upgrage = request_header.getOption("Upgrade");
-        //} catch (Exception e) { e.printStackTrace(); return false; }
         if (option_upgrage == null)  return false;
-//x        System.out.println("...Upgrade success.");
 
         if (!option_upgrage.equals("websocket")) { return false; }
-//x        System.out.println("...equals websocket success.");
 
 
         // -------- check 'Sec-WebSocket-Version' -------- //
-//        if (!request_header.hasOption("Sec-WebSocket-Version")) {
-//            System.out.println("defaultHeaderDispatcher. error. option \"Sec-WebSocket-Version\" not found.");
-//            return false;
-//        }
-
-
-        // -------- check 'Sec-WebSocket-Key' -------- //
-//        if (request_header.hasOption("Sec-WebSocket-Key")) {
-//            System.out.println("option \"Sec-WebSocket-Key\" present.");
-
-//x                    state = HTTP_STATE_WS_SERVER;
-
-            // set-up websocket server
-            // callback: websocket server
-
-//            return true;
-//        }  // "Sec-WebSocket-Key"
-//        }  // "websocket"
-//        }  // "Upgrade: "
+        //if (!request_header.hasOption("Sec-WebSocket-Version")) {
+        //    System.out.println("defaultHeaderDispatcher. error. option \"Sec-WebSocket-Version\" not found.");
+        //    return false;
+        //}
 
 
         return true;
@@ -136,40 +115,23 @@ public abstract class Host {
     // --------------------------------------------------------------------------------
 
     protected void receivePayload() throws Exception {
-//x        byte[] payload = new byte[0];
 
-        //if (request_header.hasOption("Content-Length")) {
         String payload_length_s = request_header.getOption("Content-Length");
         if (payload_length_s != null) {
             int payload_length = Integer.parseInt(payload_length_s);
 
-            int readed = 0;
             payload = new byte[payload_length];
 
-            for(;;) {
-                if (readed >= payload_length)  break;
-                int readed1 = input_stream.read(payload, readed, payload_length - readed);
-                if (readed1 == -1)  break;
-                readed += readed1;
-            }
+            int readed = input_stream.read(payload);
+            if (readed < payload_length)  throw new Exception("stream unexpectedly ends.");
         }
 
 
         else if (request_header.hasOption("Transfer-Encoding")) {
             String[] transfer_encoding = request_header.getOptionSplit("Transfer-Encoding");
             if (Util.inArray(transfer_encoding, "chunked")) {
-                ChunkedReader cr = new ChunkedReader(input_stream);
-//                ByteArrayOutputStream os_payload = new ByteArrayOutputStream();
-//
-//                byte[] payload_fragment = new byte[65536];
-//
-//                for(;;) {
-//                    int readed = payload_is.read(payload_fragment);
-//                    if (readed == -1)  break;
-//                    os_payload.write(payload_fragment, 0, readed);
-//                }
-
-                payload = cr.read();
+                ChunkedReader chunked_reader = new ChunkedReader(input_stream);
+                payload = chunked_reader.read();
             }
         }
 
@@ -187,6 +149,7 @@ public abstract class Host {
     // ---- Responses ------------------------------------------------------------
 
     protected void response(byte[] contents) {
+        response_header.setConnectionClose();
         response_header.appendPayload(contents);
         send(response_header.stringify());
     }
@@ -195,6 +158,7 @@ public abstract class Host {
 
     protected void response400() {
         response_header.setCode(400);
+        response_header.setConnectionClose();
         send(response_header.stringify());
     }
 
@@ -202,6 +166,7 @@ public abstract class Host {
 
     protected void response404(String message) {
         response_header.setCode(404);
+        response_header.setConnectionClose();
         response_header.appendPayload(message);
         send(response_header.stringify());
     }

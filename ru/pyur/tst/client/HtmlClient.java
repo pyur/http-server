@@ -28,8 +28,4 @@ public class HtmlClient extends HttpClient {
     }
 
 
-
-
-
-
 }

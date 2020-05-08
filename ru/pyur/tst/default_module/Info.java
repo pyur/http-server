@@ -7,8 +7,6 @@ public class Info extends ModuleInfo {
 
     private static final String NAME = "default";
 
-//    public String ModuleName() { return NAME; }
-
 
     @Override
     public HtmlContent getHtml(String action) {
