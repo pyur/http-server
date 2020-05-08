@@ -39,9 +39,26 @@ public class Main {
 
 
         //ServerTcp server = new ServerTcp(80);
-        ServerSsl server = new ServerSsl(443);
+        ServerSsl server = new ServerSsl(444);
         server.run();
 
     }
 
 }
+
+/*
+<VirtualHost _default_:443>
+    ServerName example.com
+
+    SSLProxyEngine on
+    ProxyPreserveHost on
+
+    ProxyPass "/" "https://127.0.0.1:8443/"
+
+    ProxyAddHeaders off
+
+    SSLEngine on
+    SSLCertificateFile "example.com.fullchain.pem"
+    SSLCertificateKeyFile "example.com.key.pem"
+</VirtualHost>
+*/
