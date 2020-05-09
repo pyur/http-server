@@ -16,7 +16,7 @@ public class Html_Elec extends HtmlContent {
         heading("Электричество");
 
         Table table = new Table();
-        tag(table);
+        add(table);
 
 
         String query = "SELECT `id`, `name`, `cat`, `login`, `dtx`, `idx` FROM `user`";

@@ -138,11 +138,13 @@ public class Util {
     public static byte[] fetchFile(String file_name) throws Exception {
         File file = new File(file_name);
         byte[] contents = null;
-        //try {
+        if (file.exists()) {
             FileInputStream fis = new FileInputStream(file);
             contents = new byte[fis.available()];
             int readed = fis.read(contents);
-        //} catch (Exception e) { e.printStackTrace(); }
+        }
+        else { throw new Exception("file not exists: " + file.getPath()); }
+
         return contents;
     }
 

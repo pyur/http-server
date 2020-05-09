@@ -9,7 +9,7 @@ public class Html_Auth extends HtmlContent {
     @Override
     public void makeHtml() {
 
-        title("Авторизация");  // аутентификация
+        setTitle("Авторизация");  // аутентификация
 
         heading("Авторизация");
 
@@ -17,7 +17,7 @@ public class Html_Auth extends HtmlContent {
         Div container = new Div();
         container.width(200);
         container.addStyle("margin", "50px auto 0");
-        tag(container);
+        add(container);
 
         Form form = new Form("form");
         form.setUrl("/a/" + getModule() + "/");

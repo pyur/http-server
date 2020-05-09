@@ -80,9 +80,9 @@ public abstract class Tag {
 
     // ---- setters, getters ----------------------------------------------------------------
 
-    public void text(String str) {
-        tags.add(new PlainText(str));
-    }
+    public void add(String str) { tags.add(new PlainText(str)); }
+
+    public void add(int number) { tags.add(new PlainText(number)); }
 
 
     public void add(Tag tag) {

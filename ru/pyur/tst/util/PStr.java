@@ -12,9 +12,16 @@ public class PStr {
         this.value = "";
     }
 
+
     public PStr(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+
+    public PStr(String key, int value) {
+        this.key = key;
+        this.value = "" + value;
     }
 
 

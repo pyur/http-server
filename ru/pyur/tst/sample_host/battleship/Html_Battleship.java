@@ -10,16 +10,16 @@ public class Html_Battleship extends HtmlContent {
     public void makeHtml() {
         heading("Морской бой");
 
-        text("<script>");
-        text("var session = 0;");
-        text("var user = 0;");
+        add("<script>");
+        add("var session = 0;");
+        add("var user = 0;");
 
         try {
             byte[] script = Util.fetchFile("inline_script_battleship.js");
-            text(new String(script));
+            add(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
 
-        text("</script>");
+        add("</script>");
     }
 
 

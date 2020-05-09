@@ -155,7 +155,7 @@ public class Md_MakeSpriteModules extends HtmlContent {
         configSet(CONFIG_MODULE_ICON_UPD, timestamp);
 
 
-        text("OK");
+        add("OK");
     }
 
 

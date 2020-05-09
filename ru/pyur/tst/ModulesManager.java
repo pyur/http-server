@@ -9,7 +9,7 @@ public class ModulesManager {
         ModuleInfo module_info = null;
 
         if (module_name.isEmpty()) {
-            module_info = new ru.pyur.tst.default_module.Info();
+            module_info = new ru.pyur.tst.sample_host.default_module.Info();
         }
 
         else if (module_name.equals("auth")) {
@@ -25,7 +25,7 @@ public class ModulesManager {
         }
 
         else if (module_name.equals("db")) {
-            module_info = new ru.pyur.tst.dbedit.Info();
+            module_info = new ru.pyur.tst.sample_host.dbedit.Info();
         }
 
         else if (module_name.equals("res")) {

@@ -35,6 +35,7 @@ public class Table extends Tag {
 
     public Table() {
         tag_name = "table";
+        setId("lst");
     }
 
 

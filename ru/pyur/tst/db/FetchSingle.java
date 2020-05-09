@@ -3,11 +3,11 @@ package ru.pyur.tst.db;
 import java.sql.ResultSet;
 
 
-public class FetchSingle {
+public class FetchSingle extends Fetch {
 
-    private ResultSet result_set;
+//b    private ResultSet result_set;
 
-    boolean is_empty;
+    private boolean is_empty;
 
 
     public FetchSingle(ResultSet result_set) {
@@ -26,29 +26,6 @@ public class FetchSingle {
     public boolean isEmpty() throws Exception {
         return is_empty;
     }
-
-
-
-    public int getInt(int idx) throws Exception {
-        return result_set.getInt(idx);
-    }
-
-
-    public int getInt(String name) throws Exception {
-        return result_set.getInt(name);
-    }
-
-
-
-    public String getString(int idx) throws Exception {
-        return result_set.getString(idx);
-    }
-
-
-    public String getString(String name) throws Exception {
-        return result_set.getString(name);
-    }
-
 
 
 }

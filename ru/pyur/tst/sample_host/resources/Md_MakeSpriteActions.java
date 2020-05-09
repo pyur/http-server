@@ -27,7 +27,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
 
         if (files == null) {
             //System.out.println("directory.files == null");
-            text("Failed. directory not exists.");
+            add("Failed. directory not exists.");
             return;
         }
 
@@ -156,7 +156,7 @@ public class Md_MakeSpriteActions extends HtmlContent {
 //        }
 
 
-        text("OK");
+        add("OK");
     }
 
 

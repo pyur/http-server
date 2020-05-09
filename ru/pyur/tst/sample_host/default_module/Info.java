@@ -1,4 +1,4 @@
-package ru.pyur.tst.default_module;
+package ru.pyur.tst.sample_host.default_module;
 
 import ru.pyur.tst.*;
 

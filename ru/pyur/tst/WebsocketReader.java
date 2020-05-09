@@ -1,5 +1,7 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.util.ExpandableByteArray;
+
 import java.io.InputStream;
 
 

@@ -21,10 +21,13 @@ public class DbFetch {
 
 
 
+    public DbFetch() {}
 
     public DbFetch(Connection connection) {
         this.connection = connection;
     }
+
+    public void setConnection(Connection connection) { this.connection = connection; }
 
 
 
@@ -88,7 +91,7 @@ public class DbFetch {
 
 
 
-    private ResultSet getResultSet() throws Exception {
+    protected ResultSet getResultSet() throws Exception {
         if (tables.size() == 0) throw new Exception("table is not specified.");
 
         StringBuilder sb = new StringBuilder();
@@ -141,8 +144,8 @@ public class DbFetch {
 
 
 
-    public Fetch fetch() throws Exception {
-        return new Fetch(getResultSet());
+    public FetchArray fetchArray() throws Exception {
+        return new FetchArray(getResultSet());
     }
 
 

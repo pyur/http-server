@@ -1,12 +1,12 @@
-package ru.pyur.tst.dbedit;
+package ru.pyur.tst.sample_host.dbedit;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.*;
 
-import static ru.pyur.tst.dbedit.Info.DBEDIT_ACTION_DB;
-import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
+import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_ACTION_DB_LIST;
+import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_DB;
 
 
 public class Md_DbList extends HtmlContent {
@@ -18,7 +18,7 @@ public class Md_DbList extends HtmlContent {
 
 
         Table table = new Table();
-        tag(table);
+        add(table);
 
         table.addColumn("Имя", 200);
 
@@ -41,12 +41,12 @@ public class Md_DbList extends HtmlContent {
 
             ModuleUrl href = new ModuleUrl();
             href.setModule(getModule());
-            href.setAction(DBEDIT_ACTION_DB);
+            href.setAction(DBEDIT_ACTION_DB_LIST);
             href.addParameter(DBEDIT_PARAM_DB, db_name);
 
             link.setHref(href);
 
-            link.text(db_name);
+            link.add(db_name);
 
         }
 

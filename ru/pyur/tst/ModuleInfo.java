@@ -1,6 +1,8 @@
 package ru.pyur.tst;
 
 
+import java.sql.Connection;
+
 public abstract class ModuleInfo {
 
     private static final String NAME = "";
@@ -8,6 +10,13 @@ public abstract class ModuleInfo {
 
 
     public String ModuleName() { return NAME; }
+
+
+    // abstract void modulePre();
+    // abstract void moduleAfter();
+
+    //protected Connection getModuleDb() { return null; }
+
 
 
 

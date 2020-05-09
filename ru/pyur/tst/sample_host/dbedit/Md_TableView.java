@@ -1,13 +1,12 @@
-package ru.pyur.tst.dbedit;
+package ru.pyur.tst.sample_host.dbedit;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.ResultSet;
-import java.sql.Statement;
 
-import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_DB;
-import static ru.pyur.tst.dbedit.Info.DBEDIT_PARAM_TABLE;
+import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_DB;
+import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_TABLE;
 
 
 public class Md_TableView extends HtmlContent {
@@ -20,7 +19,7 @@ public class Md_TableView extends HtmlContent {
 
 
         Table table = new Table("lmt");  // todo: lst
-        tag(table);
+        add(table);
 
         table.addColumn("Имя", 150);
         table.addColumn("Тип", 200);

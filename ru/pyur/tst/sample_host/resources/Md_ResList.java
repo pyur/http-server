@@ -14,7 +14,7 @@ public class Md_ResList extends HtmlContent {
         heading("Список таблиц конфига");
 
         Table table = new Table();
-        tag(table);
+        add(table);
 
         table.addColumn("Имя", 200);
 
@@ -40,7 +40,7 @@ public class Md_ResList extends HtmlContent {
 
             link.setHref(href);
 
-            link.text(table_name);
+            link.add(table_name);
 
             td_db_name.add(link);
             tr.add(td_db_name);

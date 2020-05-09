@@ -23,19 +23,19 @@ public class Html_Chat extends HtmlContent {
         div_msg_container.addStyle("overflow-y", "scroll");
         div_msg_container.addStyle("background-color", "#eee");
 
-        tag(div_msg_container);
+        add(div_msg_container);
 
-        text("<div style=\"width: 300px; height: 50px; margin: 0 auto; border: 1px solid #000;\">");
-        text("<textarea id=\"msg_input\" style=\"width: 250px; height: 44px; margin: 0 auto; border: 1px solid #000;\" autofocus></textarea>");
-        text("<input id=\"msg_send\" type=\"button\" style=\"width: 44px; height: 50px; vertical-align: top;\" value=\"&gt;\">");
-        text("</div>");
+        add("<div style=\"width: 300px; height: 50px; margin: 0 auto; border: 1px solid #000;\">");
+        add("<textarea id=\"msg_input\" style=\"width: 250px; height: 44px; margin: 0 auto; border: 1px solid #000;\" autofocus></textarea>");
+        add("<input id=\"msg_send\" type=\"button\" style=\"width: 44px; height: 50px; vertical-align: top;\" value=\"&gt;\">");
+        add("</div>");
 
 
-        text("<script>");
+        add("<script>");
 
-        text(new String(script));
+        add(new String(script));
 
-        text("</script>");
+        add("</script>");
 
     }
 

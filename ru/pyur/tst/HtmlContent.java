@@ -3,8 +3,6 @@ package ru.pyur.tst;
 import ru.pyur.tst.tags.*;
 import ru.pyur.tst.util.Util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -53,36 +51,39 @@ public abstract class HtmlContent extends ContentBase {
 
     // ---- append to head: string, int, tags ---- //
 
-    protected void headText(String text) {
+    protected void addHead(String text) {
         head.add(new PlainText(text));
     }
 
-    protected void headText(int number) {
+    protected void addHead(int number) {
         head.add(new PlainText("" + number));
     }
 
-    protected void headTag(Tag tag) {
+    protected void addHead(Tag tag) {
         head.add(tag);
     }
 
 
-    protected void title(String title) { this.title = title; }
+    //protected void appendTitle(String title) { this.title += title; }
+    protected void setTitle(String title) { this.title = title; }
 
 
 
     // ---- append to body: string, int, tags ---- //
 
-    protected void text(String text) {
+    protected void add(String text) {
         body.add(new PlainText(text));
     }
 
-    protected void text(int number) {
+    protected void add(int number) {
         body.add(new PlainText("" + number));
     }
 
-    protected void tag(Tag tag) {
-        body.add(tag);
+    protected void add(Tag tag) {
+        if (tag != null)  body.add(tag);
     }
+
+    protected void add(ArrayList<Tag> tags) { for (Tag tag : tags) { body.add(tag); } }
 
 
     protected void heading(String text) {
@@ -131,7 +132,7 @@ public abstract class HtmlContent extends ContentBase {
                 div_line.add(new PlainText("(" + ste.getFileName() + " : "));
                 div_line.add(new PlainText(ste.getLineNumber() + ")"));
             }
-            tag(div);
+            add(div);
         }
 
         makeHtmlHeader();
@@ -156,15 +157,15 @@ public abstract class HtmlContent extends ContentBase {
 
 
     private void makeHtmlHeader() {
-        headText("<!DOCTYPE html>\r\n<html><head>");
+        addHead("<!DOCTYPE html>\r\n<html><head>");
         if (title != null) {
-            headText("<title>");
-            headText(title);
-            headText("</title>");
+            addHead("<title>");
+            addHead(title);
+            addHead("</title>");
         }
-        headText("<meta charset=\"UTF-8\">");
+        addHead("<meta charset=\"UTF-8\">");
 
-        headText("\r\n<style>\r\n");
+        addHead("\r\n<style>\r\n");
 
 //        File style_file = new File("inline_style.css");
 //        try {
@@ -175,23 +176,23 @@ public abstract class HtmlContent extends ContentBase {
 //        } catch (Exception e) { e.printStackTrace(); }
         try {
             byte[] style = Util.fetchFile("inline_style.css");
-            headText(new String(style));
+            addHead(new String(style));
         } catch (Exception e) { e.printStackTrace(); }
 
-        headText("\r\n</style>\r\n");
+        addHead("\r\n</style>\r\n");
 
 
         int tsSpriteActions = configGeti(CONFIG_ACTION_ICON_UPD);
         int tsSpriteModules = configGeti(CONFIG_MODULE_ICON_UPD);
 
 
-        headText("\r\n<script>\r\n");
-        headText("var tsSpriteActions = ");
-        headText(tsSpriteActions);
-        headText(";\r\n");
-        headText("var tsSpriteModules = ");
-        headText(tsSpriteModules);
-        headText(";\r\n");
+        addHead("\r\n<script>\r\n");
+        addHead("var tsSpriteActions = ");
+        addHead(tsSpriteActions);
+        addHead(";\r\n");
+        addHead("var tsSpriteModules = ");
+        addHead(tsSpriteModules);
+        addHead(";\r\n");
 
 //        File script_file = new File("inline_script.js");
 //        try {
@@ -202,13 +203,13 @@ public abstract class HtmlContent extends ContentBase {
 //        } catch (Exception e) { e.printStackTrace(); }
         try {
             byte[] script = Util.fetchFile("inline_script.js");
-            headText(new String(script));
+            addHead(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
 
-        headText("\r\n</script>\r\n");
+        addHead("\r\n</script>\r\n");
 
 
-        headText("</head><body>");
+        addHead("</head><body>");
     }
 
 
@@ -216,7 +217,7 @@ public abstract class HtmlContent extends ContentBase {
 
     private void makeModulesBar() {
         Div div_modules_bar = new Div();
-        tag(div_modules_bar);
+        add(div_modules_bar);
         div_modules_bar.addClass("modules_bar");
 
         // ---- todo: menu = auth->get_menu()
@@ -241,7 +242,7 @@ public abstract class HtmlContent extends ContentBase {
             Div div_desc = new Div();
             mod.add(div_desc);
             String desc = mbi.descb.isEmpty() ? mbi.desc : mbi.descb;
-            div_desc.text(desc);
+            div_desc.add(desc);
         }
 
     }

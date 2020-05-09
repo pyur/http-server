@@ -15,6 +15,8 @@ public abstract class ContentBase {
     private Connection db_connection;
     private Connection db_config;
 
+    private Connection module_db;
+
 
 
     // ---- constructor ----------------
@@ -39,6 +41,8 @@ public abstract class ContentBase {
     // ---- setters, getters ------------------------------------------------
 
 //    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager
+    protected Connection getModuleDb() { return module_db; }
+    public void setModuleDb(Connection module_db) { this.module_db = module_db; }
 
     protected String getModule() { return session.getModule(); }
 

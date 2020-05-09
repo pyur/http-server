@@ -38,6 +38,11 @@ public class ModuleUrl {
     }
 
 
+    public void addParameter(String option, int value) {
+        options.add(new PStr(option, value));
+    }
+
+
 
     @Override
     public String toString() {

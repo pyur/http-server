@@ -3,38 +3,50 @@ package ru.pyur.tst.db;
 import java.sql.ResultSet;
 
 
-public class Fetch {
+public abstract class Fetch {
 
-    private ResultSet result_set;
+    protected ResultSet result_set;
 
-    //boolean is_empty;
+//?    boolean is_empty;
 
 
-    public Fetch(ResultSet result_set) {
-        this.result_set = result_set;
-        //try {
-        //    is_empty = result_set.isAfterLast();
-        //} catch (Exception e) {}
+//    public Fetch(ResultSet result_set) {
+//        this.result_set = result_set;
+//
+//        try {
+//            is_empty = result_set.isAfterLast();
+//        } catch (Exception e) {}
+//
+//        try {
+//            result_set.next();
+//        } catch (Exception e) {}
+//    }
+
+
+//    public boolean isEmpty() throws Exception {
+//        return is_empty;
+//    }
+
+
+
+    public int getInt(int idx) throws Exception {
+        return result_set.getInt(idx);
     }
 
 
-    //public int count() {
-        //move to first
-        //iterate
-        //move to first
-    //    return 0;
-    //}
-
-
-    public boolean isEmpty() throws Exception {
-        //return is_empty;
-        return result_set.isAfterLast();
+    public int getInt(String name) throws Exception {
+        return result_set.getInt(name);
     }
 
 
 
-    public boolean row() throws Exception {
-        return result_set.next();
+    public String getString(int idx) throws Exception {
+        return result_set.getString(idx);
+    }
+
+
+    public String getString(String name) throws Exception {
+        return result_set.getString(name);
     }
 
 

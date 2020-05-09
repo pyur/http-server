@@ -46,15 +46,16 @@ public class SampleHost extends ModularHost {
         if (!last_argument.isEmpty()) {
             try {
                 //System.out.println("user dir: " + System.getProperty("user.dir"));
+                if (!request_header.getPath().equals("/favicon.ico"))  throw new Exception("file name strict.");
                 File file = new File(doc_root + request_header.getPath());
+//todo                File file = new File(doc_root + "/../../txt");
+                System.out.println("file: " + file.getAbsolutePath());
                 if (file.exists()) {
                     FileInputStream fis = new FileInputStream(file);
                     byte[] bytes = new byte[fis.available()];
                     fis.read(bytes);
                     fis.close();
 
-                    //ArrayList<PStr> opts = new ArrayList<>();
-                    //opts.add(new PStr("Content-Type", "image/x-icon"));
                     addOption("Content-Type", "image/x-icon");
                     //Last-Modified: Wed, 21 Jan 2015 12:50:06 GMT
                     //ETag: "47e-50d28feb5fca8"

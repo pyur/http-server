@@ -8,4 +8,10 @@ public class PlainText extends Tag {
         plainText = text;
     }
 
+
+    public PlainText(int number) {
+        //tag_name = null;
+        plainText = "" + number;
+    }
+
 }
