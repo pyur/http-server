@@ -1,13 +1,9 @@
 package ru.pyur.tst.sample_host.dbedit;
 
 import ru.pyur.tst.HtmlContent;
-import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.DbFetcher;
 import ru.pyur.tst.tags.*;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 
 import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_ACTION_DB_LIST;
 import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_HOST;
@@ -97,10 +93,11 @@ public class Md_HostList extends HtmlContent {
 
         heading("Хосты баз данных");
 
-        TableFetcher host_fetcher = new TableFetcher(getModuleDb());
+        TableFetcher host_fetcher = new HostTable(getModuleDb());
 
         //ArrayList<Tag> tags = host_fetcher.make();
-        Table table = host_fetcher.make();
+        //Table table = host_fetcher.make();
+        Tag table = host_fetcher.make();
 
         add(table);
 
@@ -110,120 +107,63 @@ public class Md_HostList extends HtmlContent {
 
 
 
-//    private class HostFetcher extends TableFetcher {
-//    }
+    private class HostTable extends TableFetcher {
 
-    //base for generic table fetcher
-    private class TableFetcher extends DbFetcher {
-
-        //private ArrayList<Tag> tags = new ArrayList<>();
-
-        private Table table;
-        private Tr tr;
-
-
-        public TableFetcher(Connection conn) {
-            setResultCallback(cb_result);
-            //db = new DbFetch(conn);
+        public HostTable(Connection conn) {
             setConnection(conn);
         }
 
 
-        // ---- setters, getters ----------------------------------------------------------------
-
-//        protected void add(String str) { tags.add(new PlainText(str)); }
-
-//        protected void add(int number) { tags.add(new PlainText(number)); }
-
-//        protected void add(Tag tag) { tags.add(tag); }
-
-
-
         @Override
-        public Table make() {
-        //public ArrayList<Tag> make() {
-//            DbFetch db_db = new DbFetch(getModuleDb());
-//            db_db.table("db");
-//            db_db.col(new String[]{"id", "host", "port", "login"});
+        //public Table make() {
+        public Tag make() {
+            initTable(cb_table);
+
             table("db");
             col(new String[]{"id", "host", "port", "login"});
+            //where("`id` = 2");
 
-            processResults();
+            addColumn("№", 30);
+            addColumn("Хост", 120);
+            addColumn("Порт", 60);
+            addColumn("Логин", 100);
 
-            return table;
-            //return tags;
+            fetchTable();
+
+            return tag;
         }
 
 
 
-        private DbFetcher.Callback cb_result = new DbFetcher.Callback() {
-            @Override
-            public void onEmpty() {
-                // fetch empty result
-            }
+        private TableCallback cb_table = new TableCallback() {
 
-
-            @Override
-            public void onFetch() {
-                // fetch success. prepare table, etc.
-
-                table = new Table();
-                //add(table);
-
-                table.addColumn("№", 30);
-                table.addColumn("Хост", 120);
-                table.addColumn("Порт", 60);
-                table.addColumn("Логин", 100);
-            }
+//            @Override
+//            public void onFetch() {  // todo: abolish
+//                // fetch success. prepare table, etc.
+//
+//                //todo: column description in 'make'
+//                table.addColumn("№", 30);
+//                table.addColumn("Хост", 120);
+//                table.addColumn("Порт", 60);
+//                table.addColumn("Логин", 100);
+//            }
 
 
             @Override
             public void onRow() {
                 // add row to table, etc
-                //Tr tr = new Tr();
-                tr = new Tr();
-                table.add(tr);
             }
-
-//            @Override
-//            public void onColumn(ResultSet rs, int column_num) {
-//                // add cell to table row
-//                Td cell = new Td();
-//                try {
-//                    switch (column_num) {
-//                        case 1:
-//                            rs.getInt(column_num);
-//                            break;
-//
-//                        case 2:
-//                            rs.getString(column_num);
-//                            break;
-//
-//                        case 3:
-//                            rs.getInt(column_num);
-//                            break;
-//
-//                        case 4:
-//                            rs.getString(column_num);
-//                            break;
-//
-//                    }
-//                } catch (Exception e) { e.printStackTrace(); }
-//
-//                cell.add(text);
-//            }
 
 
             @Override
-            public void onColumnString(int column_num, String value) {
+            public Tag onColumnString(int column_num, String value) {
                 // add cell to table row
                 //Td cell = new Td(value);
-                Td cell = new Td();
-                tr.add(cell);
+                Tag tag = null;
 
                 if (column_num == 2) {
                     A link = new A();
-                    cell.add(link);
+                    //cell.add(link);
 
                     ModuleUrl href = new ModuleUrl();
                     href.setModule(getModule());
@@ -233,12 +173,15 @@ public class Md_HostList extends HtmlContent {
                     link.setHref(href);
 
                     link.add(value);
+                    tag = link;
                 }
 
                 else {
-                    cell.add(value);
+                    //cell.add(value);
+                    tag = new PlainText(value);
                 }
 
+                return tag;
             }
         };
 

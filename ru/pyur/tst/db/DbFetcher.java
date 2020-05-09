@@ -2,26 +2,22 @@ package ru.pyur.tst.db;
 
 
 import ru.pyur.tst.tags.Table;
-import ru.pyur.tst.tags.Tag;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
 
-//public abstract class DbFetcher {  // maybe 'extends DbFetch'
+
 public abstract class DbFetcher extends DbFetch {
 
-//    protected DbFetch db;
+    private FetcherCallback fetcher_callback;
 
-    private Callback callback;
-
-    protected interface Callback {
+    protected interface FetcherCallback {
         void onEmpty();
         void onFetch();
         void onRow();
         //void onRowWithId(int row_id);
-        //void onColumn(ResultSet rs, int column_num);
-        void onColumnString(int column_num, String value);
+        void onColumn(ResultSet rs, int column_num);
+        //void onColumnString(int column_num, String value);
     }
 
 
@@ -32,49 +28,61 @@ public abstract class DbFetcher extends DbFetch {
     //protected void col(String[] columns) { db.col(columns); }
 
 
-    abstract public Table make();
     //abstract public ArrayList<Tag> make();
 
 
-    protected void setResultCallback(Callback cb_result) {
-        callback = cb_result;
+    protected void setFetcherCallback(FetcherCallback cb_result) {
+        fetcher_callback = cb_result;
     }
 
 
-    protected void processResults() {
+    protected void fetchResults() throws Exception {
         ResultSet rs;
-        try {
+//x        try {
             rs = getResultSet();
-        } catch (Exception e) {
-            e.printStackTrace();
+//x        } catch (Exception e) {
+//x            e.printStackTrace();
             //callback.onError();
+//x            return;
+//x        }
+
+
+        boolean is_empty = true;
+//x        try {
+            is_empty = rs.isAfterLast();
+//x        } catch (Exception e) { e.printStackTrace(); }
+
+        if (is_empty) {
+            fetcher_callback.onEmpty();
             return;
         }
 
-        callback.onFetch();
 
-        try {
+        fetcher_callback.onFetch();
+
+
+//x        try {
             ResultSetMetaData rsmd = rs.getMetaData();
             //String name = rsmd.getColumnName(1);
             int column_count = rsmd.getColumnCount();
 
             while (rs.next()) {
-                callback.onRow();
+                fetcher_callback.onRow();
                 //if (withId)  callback.onRow(row_id);
 
                 for (int i = 1; i <= column_count; i++) {
-                    //callback.onColumn(rs, i);
-                    String value = rs.getString(i);
-                    callback.onColumnString(i, value);
+                    fetcher_callback.onColumn(rs, i);
+                    //String value = rs.getString(i);
+                    //fetcher_callback.onColumnString(i, value);
                 }
 
             }
             rs.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+//x        } catch (Exception e) {
+//x            e.printStackTrace();
             //callback.onOtherError();
-            return;
-        }
+//x            return;
+//x        }
 
     }
 
