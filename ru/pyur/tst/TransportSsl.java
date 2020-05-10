@@ -20,13 +20,17 @@ public class TransportSsl implements Runnable {
 
 
 
-    // -------------------------------- Starting thread -------------------------------- //
+    // ---------------------------- Starting client thread ---------------------------- //
 
     @Override
     public void run() {
+        System.out.println("client thread started.");
+
         try {
             listen();
         } catch (Exception e) { e.printStackTrace(); }
+
+        System.out.println("client thread finished.");
     }
 
 

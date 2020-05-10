@@ -42,22 +42,19 @@ public abstract class TableFetcher extends DbFetcher {
     abstract public Tag make();
 
 
+    protected void onTableFetch() {}
+
     protected void onTableRow() {}
 
     protected String onTableColumnString(int column_num, String value) { return null; }
 
     protected Tag onTableColumnTag(int column_num, String value) { return null; }
 
+    protected void onTableFooter() {}
+
 
 
     // ---- setters, getters ----------------------------------------------------------------
-
-//        protected void add(String str) { tags.add(new PlainText(str)); }
-
-//        protected void add(int number) { tags.add(new PlainText(number)); }
-
-//        protected void add(Tag tag) { tags.add(tag); }
-
 
     public void addColumn(String description, int width) {
         table.addColumn(description, width);
@@ -65,16 +62,6 @@ public abstract class TableFetcher extends DbFetcher {
 
     public void addColumn(String description, int width, int align) {
         table.addColumn(description, width, align);
-    }
-
-
-//x    protected void setTableCallback(TableCallback cb_table) {
-//x    protected void initTable(TableCallback cb_table) {
-    protected void initTable() {
-//x        table_callback = cb_table;
-//x        setFetcherCallback(cb_fetcher);
-
-        table = new Table();  // for preemptive column setup
     }
 
 
@@ -99,7 +86,6 @@ public abstract class TableFetcher extends DbFetcher {
 
 
 
-//x    private FetcherCallback cb_fetcher = new FetcherCallback() {
     @Override
     public void onEmpty() {
         Div div = new Div();
@@ -110,15 +96,15 @@ public abstract class TableFetcher extends DbFetcher {
     }
 
 
+
     @Override
     public void onFetch() {
-        //table = new Table();
+        table = new Table();
         tag = table;
-        //tag = new Table();
 
-        //table_callback.onFetch();
-        //todo: instead of call child, add columns (?and actions)
+        onTableFetch();
     }
+
 
 
     @Override
@@ -126,7 +112,6 @@ public abstract class TableFetcher extends DbFetcher {
         tr = new Tr();
         table.add(tr);
 
-//x        table_callback.onRow();
         onTableRow();
     }
 
@@ -142,23 +127,20 @@ public abstract class TableFetcher extends DbFetcher {
         } catch (Exception e) { e.printStackTrace(); return; }
 
 
-//x        String inner_str = table_callback.onColumnString(column_num, value);
         String inner_str = onTableColumnString(column_num, value);
         if (inner_str != null)  cell.add(inner_str);
 
-//x        Tag inner_tag = table_callback.onColumnTag(column_num, value);
         Tag inner_tag = onTableColumnTag(column_num, value);
         if (inner_tag != null)  cell.add(inner_tag);
 
         if (inner_str == null && inner_tag == null) { cell.add(value); }
-
-        //boolean isInner = table_callback.onColumn(column_num, value);
-        //if (!isInner) { cell.add(value); }
-
-
-        //cell.add(inner);
     }
-//x    };
 
+
+
+    @Override
+    public void onDone() {
+        onTableFooter();
+    }
 
 }
