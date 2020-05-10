@@ -156,7 +156,11 @@ public class Md_HostList extends HtmlContent {
 
 
             @Override
-            public Tag onColumnString(int column_num, String value) {
+            public String onColumnString(int column_num, String value) { return null; }
+
+
+            @Override
+            public Tag onColumnTag(int column_num, String value) {
                 // add cell to table row
                 //Td cell = new Td(value);
                 Tag tag = null;
@@ -176,13 +180,18 @@ public class Md_HostList extends HtmlContent {
                     tag = link;
                 }
 
-                else {
-                    //cell.add(value);
-                    tag = new PlainText(value);
-                }
+                //else {
+                //    //cell.add(value);
+                //    tag = new PlainText(value);
+                //}
 
                 return tag;
             }
+
+
+            //@Override
+            //public boolean onColumn(int column_num, String value) { return false; }
+
         };
 
     }

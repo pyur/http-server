@@ -19,8 +19,9 @@ public abstract class TableFetcher extends DbFetcher {
         //void onFetch();
         void onRow();
         //void onRowWithId(int row_id);
-        //void onColumn(ResultSet rs, int column_num);
-        Tag onColumnString(int column_num, String value);
+        String onColumnString(int column_num, String value);
+        Tag onColumnTag(int column_num, String value);
+        //boolean onColumn(int column_num, String value);
     }
 
 
@@ -127,9 +128,19 @@ public abstract class TableFetcher extends DbFetcher {
             } catch (Exception e) { e.printStackTrace(); return; }
 
 
-            Tag inner = table_callback.onColumnString(column_num, value);
+            String inner_str = table_callback.onColumnString(column_num, value);
+            if (inner_str != null)  cell.add(inner_str);
 
-            cell.add(inner);
+            Tag inner_tag = table_callback.onColumnTag(column_num, value);
+            if (inner_tag != null)  cell.add(inner_tag);
+
+            if (inner_str == null && inner_tag == null) { cell.add(value); }
+
+            //boolean isInner = table_callback.onColumn(column_num, value);
+            //if (!isInner) { cell.add(value); }
+
+
+            //cell.add(inner);
         }
     };
 
