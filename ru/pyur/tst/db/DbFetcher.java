@@ -9,16 +9,29 @@ import java.sql.ResultSetMetaData;
 
 public abstract class DbFetcher extends DbFetch {
 
-    private FetcherCallback fetcher_callback;
+//x    private FetcherCallback fetcher_callback;
+//x
+//x    protected interface FetcherCallback {
+//x        void onEmpty();
+//x        void onFetch();
+//x        void onRow();
+//x        //void onRowWithId(int row_id);
+//x        void onColumn(ResultSet rs, int column_num);
+//x        //void onColumnString(int column_num, String value);
+//x    }
 
-    protected interface FetcherCallback {
-        void onEmpty();
-        void onFetch();
-        void onRow();
-        //void onRowWithId(int row_id);
-        void onColumn(ResultSet rs, int column_num);
-        //void onColumnString(int column_num, String value);
-    }
+
+
+    // ---- prototypes -----
+
+    protected void onEmpty() {}
+
+    protected void onFetch() {}
+
+    protected void onRow() {}
+
+    protected void onColumn(ResultSet rs, int column_num) {}
+
 
 
     // ---- setters, getters ----------------
@@ -31,9 +44,7 @@ public abstract class DbFetcher extends DbFetch {
     //abstract public ArrayList<Tag> make();
 
 
-    protected void setFetcherCallback(FetcherCallback cb_result) {
-        fetcher_callback = cb_result;
-    }
+//x    protected void setFetcherCallback(FetcherCallback cb_result) { fetcher_callback = cb_result; }
 
 
     protected void fetchResults() throws Exception {
@@ -53,12 +64,14 @@ public abstract class DbFetcher extends DbFetch {
 //x        } catch (Exception e) { e.printStackTrace(); }
 
         if (is_empty) {
-            fetcher_callback.onEmpty();
+//x            fetcher_callback.onEmpty();
+            onEmpty();
             return;
         }
 
 
-        fetcher_callback.onFetch();
+//x        fetcher_callback.onFetch();
+        onFetch();
 
 
 //x        try {
@@ -67,11 +80,13 @@ public abstract class DbFetcher extends DbFetch {
             int column_count = rsmd.getColumnCount();
 
             while (rs.next()) {
-                fetcher_callback.onRow();
+//x                fetcher_callback.onRow();
+                onRow();
                 //if (withId)  callback.onRow(row_id);
 
                 for (int i = 1; i <= column_count; i++) {
-                    fetcher_callback.onColumn(rs, i);
+//x                    fetcher_callback.onColumn(rs, i);
+                    onColumn(rs, i);
                     //String value = rs.getString(i);
                     //fetcher_callback.onColumnString(i, value);
                 }

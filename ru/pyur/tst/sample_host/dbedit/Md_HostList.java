@@ -117,7 +117,8 @@ public class Md_HostList extends HtmlContent {
         @Override
         //public Table make() {
         public Tag make() {
-            initTable(cb_table);
+//x            initTable(cb_table);
+            initTable();
 
             table("db");
             col(new String[]{"id", "host", "port", "login"});
@@ -135,7 +136,7 @@ public class Md_HostList extends HtmlContent {
 
 
 
-        private TableCallback cb_table = new TableCallback() {
+//x        private TableCallback cb_table = new TableCallback() {
 
 //            @Override
 //            public void onFetch() {  // todo: abolish
@@ -149,50 +150,41 @@ public class Md_HostList extends HtmlContent {
 //            }
 
 
-            @Override
-            public void onRow() {
-                // add row to table, etc
-            }
+//x            @Override
+//x            public void onTableRow() {
+//x                // add row to table, etc
+//x            }
+
+
+//x            @Override
+//x            public String onTableColumnString(int column_num, String value) { return null; }
 
 
             @Override
-            public String onColumnString(int column_num, String value) { return null; }
-
-
-            @Override
-            public Tag onColumnTag(int column_num, String value) {
+            public Tag onTableColumnTag(int column_num, String value) {
                 // add cell to table row
-                //Td cell = new Td(value);
-                Tag tag = null;
 
-                if (column_num == 2) {
-                    A link = new A();
-                    //cell.add(link);
+                if (column_num != 2)  return null;
 
-                    ModuleUrl href = new ModuleUrl();
-                    href.setModule(getModule());
-                    href.setAction(DBEDIT_ACTION_DB_LIST);
-                    href.addParameter(DBEDIT_PARAM_HOST, "todo_id");
+                A link = new A();
 
-                    link.setHref(href);
+                ModuleUrl href = new ModuleUrl();
+                href.setModule(getModule());
+                href.setAction(DBEDIT_ACTION_DB_LIST);
+                href.addParameter(DBEDIT_PARAM_HOST, "todo_id");
 
-                    link.add(value);
-                    tag = link;
-                }
+                link.setHref(href);
 
-                //else {
-                //    //cell.add(value);
-                //    tag = new PlainText(value);
-                //}
+                link.add(value);
 
-                return tag;
+                return link;
             }
 
 
             //@Override
             //public boolean onColumn(int column_num, String value) { return false; }
 
-        };
+//x        };
 
     }
 

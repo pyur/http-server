@@ -13,16 +13,16 @@ public abstract class TableFetcher extends DbFetcher {
     //private ArrayList<Tag> tags = new ArrayList<>();
     protected Tag tag;
 
-    private TableCallback table_callback;
-
-    protected interface TableCallback {
-        //void onFetch();
-        void onRow();
-        //void onRowWithId(int row_id);
-        String onColumnString(int column_num, String value);
-        Tag onColumnTag(int column_num, String value);
-        //boolean onColumn(int column_num, String value);
-    }
+//x    private TableCallback table_callback;
+//x
+//x    protected interface TableCallback {
+//x        //void onFetch();
+//x        void onRow();
+//x        //void onRowWithId(int row_id);
+//x        String onColumnString(int column_num, String value);
+//x        Tag onColumnTag(int column_num, String value);
+//x        //boolean onColumn(int column_num, String value);
+//x    }
 
 
 
@@ -36,8 +36,17 @@ public abstract class TableFetcher extends DbFetcher {
 
 
 
+    // ---- prototypes ----------------
+
     //abstract public Table make();
     abstract public Tag make();
+
+
+    protected void onTableRow() {}
+
+    protected String onTableColumnString(int column_num, String value) { return null; }
+
+    protected Tag onTableColumnTag(int column_num, String value) { return null; }
 
 
 
@@ -59,12 +68,13 @@ public abstract class TableFetcher extends DbFetcher {
     }
 
 
-    //protected void setTableCallback(TableCallback cb_table) {
-    protected void initTable(TableCallback cb_table) {
-        table_callback = cb_table;
-        setFetcherCallback(cb_fetcher);
+//x    protected void setTableCallback(TableCallback cb_table) {
+//x    protected void initTable(TableCallback cb_table) {
+    protected void initTable() {
+//x        table_callback = cb_table;
+//x        setFetcherCallback(cb_fetcher);
 
-        table = new Table();
+        table = new Table();  // for preemptive column setup
     }
 
 
@@ -89,60 +99,66 @@ public abstract class TableFetcher extends DbFetcher {
 
 
 
-    private FetcherCallback cb_fetcher = new FetcherCallback() {
-        @Override
-        public void onEmpty() {
-            Div div = new Div();
-            div.add("Данные отсутствуют.");
-            div.addStyle("font-size", "12pt");
-            //div.addStyle("border", "1px solid black");
-            tag = div;
-        }
-
-        @Override
-        public void onFetch() {
-            //table = new Table();
-            tag = table;
-
-            //table_callback.onFetch();
-            //todo: instead of call child, add columns (?and actions)
-        }
-
-        @Override
-        public void onRow() {
-            tr = new Tr();
-            table.add(tr);
-
-            table_callback.onRow();
-        }
-
-        @Override
-        public void onColumn(ResultSet rs, int column_num) {
-        //public void onColumnString(int column_num, String value) {
-            Td cell = new Td();
-            tr.add(cell);
-
-            String value;
-            try {
-                value = rs.getString(column_num);
-            } catch (Exception e) { e.printStackTrace(); return; }
+//x    private FetcherCallback cb_fetcher = new FetcherCallback() {
+    @Override
+    public void onEmpty() {
+        Div div = new Div();
+        div.add("Данные отсутствуют.");
+        div.addStyle("font-size", "12pt");
+        //div.addStyle("border", "1px solid black");
+        tag = div;
+    }
 
 
-            String inner_str = table_callback.onColumnString(column_num, value);
-            if (inner_str != null)  cell.add(inner_str);
+    @Override
+    public void onFetch() {
+        //table = new Table();
+        tag = table;
+        //tag = new Table();
 
-            Tag inner_tag = table_callback.onColumnTag(column_num, value);
-            if (inner_tag != null)  cell.add(inner_tag);
-
-            if (inner_str == null && inner_tag == null) { cell.add(value); }
-
-            //boolean isInner = table_callback.onColumn(column_num, value);
-            //if (!isInner) { cell.add(value); }
+        //table_callback.onFetch();
+        //todo: instead of call child, add columns (?and actions)
+    }
 
 
-            //cell.add(inner);
-        }
-    };
+    @Override
+    public void onRow() {
+        tr = new Tr();
+        table.add(tr);
+
+//x        table_callback.onRow();
+        onTableRow();
+    }
+
+
+    @Override
+    public void onColumn(ResultSet rs, int column_num) {
+        Td cell = new Td();
+        tr.add(cell);
+
+        String value;
+        try {
+            value = rs.getString(column_num);
+        } catch (Exception e) { e.printStackTrace(); return; }
+
+
+//x        String inner_str = table_callback.onColumnString(column_num, value);
+        String inner_str = onTableColumnString(column_num, value);
+        if (inner_str != null)  cell.add(inner_str);
+
+//x        Tag inner_tag = table_callback.onColumnTag(column_num, value);
+        Tag inner_tag = onTableColumnTag(column_num, value);
+        if (inner_tag != null)  cell.add(inner_tag);
+
+        if (inner_str == null && inner_tag == null) { cell.add(value); }
+
+        //boolean isInner = table_callback.onColumn(column_num, value);
+        //if (!isInner) { cell.add(value); }
+
+
+        //cell.add(inner);
+    }
+//x    };
 
 
 }
