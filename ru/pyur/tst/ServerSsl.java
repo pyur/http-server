@@ -21,6 +21,8 @@ import java.util.concurrent.Executors;
 import static ru.pyur.tst.HttpHeader.HTTP_VERSION_1_0;
 
 
+// https://stackoverflow.com/questions/50076296/how-to-use-colors-in-intellij-run-console
+
 public class ServerSsl {
 
     private ExecutorService service;
@@ -48,8 +50,8 @@ public class ServerSsl {
 
             for(;;) {
                 Socket socket = server_socket.accept();  // thread locking
+                System.out.println("new client.");
 
-//x                service.execute(new TransportSsl(socket, cb_protocol_server_event));
                 service.execute(new TransportSsl(socket));
             }
 

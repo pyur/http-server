@@ -16,6 +16,8 @@ public abstract class HtmlContent extends ContentBase {
     private ArrayList<Tag> body = new ArrayList<>();
     private String title;
 
+    private ArrayList<ActionBarItem> actions = new ArrayList<>();
+
 
 
     // -------- Sprite -------- //
@@ -51,17 +53,11 @@ public abstract class HtmlContent extends ContentBase {
 
     // ---- append to head: string, int, tags ---- //
 
-    protected void addHead(String text) {
-        head.add(new PlainText(text));
-    }
+    protected void addHead(String text) { head.add(new PlainText(text)); }
 
-    protected void addHead(int number) {
-        head.add(new PlainText("" + number));
-    }
+    protected void addHead(int number) { head.add(new PlainText("" + number)); }
 
-    protected void addHead(Tag tag) {
-        head.add(tag);
-    }
+    protected void addHead(Tag tag) { head.add(tag); }
 
 
     //protected void appendTitle(String title) { this.title += title; }
@@ -69,22 +65,38 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
+    // -------- actions --------------------------------
+
+    protected void addAction(ActionBarItem action) {
+        actions.add(action);
+    }
+
+
+    protected void addActionLink(String text, ModuleUrl url) {
+        addActionLink(text, url, null);
+    }
+
+
+    protected void addActionLink(String text, ModuleUrl url, String icon) {
+        ActionBarItem action = new ActionBarItem(text, url, icon);
+        actions.add(action);
+    }
+
+
+
     // ---- append to body: string, int, tags ---- //
 
-    protected void add(String text) {
-        body.add(new PlainText(text));
-    }
+    protected void add(String text) { body.add(new PlainText(text)); }
 
-    protected void add(int number) {
-        body.add(new PlainText("" + number));
-    }
+    protected void add(int number) { body.add(new PlainText("" + number)); }
 
-    protected void add(Tag tag) {
-        if (tag != null)  body.add(tag);
-    }
+    protected void add(Tag tag) { if (tag != null)  body.add(tag); }
 
     protected void add(ArrayList<Tag> tags) { for (Tag tag : tags) { body.add(tag); } }
 
+
+
+    // -------- predefined --------------------------------
 
     protected void heading(String text) {
         Div div = new Div();
@@ -101,7 +113,7 @@ public abstract class HtmlContent extends ContentBase {
     @Override
     public byte[] makeContent() {
 
-        makeModulesBar();
+        String modules_bar = makeModulesBar();
 
         try {
             makeHtml();
@@ -143,6 +155,10 @@ public abstract class HtmlContent extends ContentBase {
         for (Tag tag : head) {
             html.append(tag.toString());
         }
+
+        html.append(modules_bar);
+
+        html.append(makeActionsBar());
 
         for (Tag tag : body) {
             html.append(tag.toString());
@@ -215,9 +231,9 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    private void makeModulesBar() {
+    private String makeModulesBar() {
         Div div_modules_bar = new Div();
-        add(div_modules_bar);
+//x        add(div_modules_bar);
         div_modules_bar.addClass("modules_bar");
 
         // ---- todo: menu = auth->get_menu()
@@ -245,6 +261,7 @@ public abstract class HtmlContent extends ContentBase {
             div_desc.add(desc);
         }
 
+        return div_modules_bar.toString();
     }
 
 
@@ -300,5 +317,107 @@ public abstract class HtmlContent extends ContentBase {
         public ArrayList<ModuleBarItem> getModules() { return modules; }
     }
 
+
+
+
+    // -------------------------------- Action -------------------------------- //
+
+    private String makeActionsBar() {
+        Div div_actions_bar = new Div();
+//        add(div_actions_bar);
+        div_actions_bar.addClass("actions_bar");
+
+        // ---- todo: menu = auth->get_menu()
+        ModuleBar module_bar = new ModuleBar();
+
+//        for (ModuleBarItem mbi : module_bar.getModules()) {
+        for (ActionBarItem action : actions) {
+//            A mod = new A();
+//            div_actions_bar.add(mod);
+//            ModuleUrl link = new ModuleUrl();
+//            link.setModule(mbi.name);
+//            mod.setHref(link);
+//
+//            Div div_icon = new Div();
+//            mod.add(div_icon);
+//            int x = ((mbi.id - 1) % SPRITE_MODULE_COUNT) * SPRITE_MODULE_ICON_SIZE;
+//            int y = ((mbi.id - 1) / SPRITE_MODULE_COUNT) * SPRITE_MODULE_ICON_SIZE;
+//
+//            div_icon.addStyle("background-position", ((x == 0) ? "0" : "-" + x + "px") + " " + ((y == 0) ? "0" : "-" + y + "px") );
+//            div_icon.setUnselectable();
+//
+//
+//            Div div_desc = new Div();
+//            mod.add(div_desc);
+//            String desc = mbi.descb.isEmpty() ? mbi.desc : mbi.descb;
+//            div_desc.add(desc);
+
+            div_actions_bar.add(action.make());
+        }
+
+        return div_actions_bar.toString();
+    }
+
+
+
+    protected class ActionBarItem {
+        private String text;
+        //private String href;
+        private ModuleUrl url;
+        //javascript onclick
+        //? confirmation (for delete)
+        //! on new tab (target="_blank")
+        //context submenu
+        private String icon;
+
+
+        public ActionBarItem() {}
+
+        public ActionBarItem(String text, ModuleUrl url, String icon) {
+            this.text = text;
+            this.url = url;
+            this.icon = icon;
+        }
+
+
+        public Tag make() {
+            Tag root_tag = null;
+
+            if (url != null) {
+                A link = new A();
+                root_tag = link;
+//                link.addClass("action_bar");
+                //ModuleUrl url = new ModuleUrl();
+                //url.setModule(getModule());
+                //url.setAction("from_private_var");
+                //add params
+                link.setHref(url);
+
+                // ---- icon ---- //
+                if (icon != null) {
+                    Div div_icon = new Div();
+                    link.add(div_icon);
+                    div_icon.addStyle("background-position", "-16px 0");
+                    //unselectable
+                }
+                else {
+                    Div div_icon = new Div();
+                    link.add(div_icon);
+                    div_icon.addClass("no_icon");
+                    //add class for hide icon
+                }
+
+                // ---- text ---- //
+                Div div_text = new Div();
+                link.add(div_text);
+                div_text.add(text);
+
+            }
+
+            return root_tag;
+        }
+
+
+    }
 
 }

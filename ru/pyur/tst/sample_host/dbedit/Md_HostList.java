@@ -21,7 +21,6 @@ public class Md_HostList extends HtmlContent {
         Tag table = host_fetcher.make();
         add(table);
 
-
     }
 
 

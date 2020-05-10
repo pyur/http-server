@@ -49,6 +49,9 @@ public abstract class ContentBase {
     protected String getAction() { return session.getAction(); }
 
 
+
+    // -------- get parameter --------------------------------
+
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
     protected String getParam(String key) throws Exception {
         ArrayList<PStr> lsQuery = session.getQuery();
