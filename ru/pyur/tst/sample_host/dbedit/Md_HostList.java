@@ -15,6 +15,15 @@ public class Md_HostList extends HtmlContent {
     @Override
     public void makeHtml() throws Exception {
 
+        {
+            ModuleUrl url = new ModuleUrl();
+            url.setModule(getModule());
+            url.setAction("host_edit");
+            //add params
+            addActionLink("Добавить хост", url, "plus-button");
+        }
+
+
         heading("Хосты баз данных");
 
         TableFetcher host_fetcher = new HostTable(getModuleDb());

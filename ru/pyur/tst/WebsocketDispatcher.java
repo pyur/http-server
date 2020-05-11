@@ -27,8 +27,10 @@ public abstract class WebsocketDispatcher {
         this.session = session;
 
         this.db_manager = session.getDbManager();
-        db_connection = db_manager.getDb();
-        db_config = db_manager.getConfigDb();
+        try {
+            db_connection = db_manager.getDb();
+            db_config = db_manager.getConfigDb();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 

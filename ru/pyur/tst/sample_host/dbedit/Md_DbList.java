@@ -18,12 +18,13 @@ public class Md_DbList extends HtmlContent {
         String host_id = getParam("host");  // todo: getFiltered()
         Connection conn = DbEditCommon.getDatabase(getModuleDb(), host_id);
 
-        ModuleUrl url1 = new ModuleUrl();
-        url1.setModule(getModule());
-        url1.setAction("some_action");
-        //add params
-        addActionLink("Действие 1", url1, "wheel");
-        addActionLink("Действие 2", url1);
+        {
+            ModuleUrl url = new ModuleUrl();
+            url.setModule(getModule());
+            url.setAction("db_edit");
+            url.addParameter("host", host_id);
+            addActionLink("Добавить базу данных", url, "plus-button");
+        }
 
 
         heading("Базы данных");

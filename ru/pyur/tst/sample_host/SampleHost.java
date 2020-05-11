@@ -79,7 +79,7 @@ public class SampleHost extends ModularHost {
 
         db_manager = new DbManager();
         db_manager.connectDb();
-        db_manager.connectConfigDb();
+        //db_manager.connectConfigDb();
 
 
 

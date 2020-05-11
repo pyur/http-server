@@ -12,8 +12,9 @@ public abstract class ContentBase {
     protected ModularHost session;
 
     private DbManager db_manager;
-    private Connection db_connection;
-    private Connection db_config;
+    private Connection db_connection;  // host-wide main database (data)
+    private Connection db_config;      // server-wide config db (list of hosts)
+    //private Connection db_config_2;  // host-wide config db (lists of icons)
 
     private Connection module_db;
 
@@ -25,8 +26,10 @@ public abstract class ContentBase {
         this.session = session;
 
         this.db_manager = session.getDbManager();
-        db_connection = db_manager.getDb();
-        db_config = db_manager.getConfigDb();
+        try {
+            db_connection = db_manager.getDb();
+            db_config = db_manager.getConfigDb();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
 
@@ -41,6 +44,10 @@ public abstract class ContentBase {
     // ---- setters, getters ------------------------------------------------
 
 //    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager
+    protected Connection getHostDb() { return db_connection; }
+
+    protected Connection getConfigDb() { return db_config; }
+
     protected Connection getModuleDb() { return module_db; }
     public void setModuleDb(Connection module_db) { this.module_db = module_db; }
 
@@ -106,7 +113,7 @@ public abstract class ContentBase {
         Statement stmt = null;
 
         try {
-            stmt = db_manager.getConfigDb().createStatement();
+            stmt = db_config.createStatement();
         } catch (Exception e) { e.printStackTrace(); }
 
         return stmt;
@@ -118,7 +125,7 @@ public abstract class ContentBase {
         PreparedStatement ps = null;
 
         try {
-            ps = db_manager.getConfigDb().prepareStatement(query);
+            ps = db_config.prepareStatement(query);
         } catch (Exception e) { e.printStackTrace(); }
 
         return ps;

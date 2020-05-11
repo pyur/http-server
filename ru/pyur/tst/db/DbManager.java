@@ -34,7 +34,10 @@ public class DbManager {
 
     public Connection getDb() { return db_connection;}
 
-    public Connection getConfigDb() { return db_config;}
+    public Connection getConfigDb() throws Exception {
+        if (db_config == null)  connectConfigDb();
+        return db_config;
+    }
 
 
 
@@ -75,13 +78,11 @@ public class DbManager {
 
     // -------------------------------- Config -------------------------------- //
 
-    public void connectConfigDb() {
+    public void connectConfigDb() throws Exception {
         if (db_config == null) {
-            try {
+//            try {
                 db_config = DriverManager.getConnection(CONFIG_URL);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            } catch (Exception e) { e.printStackTrace(); }
         }
     }
 

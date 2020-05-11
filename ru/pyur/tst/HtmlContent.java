@@ -16,6 +16,7 @@ public abstract class HtmlContent extends ContentBase {
     private ArrayList<Tag> body = new ArrayList<>();
     private String title;
 
+    private ActionIconManager action_icon_manager;
     private ArrayList<ActionBarItem> actions = new ArrayList<>();
 
 
@@ -47,6 +48,7 @@ public abstract class HtmlContent extends ContentBase {
         setContentType("text/html; charset=utf-8");
         //setContentType("text/plain");
         // https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+        action_icon_manager = new ActionIconManager(getConfigDb());
     }
 
 
@@ -394,17 +396,24 @@ public abstract class HtmlContent extends ContentBase {
                 link.setHref(url);
 
                 // ---- icon ---- //
+                ActionIcon action_icon = null;
                 if (icon != null) {
-                    Div div_icon = new Div();
-                    link.add(div_icon);
-                    div_icon.addStyle("background-position", "-16px 0");
+                    try {
+                        action_icon = action_icon_manager.getActionIcon(icon);
+                    } catch (Exception e) { e.printStackTrace(); }
+                }
+
+                Div div_icon = new Div();
+                link.add(div_icon);
+
+                if (action_icon != null) {
+                    div_icon.addStyle("background-position", action_icon.getSpriteOffset());
                     //unselectable
                 }
                 else {
-                    Div div_icon = new Div();
-                    link.add(div_icon);
+//                    Div div_icon = new Div();
+//                    link.add(div_icon);
                     div_icon.addClass("no_icon");
-                    //add class for hide icon
                 }
 
                 // ---- text ---- //
