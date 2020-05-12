@@ -1,12 +1,12 @@
-package ru.pyur.tst.sample_host.dbedit;
+package ru.pyur.tst.dbedit.dbedit;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.Connection;
 
-import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_ACTION_DB_LIST;
-import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_HOST;
+import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_ACTION_DB_LIST;
+import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_HOST;
 
 
 public class Md_HostList extends HtmlContent {

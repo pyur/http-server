@@ -1,4 +1,4 @@
-package ru.pyur.tst.sample_host.dbedit;
+package ru.pyur.tst.dbedit.dbedit;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.ModuleInfo;

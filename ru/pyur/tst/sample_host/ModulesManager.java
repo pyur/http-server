@@ -1,7 +1,9 @@
-package ru.pyur.tst;
+package ru.pyur.tst.sample_host;
 
 
 // can be placed in separate package, for easy update
+
+import ru.pyur.tst.ModuleInfo;
 
 public class ModulesManager {
 
@@ -25,7 +27,7 @@ public class ModulesManager {
         }
 
         else if (module_name.equals("db")) {
-            module_info = new ru.pyur.tst.sample_host.dbedit.Info();
+            module_info = new ru.pyur.tst.dbedit.dbedit.Info();
         }
 
         else if (module_name.equals("res")) {

@@ -1,12 +1,12 @@
-package ru.pyur.tst.sample_host.dbedit;
+package ru.pyur.tst.dbedit.dbedit;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.ResultSet;
 
-import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_DB;
-import static ru.pyur.tst.sample_host.dbedit.Info.DBEDIT_PARAM_TABLE;
+import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_DB;
+import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_TABLE;
 
 
 public class Md_TableView extends HtmlContent {

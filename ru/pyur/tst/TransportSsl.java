@@ -1,5 +1,6 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.dbedit.DbAdminHost;
 import ru.pyur.tst.sample_host.SampleHost;
 
 import java.io.InputStream;
@@ -85,15 +86,20 @@ public class TransportSsl implements Runnable {
         //    host = new EmptyHost();
         //}
 
-        //else if (host.equals("dbadmin.vtof.ru")) {
-        //    host = new DbAdminHost();
-        //}
+        if (host_name.equals("sample.pyur.ru")) {
+            host = new SampleHost();
+        }
+
+        //if (host_name.equals("dbadmin.vtof.ru")) {
+        else if (host_name.equals("dbedit.pyur.ru")) {
+            host = new DbAdminHost();
+        }
 
         //else {
         //    host = new OnlyIpHost();
         //}
 
-        host = new SampleHost();  // sample
+        //host = new SampleHost();  // sample
 
 
         if (host != null) {

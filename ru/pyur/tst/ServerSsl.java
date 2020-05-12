@@ -45,7 +45,7 @@ public class ServerSsl {
         try {
             //SSLServerSocket server = new SSLServerSocket(port);
             //ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
-            ServerSocketFactory ssocketFactory = createSSLFactory(new File("c.vtof.ru.key.pem"), new File("c.vtof.ru.fullchain.pem"), "");
+            ServerSocketFactory ssocketFactory = createSSLFactory(new File("sample.pyur.ru.key.pem"), new File("sample.pyur.ru.fullchain.pem"), "");
             ServerSocket server_socket = ssocketFactory.createServerSocket(port);
 
             for(;;) {
