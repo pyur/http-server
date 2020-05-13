@@ -51,4 +51,15 @@ public abstract class Fetch {
 
 
 
+    public byte[] getBytes(int idx) throws Exception {
+        return result_set.getBytes(idx);
+    }
+
+
+    public byte[] getBytes(String name) throws Exception {
+        return result_set.getBytes(name);
+    }
+
+
+
 }

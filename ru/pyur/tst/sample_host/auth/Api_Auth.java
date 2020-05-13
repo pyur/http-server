@@ -22,8 +22,8 @@ public class Api_Auth extends ApiContent {
 
 
         if (user_id != -1) {
-            Auth auth = new Auth(host_session.getConfigDb(), host_session.getDb(), host_session.getResponseHeader());
-            auth.newAuth(user_id);
+//todo            Auth auth = new Auth(host_session.getConfigDb(), host_session.getDb(), host_session.getResponseHeader());
+//todo            auth.newAuth(user_id);
             put("result", "ok");
         }
 

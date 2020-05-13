@@ -53,8 +53,11 @@ public class Auth {
     private HttpResponse response_header;
 
 //    private DbManager db_manager;
-    private Connection db_host;
-    private Connection db_host_config;
+//    private Connection db_host;
+//    private Connection db_host_config;
+    private Connection db_sess;
+    private Connection db_user;
+    private Connection db_adm_user;
 
 
 
@@ -71,11 +74,10 @@ public class Auth {
 //        db_manager = session.getDbManager();
 //    }
 
-//    public Auth(DbManager dbm, HttpResponse response_header) {
-    public Auth(Connection db_config, Connection db_main, HttpResponse response_header) {
-//        db_manager = dbm;
-        db_host_config = db_config;
-        db_host = db_main;
+    public Auth(Connection db_sess, Connection db_user, Connection db_adm_user, HttpResponse response_header) {
+        this.db_sess = db_sess;
+        this.db_user = db_user;
+        this.db_adm_user = db_adm_user;
         this.response_header = response_header;
     }
 
@@ -108,7 +110,14 @@ public class Auth {
         }
 
 
-        checkConfigUser();  // if (user_id >= 65504)
+        if (db_user != null) {
+        }
+
+
+        if (db_adm_user != null) {
+            checkConfigUser();  // if (user_id >= 65504)
+        }
+
 
 //todo        if (state != 2)  checkDbUser();
 
@@ -229,9 +238,8 @@ public class Auth {
         int claim_iat = Integer.parseInt(claim[2]);
 
 
-//        DbFetch db_sess = new DbFetch(db_manager.getDb());
-        DbFetch db_sess = new DbFetch(db_host);
-        db_sess.table("sesst");  // todo: `sessta` - archived
+        DbFetch db_sess = new DbFetch(this.db_sess);
+        db_sess.table("sess");  // todo: `sess_arc` - archived
         db_sess.col(new String[]{"user", "tp", "tm"});
         db_sess.where("`id` = ?");  // `stat` = 0 . todo: make second table for archived sessions
         db_sess.wa(session_id);
@@ -290,7 +298,6 @@ public class Auth {
 
     // --------------------------------------------------------------------------------------
 
-//    public static void newAuth(int user_id) throws Exception {
     public void newAuth(int user_id) throws Exception {
         int session_id = newSession(user_id);
         String token = makeToken(user_id, session_id);
@@ -303,9 +310,8 @@ public class Auth {
     public int newSession(int user_id) throws Exception {
         int current_time = (int)(System.currentTimeMillis() / 1000);
 
-//        DbInsert db_sess = new DbInsert(db_manager.getDb());
-        DbInsert db_sess = new DbInsert(db_host);
-        db_sess.table("sesst");
+        DbInsert db_sess = new DbInsert(this.db_sess);
+        db_sess.table("sess");
 
         //skip "stat"
         db_sess.set("user", user_id);
@@ -325,9 +331,8 @@ public class Auth {
     private void updateSession(int session_id, int prev_time) throws Exception {
         int current_time = (int)(System.currentTimeMillis() / 1000);
 
-//        DbUpdate db_sess = new DbUpdate(db_manager.getDb());
-        DbUpdate db_sess = new DbUpdate(db_host);
-        db_sess.table("sesst");
+        DbUpdate db_sess = new DbUpdate(this.db_sess);
+        db_sess.table("sess");
         db_sess.where("`id` = ?");
         db_sess.wa(session_id);
 

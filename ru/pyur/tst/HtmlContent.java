@@ -12,8 +12,6 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
-import static ru.pyur.tst.sample_host.resources.Md_MakeSpriteActions.CONFIG_ACTION_ICON_UPD;
-import static ru.pyur.tst.sample_host.resources.Md_MakeSpriteModules.CONFIG_MODULE_ICON_UPD;
 
 
 public abstract class HtmlContent extends ContentBase {
@@ -104,7 +102,7 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    // -------- predefined --------------------------------
+    // -------- predefined elements --------------------------------
 
     protected void heading(String text) {
         Div div = new Div();
@@ -141,12 +139,6 @@ public abstract class HtmlContent extends ContentBase {
                 div.add(div_line);
                 //div_line.add(new PlainText("toString: " + ste.toString() + "<br>\n"));
 
-                //div_line.add(new PlainText(", getClassName: " + ste.getClassName() + "<br>\n"));
-                //div_line.add(new PlainText(", getMethodName: " + ste.getMethodName() + "<br>\n"));
-                //div_line.add(new PlainText(", getFileName: " + ste.getFileName() + "<br>\n"));
-                //div_line.add(new PlainText(", getLineNumber: " + ste.getLineNumber() + "<br>\n"));
-                //div_line.add(new PlainText(", isNativeMethod: " + ste.isNativeMethod() + "<br>\n"));
-
                 div_line.add(new PlainText("&nbsp; " + ste.getClassName() + " . "));
                 div_line.add(new PlainText(ste.getMethodName() + " "));
                 div_line.add(new PlainText("(" + ste.getFileName() + " : "));
@@ -166,7 +158,7 @@ public abstract class HtmlContent extends ContentBase {
 
         html.append(modules_bar);
 
-        html.append(makeActionsBar());
+        if (actions.size() != 0)  html.append(makeActionsBar());
 
         for (Tag tag : body) {
             html.append(tag.toString());
@@ -192,15 +184,13 @@ public abstract class HtmlContent extends ContentBase {
         addHead("\r\n<style>\r\n");
 
         try {
-            byte[] style = Util.fetchFile("inline_style.css");
+            byte[] style = Util.fetchFile(getHostDir() + "/inline_style.css");
             addHead(new String(style));
         } catch (Exception e) { e.printStackTrace(); }
 
         addHead("\r\n</style>\r\n");
 
 
-//x        int tsSpriteActions = configGeti(CONFIG_ACTION_ICON_UPD);
-//x        int tsSpriteModules = configGeti(CONFIG_MODULE_ICON_UPD);
         DbFetch cache_ts = new DbFetch(getConfigDb());
         cache_ts.table("res_ts");
         cache_ts.col(new String[]{"name", "ts"});
@@ -216,7 +206,7 @@ public abstract class HtmlContent extends ContentBase {
                 res_ts.add(name, ts);
             }
 
-            File file_script = new File("sample/script.js");
+            File file_script = new File(getHostDir() + "/script.js");
             if (file_script.exists()) {
                 res_ts.add("script", (int)(file_script.lastModified() / 1000) );
             }
@@ -225,17 +215,12 @@ public abstract class HtmlContent extends ContentBase {
 
 
         addHead("\r\n<script>\r\n");
-//x        addHead("var tsSpriteActions = ");
-//x        addHead(tsSpriteActions);
-//x        addHead(";\r\n");
-//x        addHead("var tsSpriteModules = ");
-//x        addHead(tsSpriteModules);
         addHead("var cached_ts = ");
         addHead(res_ts.stringify());
         addHead(";\r\n");
 
         try {
-            byte[] script = Util.fetchFile("inline_script.js");
+            byte[] script = Util.fetchFile(getHostDir() + "/inline_script.js");
             addHead(new String(script));
         } catch (Exception e) { e.printStackTrace(); }
 
@@ -247,6 +232,8 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
+
+    // -------------------------------- Modules bar -------------------------------- //
 
     private String makeModulesBar() {
         Div div_modules_bar = new Div();
@@ -336,46 +323,17 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    // -------------------------------- Action -------------------------------- //
+    // -------------------------------- Actions bar -------------------------------- //
 
     private String makeActionsBar() {
         Div div_actions_bar = new Div();
-//        add(div_actions_bar);
         div_actions_bar.addClass("actions_bar");
 
-        // ---- todo: menu = auth->get_menu()
-        ModuleBar module_bar = new ModuleBar();
-
-//        for (ModuleBarItem mbi : module_bar.getModules()) {
         for (ActionBarItem action : actions) {
-//            A mod = new A();
-//            div_actions_bar.add(mod);
-//            ModuleUrl link = new ModuleUrl();
-//            link.setModule(mbi.name);
-//            mod.setHref(link);
-//
-//            Div div_icon = new Div();
-//            mod.add(div_icon);
-//            int x = ((mbi.id - 1) % SPRITE_MODULE_COUNT) * SPRITE_MODULE_ICON_SIZE;
-//            int y = ((mbi.id - 1) / SPRITE_MODULE_COUNT) * SPRITE_MODULE_ICON_SIZE;
-//
-//            div_icon.addStyle("background-position", ((x == 0) ? "0" : "-" + x + "px") + " " + ((y == 0) ? "0" : "-" + y + "px") );
-//            div_icon.setUnselectable();
-//
-//
-//            Div div_desc = new Div();
-//            mod.add(div_desc);
-//            String desc = mbi.descb.isEmpty() ? mbi.desc : mbi.descb;
-//            div_desc.add(desc);
-
             div_actions_bar.add(action.make());
         }
 
-        if (!div_actions_bar.isEmpty()) {
-            return div_actions_bar.toString();
-        } else {
-            return "";
-        }
+        return div_actions_bar.toString();
     }
 
 

@@ -14,7 +14,7 @@ public class Md_DbList extends HtmlContent {
     @Override
     public void makeHtml() throws Exception {
         String host_id = getParam("host");  // todo: getFiltered()
-        Connection conn = DbEditCommon.getDatabase(getModuleDb(), host_id);
+        Connection conn = DbEditCommon.getDatabase(getConfigDb(), host_id);
 
         {
             ModuleUrl url = new ModuleUrl();

@@ -80,15 +80,16 @@ public class DbDelete {
 
         int i = 1;
         for (Var wa : where_args) {
-            switch (wa.getType()) {
-                case VAR_TYPE_INT:
-                    ps.setInt(i + 1, wa.getInt());
-                    break;
-
-                case VAR_TYPE_STRING:
-                    ps.setString(i + 1, wa.getString());
-                    break;
-            }
+//            switch (wa.getType()) {
+//                case VAR_TYPE_INT:
+//                    ps.setInt(i + 1, wa.getInt());
+//                    break;
+//
+//                case VAR_TYPE_STRING:
+//                    ps.setString(i + 1, wa.getString());
+//                    break;
+//            }
+            wa.applyToPreparedStatement(ps, i);
             i++;
         }
 

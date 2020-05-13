@@ -2,9 +2,13 @@ package ru.pyur.tst.util;
 
 import ru.pyur.tst.util.PStr;
 
+import javax.xml.soap.SAAJResult;
 import java.io.File;
 import java.io.FileInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class Util {
 
@@ -148,5 +152,21 @@ public class Util {
         return contents;
     }
 
+
+
+
+    // ---- for password --------------------------------
+
+    public static byte[] SHA512(String text) {
+        byte[] hash = null;
+        try {
+            MessageDigest crypt = MessageDigest.getInstance("SHA-512");
+            crypt.reset();
+            crypt.update(text.getBytes());  // getBytes("UTF-8")
+            hash = crypt.digest();
+        } catch(NoSuchAlgorithmException e) { e.printStackTrace(); }
+
+        return hash;
+    }
 
 }

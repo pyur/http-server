@@ -26,7 +26,7 @@ public class Md_HostList extends HtmlContent {
 
         heading("Хосты баз данных");
 
-        TableFetcher host_fetcher = new HostTable(getModuleDb());
+        TableFetcher host_fetcher = new HostTable(getConfigDb());
         Tag table = host_fetcher.make();
         add(table);
 

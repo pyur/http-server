@@ -17,7 +17,7 @@ public abstract class Tag {
 
     protected String plainText;
 
-    private ArrayList<Tag> tags = new ArrayList<>();
+    private ArrayList<Tag> nested_tags = new ArrayList<>();
 
 
     protected String tag_name;
@@ -80,15 +80,15 @@ public abstract class Tag {
 
     // ---- setters, getters ----------------------------------------------------------------
 
-    public boolean isEmpty() { return tags.size() == 0; }
+    public boolean isEmpty() { return nested_tags.size() == 0; }
 
-    public void add(String str) { tags.add(new PlainText(str)); }
+    public void add(String str) { nested_tags.add(new PlainText(str)); }
 
-    public void add(int number) { tags.add(new PlainText(number)); }
+    public void add(int number) { nested_tags.add(new PlainText(number)); }
 
 
     public void add(Tag tag) {
-        tags.add(tag);
+        nested_tags.add(tag);
     }
 
 
@@ -249,7 +249,7 @@ public abstract class Tag {
         //}
 
 
-        for (Tag tag : tags) {
+        for (Tag tag : nested_tags) {
             t.append(tag.toString());
 
             String nested_post_tag = renderPostTag();

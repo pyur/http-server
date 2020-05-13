@@ -7,9 +7,11 @@ import java.sql.Connection;
 
 public abstract class ModularHost extends Host {
 
-//    protected DbManager db_manager;
     private Connection db_host;
     private Connection db_host_config;
+    private Connection db_sess;
+    private Connection db_user;
+    private Connection db_adm_user;
 
     protected Auth auth;
 
@@ -43,13 +45,22 @@ public abstract class ModularHost extends Host {
 
     // ----------------
 
+    protected abstract String getHostDir();
+
     protected String getDocRoot() { return null; }
 
     protected ModuleInfo getModuleInfo(String module_name) { return null; }
 
-    protected Connection getHostDb() { return null; }
+    // ---- db ----
+    protected Connection connectHostDb() { return null; }
 
-    protected Connection getHostConfig() { return null; }
+    protected Connection connectHostConfig() { return null; }
+
+    protected Connection connectSessDb() { return null; }
+
+    protected Connection connectUserDb() { return null; }
+
+    protected Connection connectAdmUserDb() { return null; }
 
 
 
@@ -69,6 +80,12 @@ public abstract class ModularHost extends Host {
     public Connection getDb() { return db_host; }
 
     public Connection getConfigDb() { return db_host_config; }
+
+    public Connection getSessDb() { return db_sess; }
+
+    public Connection getUserDb() { return db_user; }
+
+    public Connection getAdmUserDb() { return db_adm_user; }
 
 
 
@@ -139,15 +156,17 @@ public abstract class ModularHost extends Host {
 
         // -------- open database -------- //
 
-        db_host = getHostDb();
-        db_host_config = getHostConfig();
+        db_host = connectHostDb();
+        db_host_config = connectHostConfig();
+        db_sess = connectSessDb();
+        db_user = connectUserDb();
+        db_adm_user = connectAdmUserDb();
 
 
 
         // -------- user authorization -------- //
 
-//        auth = new Auth(db_manager, response_header);
-        auth = new Auth(db_host_config, db_host, response_header);
+        auth = new Auth(db_sess, db_user, db_adm_user, response_header);
         try {
             auth.authByCookie(request_header);
         } catch (Exception e) {
@@ -205,8 +224,11 @@ public abstract class ModularHost extends Host {
         // ---- close database ---- //
 
         try {
-            db_host.close();
-            db_host_config.close();
+            if (db_host != null)  db_host.close();
+            if (db_host_config != null)  db_host_config.close();
+            if (db_sess != null)  db_sess.close();
+            if (db_user != null)  db_user.close();
+            if (db_adm_user != null)  db_adm_user.close();
         } catch (Exception e) { e.printStackTrace(); }
     }
 

@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
+import static ru.pyur.tst.db.Var.VAR_TYPE_BYTE_ARRAY;
 import static ru.pyur.tst.db.Var.VAR_TYPE_INT;
 import static ru.pyur.tst.db.Var.VAR_TYPE_STRING;
 
@@ -35,6 +36,10 @@ public class DbUpdate {
     }
 
     public void set(String column, String value) {
+        this.values.add(new PVar(column, value));
+    }
+
+    public void set(String column, byte[] value) {
         this.values.add(new PVar(column, value));
     }
 
@@ -91,29 +96,35 @@ public class DbUpdate {
         int i = 1;
         for (PVar value : values) {
             Var val = value.value;
-            switch (val.getType()) {
-                case VAR_TYPE_INT:
-                    ps.setInt(i, val.getInt());
-                    break;
-
-                case VAR_TYPE_STRING:
-                    ps.setString(i, val.getString());
-                    break;
-            }
+//            switch (val.getType()) {
+//                case VAR_TYPE_INT:
+//                    ps.setInt(i, val.getInt());
+//                    break;
+//
+//                case VAR_TYPE_STRING:
+//                    ps.setString(i, val.getString());
+//                    break;
+//
+//                case VAR_TYPE_BYTE_ARRAY:
+//                    ps.setBytes(i, val.getBytes());
+//                    break;
+//            }
+            val.applyToPreparedStatement(ps, i);
             i++;
         }
 
 
         for (Var wa : where_args) {
-            switch (wa.getType()) {
-                case VAR_TYPE_INT:
-                    ps.setInt(i, wa.getInt());
-                    break;
-
-                case VAR_TYPE_STRING:
-                    ps.setString(i, wa.getString());
-                    break;
-            }
+//            switch (wa.getType()) {
+//                case VAR_TYPE_INT:
+//                    ps.setInt(i, wa.getInt());
+//                    break;
+//
+//                case VAR_TYPE_STRING:
+//                    ps.setString(i, wa.getString());
+//                    break;
+//            }
+            wa.applyToPreparedStatement(ps, i);
             i++;
         }
 

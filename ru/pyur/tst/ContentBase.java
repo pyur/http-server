@@ -10,10 +10,12 @@ public abstract class ContentBase {
 
     protected ModularHost host_session;
 
+    private String host_dir;
+
 //    private DbManager db_manager;
-    private Connection db_connection;  // host-wide main database (data)
+//    private Connection db_connection;  // host-wide main database (data)
 //    private Connection db_config_1;      // server-wide config db (list of hosts)
-    private Connection db_config;  // host-wide config db (lists of icons)
+//    private Connection db_config;  // host-wide config db (lists of icons)
 
     private Connection module_db;
 
@@ -24,11 +26,12 @@ public abstract class ContentBase {
     protected void initCommon(ModularHost host) {
         host_session = host;
 
-//        this.db_manager = session.getDbManager();
-        try {
-            db_connection = host_session.getDb();
-            db_config = host_session.getConfigDb();
-        } catch (Exception e) { e.printStackTrace(); }
+        host_dir = host.getHostDir();
+
+//        try {
+//            db_connection = host_session.getDb();
+//            db_config = host_session.getConfigDb();
+//        } catch (Exception e) { e.printStackTrace(); }
     }
 
 
@@ -42,13 +45,23 @@ public abstract class ContentBase {
 
     // ---- setters, getters ------------------------------------------------
 
-//    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager
-    protected Connection getHostDb() { return db_connection; }
+    protected String getHostDir() { return host_dir; }
 
-    protected Connection getConfigDb() { return db_config; }
+//    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager
+    protected Connection getHostDb() { return host_session.getDb(); }
+
+    protected Connection getConfigDb() { return host_session.getConfigDb(); }
+
+    protected Connection getSessDb() { return host_session.getSessDb(); }
+
+    protected Connection getUserDb() { return host_session.getUserDb(); }
+
+    protected Connection getAdmUserDb() { return host_session.getAdmUserDb(); }
+
 
     protected Connection getModuleDb() { return module_db; }
     public void setModuleDb(Connection module_db) { this.module_db = module_db; }
+
 
     protected String getModule() { return host_session.getModule(); }
 
@@ -99,7 +112,7 @@ public abstract class ContentBase {
     // -------------------------------------------------------------------------- //
 
     protected ResultSet query(String query) throws Exception {
-        Statement stmt = db_connection.createStatement();
+        Statement stmt = getHostDb().createStatement();
         return stmt.executeQuery(query);
     }
 
@@ -112,7 +125,7 @@ public abstract class ContentBase {
         Statement stmt = null;
 
         try {
-            stmt = db_config.createStatement();
+            stmt = getConfigDb().createStatement();
         } catch (Exception e) { e.printStackTrace(); }
 
         return stmt;
@@ -124,7 +137,7 @@ public abstract class ContentBase {
         PreparedStatement ps = null;
 
         try {
-            ps = db_config.prepareStatement(query);
+            ps = getConfigDb().prepareStatement(query);
         } catch (Exception e) { e.printStackTrace(); }
 
         return ps;
@@ -197,7 +210,6 @@ public abstract class ContentBase {
 
 
     protected String configGet(String key) {
- //x       connectConfigDb();
 
         String value = "";
 
@@ -215,6 +227,31 @@ public abstract class ContentBase {
         } catch (Exception e) { e.printStackTrace(); }
 
         return value;
+    }
+
+
+
+
+    protected void configUpdateOrInsert(String table, String key, String value) {
+        String query = "UPDATE `" + table + "` SET `ts` = ? WHERE `name` = ?";
+
+        int update_result = 0;
+        try {
+            PreparedStatement ps = getConfigStatement(query);
+            ps.setString(1, value);
+            ps.setString(2, key);
+            update_result = ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+
+        if (update_result == 0) {
+            query = "INSERT INTO `config` (`key`, `value`) VALUES (?, ?)";
+            try {
+                PreparedStatement ps = getConfigStatement(query);
+                ps.setString(1, key);
+                ps.setString(2, value);
+                int insert_result = ps.executeUpdate();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
     }
 
 

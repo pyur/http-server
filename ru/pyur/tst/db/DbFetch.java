@@ -13,6 +13,7 @@ import static ru.pyur.tst.db.Var.VAR_TYPE_STRING;
 public class DbFetch {
 
     private Connection connection;
+    private ResultSet result_set;
 
     private ArrayList<String> tables = new ArrayList<>();
     private ArrayList<String> columns = new ArrayList<>();
@@ -121,15 +122,16 @@ public class DbFetch {
 
         int i = 1;
         for (Var wa : where_args) {
-            switch (wa.getType()) {
-                case VAR_TYPE_INT:
-                    ps.setInt(i, wa.getInt());
-                    break;
-
-                case VAR_TYPE_STRING:
-                    ps.setString(i, wa.getString());
-                    break;
-            }
+//            switch (wa.getType()) {
+//                case VAR_TYPE_INT:
+//                    ps.setInt(i, wa.getInt());
+//                    break;
+//
+//                case VAR_TYPE_STRING:
+//                    ps.setString(i, wa.getString());
+//                    break;
+//            }
+            wa.applyToPreparedStatement(ps, i);
             i++;
         }
 
@@ -145,14 +147,28 @@ public class DbFetch {
 
 
     public FetchArray fetchArray() throws Exception {
-        return new FetchArray(getResultSet());
+        result_set = getResultSet();
+        return new FetchArray(result_set);
+//        return new FetchArray(getResultSet());
     }
 
 
 
 
     public FetchSingle fetchSingle() throws Exception {
-        return new FetchSingle(getResultSet());
+        result_set = getResultSet();
+        return new FetchSingle(result_set);
+//        return new FetchSingle(getResultSet());
+    }
+
+
+
+    public void finish() {
+        if (result_set != null) {
+            try {
+                result_set.close();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
     }
 
 }

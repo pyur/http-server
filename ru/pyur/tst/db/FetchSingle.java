@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 
 public class FetchSingle extends Fetch {
 
-//b    private ResultSet result_set;
-
     private boolean is_empty;
 
 

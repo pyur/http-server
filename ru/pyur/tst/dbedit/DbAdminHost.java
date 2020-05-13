@@ -10,6 +10,8 @@ import java.sql.DriverManager;
 
 public class DbAdminHost extends ModularHost {
 
+    private final String HOST_DIR = "dbedit";
+
     private final String DOC_ROOT = "dbedit/files";
 
     // -------- Main DB -------- //
@@ -25,7 +27,14 @@ public class DbAdminHost extends ModularHost {
 
     private static final String DB_CONFIG_URL = "jdbc:sqlite:dbedit/config.db";
 
+    private static final String DB_SESS_URL = "jdbc:sqlite:dbedit/config.db";
 
+    private static final String DB_USER_URL = "jdbc:sqlite:dbedit/config.db";
+
+
+
+    @Override
+    protected String getHostDir() { return HOST_DIR; }
 
     @Override
     protected String getDocRoot() { return DOC_ROOT; }
@@ -48,7 +57,7 @@ public class DbAdminHost extends ModularHost {
 
 
     @Override
-    protected Connection getHostConfig() {
+    protected Connection connectHostConfig() {
         Connection conn = null;
 
         try {
@@ -65,6 +74,36 @@ public class DbAdminHost extends ModularHost {
 
 
     @Override
+    protected Connection connectSessDb() {
+        Connection conn = null;
+
+        try {
+            conn = DriverManager.getConnection(DB_SESS_URL);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return conn;
+    }
+
+
+    @Override
+    protected Connection connectUserDb() {
+        Connection conn = null;
+
+        try {
+            conn = DriverManager.getConnection(DB_USER_URL);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return conn;
+    }
+
+
+//    @Override
+//    protected Connection getAdmUserDb() { return null; }
+
+
+
+
+    @Override
     protected ModuleInfo getModuleInfo(String module_name) {
         ModuleInfo module_info = null;
 
@@ -76,21 +115,13 @@ public class DbAdminHost extends ModularHost {
             module_info = new ru.pyur.tst.dbedit.auth.Info();
         }
 
-//        else if (module_name.equals("elec")) {
-//            module_info = new ru.pyur.tst.sample_host.elec.Info();
-//        }
-//
-//        else if (module_name.equals("water")) {
-//            module_info = new ru.pyur.tst.sample_host.water.Info();
-//        }
-
         else if (module_name.equals("db")) {
             module_info = new ru.pyur.tst.dbedit.dbedit.Info();
         }
 
-//        else if (module_name.equals("res")) {
-//            module_info = new ru.pyur.tst.dbedit.resources.Info();
-//        }
+        else if (module_name.equals("res")) {
+            module_info = new ru.pyur.tst.dbedit.resources.Info();
+        }
 
         // todo: 'setup' for create 'config.db' and create default admin
 

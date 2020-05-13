@@ -22,6 +22,11 @@ public class PVar {
         this.value = new Var(value);
     }
 
+    public PVar(String key, byte[] value) {
+        this.key = key;
+        this.value = new Var(value);
+    }
+
 
 
 //    public static PVar PairList_FindByKey(ArrayList<PVar> list, String key) {

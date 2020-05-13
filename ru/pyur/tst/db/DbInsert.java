@@ -75,15 +75,16 @@ public class DbInsert {
         int i = 1;
         for (PVar value : values) {
             Var val = value.value;
-            switch (val.getType()) {
-                case VAR_TYPE_INT:
-                    ps.setInt(i, val.getInt());
-                    break;
-
-                case VAR_TYPE_STRING:
-                    ps.setString(i, val.getString());
-                    break;
-            }
+//            switch (val.getType()) {
+//                case VAR_TYPE_INT:
+//                    ps.setInt(i, val.getInt());
+//                    break;
+//
+//                case VAR_TYPE_STRING:
+//                    ps.setString(i, val.getString());
+//                    break;
+//            }
+            val.applyToPreparedStatement(ps, i);
             i++;
         }
 

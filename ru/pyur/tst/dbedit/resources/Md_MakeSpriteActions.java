@@ -1,4 +1,4 @@
-package ru.pyur.tst.sample_host.resources;
+package ru.pyur.tst.dbedit.resources;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.util.Util;

@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 
 public class SampleHost extends ModularHost {
 
+    private final String HOST_DIR = "sample";
+
     private final String DOC_ROOT = "sample/files";
 
     // -------- Main DB -------- //
@@ -29,13 +31,17 @@ public class SampleHost extends ModularHost {
 
 
     @Override
+    protected String getHostDir() { return HOST_DIR; }
+
+
+    @Override
     protected String getDocRoot() { return DOC_ROOT; }
 
 
 
 
     @Override
-    protected Connection getHostDb() {
+    protected Connection connectHostDb() {
         Connection conn = null;
 
         try {
@@ -50,7 +56,7 @@ public class SampleHost extends ModularHost {
 
 
     @Override
-    protected Connection getHostConfig() {
+    protected Connection connectHostConfig() {
         Connection conn = null;
 
         try {
