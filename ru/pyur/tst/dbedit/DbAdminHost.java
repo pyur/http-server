@@ -1,317 +1,104 @@
 package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.*;
-import ru.pyur.tst.db.DbManager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 
 public class DbAdminHost extends ModularHost {
 
+    private final String DOC_ROOT = "dbedit/files";
 
-    // ---- Entry point ------------------------------------------------------------
+    // -------- Main DB -------- //
+
+    //private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
+//    private static final String DB_URL = "jdbc:mariadb://127.0.0.1/";
+//    private static final String DB_USER = "root";
+//    private static final String DB_PASSWORD = "1";
+
+
+
+    // -------- Config DB -------- //
+
+    private static final String DB_CONFIG_URL = "jdbc:sqlite:dbedit/config.db";
+
+
 
     @Override
-    public void dispatch() {
+    protected String getDocRoot() { return DOC_ROOT; }
 
-        // -------- determine module, action -------- //
+
+
+//    @Override
+//    protected Connection getHostDb() {
+//        Connection conn = null;
+//
+//        try {
+//            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+//            //todo: use modern 'DataSource' class
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return conn;
+//    }
+
+
+    @Override
+    protected Connection getHostConfig() {
+        Connection conn = null;
+
         try {
-            dispatchPath();
-        } catch (Exception e) {
-            response400();
-            return;
-        }
-
-
-
-//x        System.out.println("probing for websocket");
-        if (isWebsocket()) {
-//x            System.out.println("...probing success.");
-            processWebsocket();
-            return;
-        }
-//x        System.out.println("...probing failed.");
-
-
-        if (isCast()) {
-            processCast();
-            return;
-        }
-
-
-
-        // ---------------- getHtml file ---------------- //
-
-        if (!last_argument.isEmpty()) {
-            try {
-                //System.out.println("user dir: " + System.getProperty("user.dir"));
-                if (!request_header.getPath().equals("/favicon.ico"))  throw new Exception("file name strict.");
-                File file = new File(doc_root + request_header.getPath());
-//todo                File file = new File(doc_root + "/../../txt");
-                System.out.println("file: " + file.getAbsolutePath());
-                if (file.exists()) {
-                    FileInputStream fis = new FileInputStream(file);
-                    byte[] bytes = new byte[fis.available()];
-                    fis.read(bytes);
-                    fis.close();
-
-                    addOption("Content-Type", "image/x-icon");
-                    //Last-Modified: Wed, 21 Jan 2015 12:50:06 GMT
-                    //ETag: "47e-50d28feb5fca8"
-                    response(bytes);
-                }
-                else {
-                    //System.out.println("file not exists: " + file.getPath());
-                    response404("file not exists: " + file.getPath());
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-                response404("file i/o error.");
-            }
-
-            return;
-        }
-
-
-
-        // -------- open database -------- //
-
-        db_manager = new DbManager();
-        db_manager.connectDb();
-        //db_manager.connectConfigDb();
-
-
-
-        // -------- user authorization -------- //
-
-        auth = new Auth(db_manager, response_header);
-        try {
-            auth.authByCookie(request_header);
+            conn = DriverManager.getConnection(DB_CONFIG_URL);
+            //todo: use modern 'DataSource' class
         } catch (Exception e) {
             e.printStackTrace();
-            //response401();
-            //return;
-            // -- force redirect to auth form -- //
-            //setModule("auth");
-            //setAction("");
-        }
-        //System.out.println("auth state: " + auth.state);
-
-        //modules = auth.getModules();
-
-
-
-        // -------- receive payload -------- //
-
-        try {
-            //payload = ProtocolDispatcher.receivePayload(input_stream, request_header);
-            receivePayload();
-        } catch (Exception e) { e.printStackTrace(); }
-
-
-
-        // -------- prefix -------- //
-
-        if (prefix.isEmpty()) {
-            processHtml();
         }
 
-        else if (prefix.equals("a")) {
-            processApi();
-        }
-
-        else if (prefix.equals("i")) {
-            processImage();
-        }
-
-        else if (prefix.equals("e")) {
-            processEmbed();
-        }
-
-        else if (prefix.equals("k")) {
-            processKiosk();
-        }
-
-        else {
-            // unknown prefix
-            // throw error 400
-            response404("unknown prefix");
-        }
-
-
-
-        // ---- close database ---- //
-
-        db_manager.closeDb();
-        db_manager.closeConfig();
+        return conn;
     }
 
 
 
 
-    // -------------------------------- Html module -------------------------------- //
+    @Override
+    protected ModuleInfo getModuleInfo(String module_name) {
+        ModuleInfo module_info = null;
 
-    private void processHtml() {
-        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
-
-        if (module_info == null) {
-            response404("no such module \"" + module + "\".");
-            return;
+        if (module_name.isEmpty()) {
+            module_info = new ru.pyur.tst.dbedit.default_module.Info();
         }
 
-//        module_info.setHttpSession(session);
-
-
-        HtmlContent html_content = module_info.getHtml(getAction());
-
-        if (html_content == null) {
-            response404("module \"" + module + "\" lack html support. or no action \"" + getAction() + "\"");
-            return;
+        else if (module_name.equals("auth")) {
+            module_info = new ru.pyur.tst.dbedit.auth.Info();
         }
 
-        html_content.init(this);
+//        else if (module_name.equals("elec")) {
+//            module_info = new ru.pyur.tst.sample_host.elec.Info();
+//        }
+//
+//        else if (module_name.equals("water")) {
+//            module_info = new ru.pyur.tst.sample_host.water.Info();
+//        }
 
-
-        byte[] content = html_content.makeContent();
-
-/*
-        // compression
-        //if (header has "Accept-Encoding: gzip, deflate, br") {
-
-        byte[] compressed_content = null;
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            GZIPOutputStream gos = new GZIPOutputStream(os);
-            gos.write(contents);
-            gos.close();
-            compressed_contents = os.toByteArray();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        if (compressed_contents != null) {
-            contents = compressed_contents;
-            response_options.add(new PStr("Content-Encoding", "gzip"));
-        }
-*/
-        response(content);
-    }
-
-
-
-
-    // -------------------------------- Api module -------------------------------- //
-
-    private void processApi() {
-        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
-
-        if (module_info == null) {
-            response404("no such module \"" + module + "\".");
-            return;
+        else if (module_name.equals("db")) {
+            module_info = new ru.pyur.tst.dbedit.dbedit.Info();
         }
 
-//        module_info.setHttpSession(session);
+//        else if (module_name.equals("res")) {
+//            module_info = new ru.pyur.tst.dbedit.resources.Info();
+//        }
 
+        // todo: 'setup' for create 'config.db' and create default admin
 
-        ApiContent api_content = module_info.getApi(getAction());
+        //else if (module.equals("ext")) {
+        //    module_info = new ru.pyur.tst.extsample.ExtMod();
+        //}
 
-        if (api_content == null) {
-            response404("module \"" + module + "\" lack html support");
-            return;
-        }
-
-        api_content.init(this);
-
-
-        byte[] content = api_content.makeContent();
-
-        // todo: compression
-
-        response(content);
-    }
-
-
-
-
-    // -------------------------------- Kiosk module -------------------------------- //
-
-    private void processKiosk() {
-
-    }
-
-
-
-
-    // -------------------------------- Image module -------------------------------- //
-
-    private void processImage() {
-
-    }
-
-
-
-
-    // -------------------------------- Embed module -------------------------------- //
-
-    private void processEmbed() {
-
-    }
-
-
-
-
-
-
-    // -------------------------------- Websocket module -------------------------------- //
-
-    private void processWebsocket() {
-        String ws_key;
-        //try {
-            ws_key = request_header.getOption("Sec-WebSocket-Key");
-        //} catch (Exception e) {
-        //    e.printStackTrace();
-        if (ws_key == null) {
-            response404("missing required websocket key");
-            return;
-        }
-
-
-
-        // -------- get module_info -------- //
-
-        ModuleInfo module_info = ModulesManager.getModuleInfo(module);
-
-        if (module_info == null) {
-            response404("no such module \"" + module + "\".");
-            return;
-        }
-
-//        module_info.setWebsocketSession(this);
-
-
-        WebsocketDispatcher wsd = module_info.getWs(getAction());
-
-        if (wsd == null) {
-            response404("module \"" + module + "\" lack websocket support. or wrong action\"" + getAction() + "\"");
-            return;
-        }
-
-        wsd.init(this);
-
-
-        responseSwitchingOk(ws_key);
-
-        // switch input and output streams to websocket protocol
-
-        wsd.dispatch();
-    }
-
-
-
-
-    // -------------------------------- Cast module -------------------------------- //
-
-    private void processCast() {
-
+        return module_info;
     }
 
 

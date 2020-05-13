@@ -17,7 +17,7 @@ public class Api_GetSpriteActions extends ApiContent {
 
         put("ts", ts);
 
-        byte[] bytes = Util.fetchFile("sprite_actions.png");
+        byte[] bytes = Util.fetchFile("sample/sprite_actions.png");
 
         StringBuilder url_data = new StringBuilder("data:image/png;base64,");
 

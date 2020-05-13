@@ -1,8 +1,14 @@
 package ru.pyur.tst;
 
+import ru.pyur.tst.db.DbFetch;
+import ru.pyur.tst.db.DbFetcher;
+import ru.pyur.tst.db.FetchArray;
+import ru.pyur.tst.json.Json;
 import ru.pyur.tst.tags.*;
+import ru.pyur.tst.util.PStr;
 import ru.pyur.tst.util.Util;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -43,8 +49,8 @@ public abstract class HtmlContent extends ContentBase {
 
 
 
-    public void init(ModularHost session) {
-        initCommon(session);
+    public void init(ModularHost host) {
+        initCommon(host);
         setContentType("text/html; charset=utf-8");
         //setContentType("text/plain");
         // https://developer.mozilla.org/ru/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
@@ -185,13 +191,6 @@ public abstract class HtmlContent extends ContentBase {
 
         addHead("\r\n<style>\r\n");
 
-//        File style_file = new File("inline_style.css");
-//        try {
-//            FileInputStream fis = new FileInputStream(style_file);
-//            byte[] style = new byte[fis.available()];
-//            int readed = fis.read(style);
-//            headText(new String(style));
-//        } catch (Exception e) { e.printStackTrace(); }
         try {
             byte[] style = Util.fetchFile("inline_style.css");
             addHead(new String(style));
@@ -200,25 +199,41 @@ public abstract class HtmlContent extends ContentBase {
         addHead("\r\n</style>\r\n");
 
 
-        int tsSpriteActions = configGeti(CONFIG_ACTION_ICON_UPD);
-        int tsSpriteModules = configGeti(CONFIG_MODULE_ICON_UPD);
+//x        int tsSpriteActions = configGeti(CONFIG_ACTION_ICON_UPD);
+//x        int tsSpriteModules = configGeti(CONFIG_MODULE_ICON_UPD);
+        DbFetch cache_ts = new DbFetch(getConfigDb());
+        cache_ts.table("res_ts");
+        cache_ts.col(new String[]{"name", "ts"});
+
+        Json res_ts = new Json();
+
+        try {
+            FetchArray fetch_array = cache_ts.fetchArray();
+
+            while (fetch_array.available()) {
+                String name = fetch_array.getString("name");
+                int ts = fetch_array.getInt("ts");
+                res_ts.add(name, ts);
+            }
+
+            File file_script = new File("sample/script.js");
+            if (file_script.exists()) {
+                res_ts.add("script", (int)(file_script.lastModified() / 1000) );
+            }
+
+        } catch (Exception e) { e.printStackTrace(); }
 
 
         addHead("\r\n<script>\r\n");
-        addHead("var tsSpriteActions = ");
-        addHead(tsSpriteActions);
-        addHead(";\r\n");
-        addHead("var tsSpriteModules = ");
-        addHead(tsSpriteModules);
+//x        addHead("var tsSpriteActions = ");
+//x        addHead(tsSpriteActions);
+//x        addHead(";\r\n");
+//x        addHead("var tsSpriteModules = ");
+//x        addHead(tsSpriteModules);
+        addHead("var cached_ts = ");
+        addHead(res_ts.stringify());
         addHead(";\r\n");
 
-//        File script_file = new File("inline_script.js");
-//        try {
-//            FileInputStream fis = new FileInputStream(script_file);
-//            byte[] script = new byte[fis.available()];
-//            int readed = fis.read(script);
-//            headText(new String(script));
-//        } catch (Exception e) { e.printStackTrace(); }
         try {
             byte[] script = Util.fetchFile("inline_script.js");
             addHead(new String(script));
@@ -235,7 +250,6 @@ public abstract class HtmlContent extends ContentBase {
 
     private String makeModulesBar() {
         Div div_modules_bar = new Div();
-//x        add(div_modules_bar);
         div_modules_bar.addClass("modules_bar");
 
         // ---- todo: menu = auth->get_menu()
@@ -357,7 +371,11 @@ public abstract class HtmlContent extends ContentBase {
             div_actions_bar.add(action.make());
         }
 
-        return div_actions_bar.toString();
+        if (!div_actions_bar.isEmpty()) {
+            return div_actions_bar.toString();
+        } else {
+            return "";
+        }
     }
 
 

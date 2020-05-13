@@ -252,7 +252,7 @@ public class HttpRequest extends HttpHeader {
 
 
     // todo: move to 'Cookie'
-    public Cookie getCookie(String name) throws Exception {  // todo: remove Exception
+    public Cookie getCookie(String name) {
 
         // ---- parse cookies ---- //
         if (cookies == null) {
@@ -271,12 +271,13 @@ public class HttpRequest extends HttpHeader {
             }
         }
 
+
         // ---- get ---- //
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(name)) return cookie;
         }
 
-        throw new Exception("cookie not found.");
+        return null;
     }
 
 

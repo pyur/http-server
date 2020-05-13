@@ -28,12 +28,13 @@ public abstract class Host {
         this.input_stream = input_stream;
         this.output_stream = output_stream;
 
-//        response_header = new HttpResponse();
-//        response_header.setVersion(HttpHeader.HTTP_VERSION_1_1);
-//        response_header.setCode(200);
         response_header = new HttpSessionResponse();
     }
 
+
+
+
+    // ---- prototypes ------------------------------------------------------------
 
     public abstract void dispatch();
 
@@ -140,7 +141,6 @@ public abstract class Host {
         //try read until stream ends
         //}
 
-//x        return payload;
     }
 
 

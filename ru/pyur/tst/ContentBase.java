@@ -1,6 +1,5 @@
 package ru.pyur.tst;
 
-import ru.pyur.tst.db.DbManager;
 import ru.pyur.tst.util.PStr;
 
 import java.sql.*;
@@ -9,12 +8,12 @@ import java.util.ArrayList;
 
 public abstract class ContentBase {
 
-    protected ModularHost session;
+    protected ModularHost host_session;
 
-    private DbManager db_manager;
+//    private DbManager db_manager;
     private Connection db_connection;  // host-wide main database (data)
-    private Connection db_config;      // server-wide config db (list of hosts)
-    //private Connection db_config_2;  // host-wide config db (lists of icons)
+//    private Connection db_config_1;      // server-wide config db (list of hosts)
+    private Connection db_config;  // host-wide config db (lists of icons)
 
     private Connection module_db;
 
@@ -22,13 +21,13 @@ public abstract class ContentBase {
 
     // ---- constructor ----------------
 
-    protected void initCommon(ModularHost session) {
-        this.session = session;
+    protected void initCommon(ModularHost host) {
+        host_session = host;
 
-        this.db_manager = session.getDbManager();
+//        this.db_manager = session.getDbManager();
         try {
-            db_connection = db_manager.getDb();
-            db_config = db_manager.getConfigDb();
+            db_connection = host_session.getDb();
+            db_config = host_session.getConfigDb();
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -51,9 +50,9 @@ public abstract class ContentBase {
     protected Connection getModuleDb() { return module_db; }
     public void setModuleDb(Connection module_db) { this.module_db = module_db; }
 
-    protected String getModule() { return session.getModule(); }
+    protected String getModule() { return host_session.getModule(); }
 
-    protected String getAction() { return session.getAction(); }
+    protected String getAction() { return host_session.getAction(); }
 
 
 
@@ -61,7 +60,7 @@ public abstract class ContentBase {
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
     protected String getParam(String key) throws Exception {
-        ArrayList<PStr> lsQuery = session.getQuery();
+        ArrayList<PStr> lsQuery = host_session.getQuery();
 
         for (PStr pair : lsQuery) {
             if (pair.key.equals(key))  return pair.value;
@@ -74,16 +73,16 @@ public abstract class ContentBase {
 
 
     protected void setCode(int code) {
-        session.setCode(code);
+        host_session.setCode(code);
     }
 
-    protected void setContentType(String value) { session.addOption("Content-Type", value); }
+    protected void setContentType(String value) { host_session.addOption("Content-Type", value); }
 
-    protected void setCookie(String name, String value, int expires, String path) { session.setCookie(name, value, expires, path); }
+    protected void setCookie(String name, String value, int expires, String path) { host_session.setCookie(name, value, expires, path); }
 
 
     // ---- response option ---- //
-    protected void addOption(String name, String value) { session.addOption(name, value); }
+    protected void addOption(String name, String value) { host_session.addOption(name, value); }
 
 
     // ---- response options ---- //

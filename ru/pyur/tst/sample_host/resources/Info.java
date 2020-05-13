@@ -47,7 +47,7 @@ public class Info extends ModuleInfo {
         ApiContent api_content = null;
 
         if (action.isEmpty()) {
-            //api_content = new Api_Default(session);
+            api_content = new Api_GetResource();
         }
 
         else if (action.equals(RESOURCES_ACTION_GET_SPRITE_ACTION)) {

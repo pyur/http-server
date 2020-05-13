@@ -7,6 +7,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -48,13 +49,12 @@ public class Auth {
 
     private final int AUTH_TOKEN_LIFE_TIME = 60;  // seconds
 
-//    ControlSession co_session;
-//    HttpSession session;
-
     private HttpRequest request_header;  // redundant. todo: fold
     private HttpResponse response_header;
 
-    private DbManager db_manager;
+//    private DbManager db_manager;
+    private Connection db_host;
+    private Connection db_host_config;
 
 
 
@@ -71,8 +71,11 @@ public class Auth {
 //        db_manager = session.getDbManager();
 //    }
 
-    public Auth(DbManager dbm, HttpResponse response_header) {
-        db_manager = dbm;
+//    public Auth(DbManager dbm, HttpResponse response_header) {
+    public Auth(Connection db_config, Connection db_main, HttpResponse response_header) {
+//        db_manager = dbm;
+        db_host_config = db_config;
+        db_host = db_main;
         this.response_header = response_header;
     }
 
@@ -129,7 +132,14 @@ public class Auth {
         //    throw new Exception("token cookie absent");
         //}
 
-        String token_raw = request_header.getCookie("t").getValue();
+        Cookie token_cookie = request_header.getCookie("t");
+        if (token_cookie == null) {
+            System.err.println("token cookie absent.");
+            return;
+            // throw new Exception("token cookie absent.");
+        }
+
+        String token_raw = token_cookie.getValue();
         //System.out.println("token_raw: " + token_raw);
         //String token = Cookie.replacePlus(token_raw);  // adhoc
         String token = token_raw;  // todo: replace
@@ -219,7 +229,8 @@ public class Auth {
         int claim_iat = Integer.parseInt(claim[2]);
 
 
-        DbFetch db_sess = new DbFetch(db_manager.getDb());
+//        DbFetch db_sess = new DbFetch(db_manager.getDb());
+        DbFetch db_sess = new DbFetch(db_host);
         db_sess.table("sesst");  // todo: `sessta` - archived
         db_sess.col(new String[]{"user", "tp", "tm"});
         db_sess.where("`id` = ?");  // `stat` = 0 . todo: make second table for archived sessions
@@ -292,7 +303,8 @@ public class Auth {
     public int newSession(int user_id) throws Exception {
         int current_time = (int)(System.currentTimeMillis() / 1000);
 
-        DbInsert db_sess = new DbInsert(db_manager.getDb());
+//        DbInsert db_sess = new DbInsert(db_manager.getDb());
+        DbInsert db_sess = new DbInsert(db_host);
         db_sess.table("sesst");
 
         //skip "stat"
@@ -313,7 +325,8 @@ public class Auth {
     private void updateSession(int session_id, int prev_time) throws Exception {
         int current_time = (int)(System.currentTimeMillis() / 1000);
 
-        DbUpdate db_sess = new DbUpdate(db_manager.getDb());
+//        DbUpdate db_sess = new DbUpdate(db_manager.getDb());
+        DbUpdate db_sess = new DbUpdate(db_host);
         db_sess.table("sesst");
         db_sess.where("`id` = ?");
         db_sess.wa(session_id);

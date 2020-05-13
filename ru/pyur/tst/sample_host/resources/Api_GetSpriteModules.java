@@ -10,12 +10,6 @@ import static ru.pyur.tst.sample_host.resources.Md_MakeSpriteModules.CONFIG_MODU
 
 public class Api_GetSpriteModules extends ApiContent {
 
-//    public Api_GetSpriteModules(HttpSession session) {
-//        init(session);
-//    }
-
-
-
     @Override
     public void makeJson() throws Exception {
 
@@ -26,7 +20,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         // ---------------- 1x size ---------------- //
 
-        byte[] bytes = Util.fetchFile("sprite_modules.png");
+        byte[] bytes = Util.fetchFile("sample/sprite_modules.png");
 
 
         StringBuilder url_data = new StringBuilder("data:image/png;base64,");
@@ -41,7 +35,7 @@ public class Api_GetSpriteModules extends ApiContent {
 
         // ---------------- 2x size ---------------- //
 
-        bytes = Util.fetchFile("sprite_modules_2.png");
+        bytes = Util.fetchFile("sample/sprite_modules_2.png");
 
         url_data = new StringBuilder("data:image/png;base64,");
 

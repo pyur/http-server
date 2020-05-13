@@ -80,6 +80,8 @@ public abstract class Tag {
 
     // ---- setters, getters ----------------------------------------------------------------
 
+    public boolean isEmpty() { return tags.size() == 0; }
+
     public void add(String str) { tags.add(new PlainText(str)); }
 
     public void add(int number) { tags.add(new PlainText(number)); }

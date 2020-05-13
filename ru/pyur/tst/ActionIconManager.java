@@ -1,7 +1,6 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.DbManager;
 import ru.pyur.tst.db.FetchArray;
 
 import java.sql.Connection;

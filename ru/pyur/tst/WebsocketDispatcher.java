@@ -1,35 +1,32 @@
 package ru.pyur.tst;
 
-import ru.pyur.tst.db.DbManager;
 import ru.pyur.tst.json.Json;
 
-import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 
 public abstract class WebsocketDispatcher {
 
-    protected ModularHost session;
+    protected ModularHost host_session;
 
     private WebsocketWriter websocket_writer;
 
     //protected String jact;  // json action
 
-    private DbManager db_manager;
+//    private DbManager db_manager;
     private Connection db_connection;
     private Connection db_config;
 
 
 
 
-    public void init(ModularHost session) {
-        this.session = session;
+    public void init(ModularHost host) {
+        host_session = host;
 
-        this.db_manager = session.getDbManager();
+//        this.db_manager = session.getDbManager();
         try {
-            db_connection = db_manager.getDb();
-            db_config = db_manager.getConfigDb();
+            db_connection = host_session.getDb();
+            db_config = host_session.getConfigDb();
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -38,8 +35,8 @@ public abstract class WebsocketDispatcher {
 
     public void dispatch() {
 
-        WebsocketReader wr = new WebsocketReader(session.getInputStream());
-        websocket_writer = new WebsocketWriter(session.getOutputStream());
+        WebsocketReader wr = new WebsocketReader(host_session.getInputStream());
+        websocket_writer = new WebsocketWriter(host_session.getOutputStream());
 
         onConnect();
 
