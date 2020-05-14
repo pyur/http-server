@@ -30,6 +30,7 @@ public class Form extends Tag {
         // ---- start form script ---- //
 
         sb.append("\r\n<script>\r\n");
+        sb.append("OnScriptLoaded(function(){");
         sb.append("FormSend('");
         sb.append(id);
         sb.append("', null, null");
@@ -48,6 +49,7 @@ public class Form extends Tag {
 //        }
 //
 //        sb.append("]);\r\n");
+        sb.append(");}");
         sb.append(");\r\n");
         sb.append("</script>\r\n");
 

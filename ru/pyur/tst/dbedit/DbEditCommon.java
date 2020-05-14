@@ -1,4 +1,4 @@
-package ru.pyur.tst.dbedit.dbedit;
+package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.db.DbFetch;
 import ru.pyur.tst.db.FetchSingle;

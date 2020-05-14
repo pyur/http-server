@@ -17,7 +17,7 @@ public abstract class ContentBase {
 //    private Connection db_config_1;      // server-wide config db (list of hosts)
 //    private Connection db_config;  // host-wide config db (lists of icons)
 
-    private Connection module_db;
+//    private Connection module_db;
 
 
 
@@ -59,8 +59,8 @@ public abstract class ContentBase {
     protected Connection getAdmUserDb() { return host_session.getAdmUserDb(); }
 
 
-    protected Connection getModuleDb() { return module_db; }
-    public void setModuleDb(Connection module_db) { this.module_db = module_db; }
+//    protected Connection getModuleDb() { return module_db; }
+//    public void setModuleDb(Connection module_db) { this.module_db = module_db; }
 
 
     protected String getModule() { return host_session.getModule(); }
@@ -72,14 +72,15 @@ public abstract class ContentBase {
     // -------- get parameter --------------------------------
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-    protected String getParam(String key) throws Exception {
+    protected String getParam(String key) {  // throws Exception {
         ArrayList<PStr> lsQuery = host_session.getQuery();
 
         for (PStr pair : lsQuery) {
             if (pair.key.equals(key))  return pair.value;
         }
 
-        throw new Exception("parameter \'" + key + "\' absent.");
+        //throw new Exception("parameter \'" + key + "\' absent.");
+        return null;
     }
 
 
@@ -92,6 +93,8 @@ public abstract class ContentBase {
     protected void setContentType(String value) { host_session.addOption("Content-Type", value); }
 
     protected void setCookie(String name, String value, int expires, String path) { host_session.setCookie(name, value, expires, path); }
+
+    protected String getCookie(String name) { return host_session.getCookie(name); }
 
 
     // ---- response option ---- //

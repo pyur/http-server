@@ -1,19 +1,47 @@
-package ru.pyur.tst.dbedit.dbedit;
+package ru.pyur.tst.dbedit.table;
 
 import ru.pyur.tst.HtmlContent;
+import ru.pyur.tst.dbedit.DbEditCommon;
 import ru.pyur.tst.tags.*;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
-
-import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_DB;
-import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_TABLE;
+import java.sql.Statement;
 
 
-public class Md_TableView extends HtmlContent {
+public class Html_TableView extends HtmlContent {
 
     @Override
     public void makeHtml() throws Exception {
-        String table_name = getParam(DBEDIT_PARAM_TABLE);
+//        String table_name = "";
+//        String db_name = "";
+
+        String host_id = getCookie("host");
+        String db_name = getCookie("db");
+        //String table_name = getCookie("db");
+
+        String table_name = getParam("table");  // todo getParamFiltered()
+        //if (table_name == null) { table_name = getCookie("db"); }
+        //else { setCookie("table", table_name, 2000000000, "/"); }
+
+
+        if (host_id == null || db_name == null || table_name == null) {
+            add("host, db or table not specified.");
+            return;
+        }
+
+
+        Connection conn = DbEditCommon.getDatabase(getConfigDb(), host_id);
+
+        {
+            ModuleUrl url = new ModuleUrl();
+            url.setModule(getModule());
+            url.setAction("add_column");
+//            url.addParameter(DBEDIT_PARAM_HOST, host_id);
+//            url.addParameter(DBEDIT_PARAM_DB, host_id);
+            addActionLink("Добавить колонку", url, "plus-button");
+        }
+
 
         heading("Колонки таблицы – " + table_name);
 
@@ -33,18 +61,23 @@ public class Md_TableView extends HtmlContent {
         table.addAbLocation("holly", "Ягодка", getModule(), "hly");  // some action 3
 
 
-        String db_name = getParam(DBEDIT_PARAM_DB);
+//        String db_name = getParam(DBEDIT_PARAM_DB);
 
         String query = "USE `" + db_name + "`";
 
-        query(query);
+//x        //query(query);
+        Statement stmt = conn.createStatement();
+        stmt.executeQuery(query);
+        stmt.close();
 
 
         // ----
 
         query = "SHOW COLUMNS FROM `" + table_name + "`";
 
-        ResultSet rs = query(query);
+//x        ResultSet rs = query(query);
+        stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
 
         while(rs.next()) {
             String column_name = rs.getString(1);
@@ -71,6 +104,7 @@ public class Md_TableView extends HtmlContent {
 
         }
 
+        stmt.close();
     }
 
 }

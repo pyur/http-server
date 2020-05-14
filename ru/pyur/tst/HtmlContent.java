@@ -283,7 +283,7 @@ public abstract class HtmlContent extends ContentBase {
             this.name = name;
             this.perm = perm;
             this.desc = desc;
-            this.descb = descb;
+            this.descb = (descb == null) ? "" : descb;
             this.pos = pos;
             this.noauth = noauth;
             this.auth = auth;

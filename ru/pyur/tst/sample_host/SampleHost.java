@@ -93,7 +93,7 @@ public class SampleHost extends ModularHost {
         }
 
         else if (module_name.equals("db")) {
-            module_info = new ru.pyur.tst.dbedit.dbedit.Info();
+            module_info = new ru.pyur.tst.dbedit.host.Info();
         }
 
         else if (module_name.equals("res")) {

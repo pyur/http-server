@@ -9,7 +9,7 @@ public class Html_Auth extends HtmlContent {
     @Override
     public void makeHtml() {
 
-        setTitle("Авторизация");  // аутентификация
+        setTitle("Авторизация");
 
         heading("Авторизация");
 
@@ -50,13 +50,13 @@ public class Html_Auth extends HtmlContent {
         form.add(it_password);
 
 
-        InputButton ib_submit = new InputButton();
+        SubmitButton but_submit = new SubmitButton();
         //ib_submit.addClass("text");
-        ib_submit.setName("submit");
-        ib_submit.setValue("Войти");
-        ib_submit.addStyle("display", "block");
-        ib_submit.addStyle("margin", "20px auto 0");
-        form.add(ib_submit);
+        but_submit.setName("submit");
+        but_submit.setValue("Войти");
+        but_submit.addStyle("display", "block");
+        but_submit.addStyle("margin", "20px auto 0");
+        form.add(but_submit);
 
     }
 

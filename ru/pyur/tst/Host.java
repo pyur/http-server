@@ -64,6 +64,12 @@ public abstract class Host {
 
     public void setCookie(String name, String value, int expires, String path) { response_header.setCookie(name, value, expires, path); }
 
+    public String getCookie(String name) {
+        Cookie cookie = request_header.getCookie(name);
+        if (cookie != null)  return cookie.getValue();
+        return null;
+    }
+
 
 
 

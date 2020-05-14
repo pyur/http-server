@@ -96,14 +96,21 @@ public abstract class ApiContent extends ContentBase {
         request = new Json();
         answer = new Json();
 
+        byte[] payload = host_session.getPayload();
+        if (payload == null) {
+            put("result", "error");
+            put("error", "request is empty");
+            setCode(406);
+            return answer.stringify().getBytes();
+        }
 
         // -------- parse request -------- //
         //System.out.println("host_session: " + host_session);
-        System.out.println(new String(host_session.getPayload()));
+        System.out.println(new String(payload));
         //System.out.println("request: " + request);
 
         try {
-            request.parse(new String(host_session.getPayload()));
+            request.parse(new String(payload));
         } catch (Exception e) {
             System.err.println("request parse failed.");
             e.printStackTrace();

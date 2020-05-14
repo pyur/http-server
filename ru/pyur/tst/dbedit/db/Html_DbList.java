@@ -1,26 +1,37 @@
-package ru.pyur.tst.dbedit.dbedit;
+package ru.pyur.tst.dbedit.db;
 
 import ru.pyur.tst.HtmlContent;
+import ru.pyur.tst.dbedit.DbEditCommon;
 import ru.pyur.tst.tags.*;
 
 import java.sql.*;
 
-import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_ACTION_DB_LIST;
-import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_DB;
 
-
-public class Md_DbList extends HtmlContent {
+public class Html_DbList extends HtmlContent {
 
     @Override
     public void makeHtml() throws Exception {
-        String host_id = getParam("host");  // todo: getFiltered()
+        String host_id = getParam("host");  // todo getParamInt()
+        if (host_id == null) {
+            host_id = getCookie("host");
+        }
+        else {
+            setCookie("host", host_id, 2000000000, "/");
+        }
+
+        if (host_id == null) {
+            add("host not specified.");
+            return;
+        }
+
+
         Connection conn = DbEditCommon.getDatabase(getConfigDb(), host_id);
 
         {
             ModuleUrl url = new ModuleUrl();
             url.setModule(getModule());
-            url.setAction("db_edit");
-            url.addParameter("host", host_id);
+            url.setAction("edit");
+            //url.addParameter("?!?", host_id);  // from cookie
             addActionLink("Добавить базу данных", url, "plus-button");
         }
 
@@ -56,9 +67,10 @@ public class Md_DbList extends HtmlContent {
             td_database.add(link);
 
             ModuleUrl href = new ModuleUrl();
-            href.setModule(getModule());
-            href.setAction(DBEDIT_ACTION_DB_LIST);
-            href.addParameter(DBEDIT_PARAM_DB, db_name);
+            href.setModule("table");
+            //href.setAction("");
+            //href.addParameter(DBEDIT_PARAM_HOST, host_id);
+            href.addParameter("db", db_name);
 
             link.setHref(href);
 

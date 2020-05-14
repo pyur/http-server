@@ -2,6 +2,7 @@ package ru.pyur.tst.tags;
 
 import ru.pyur.tst.sample_host.battleship.Coordinate;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class Table extends Tag {
@@ -43,6 +44,18 @@ public class Table extends Tag {
         tag_name = "table";
         setId(id);
     }
+
+
+    public Table(String id, Connection db) {
+        tag_name = "table";
+        setId(id);
+        setActionIconsDb(db);
+    }
+
+
+    Connection db_action_icons;
+    public void setActionIconsDb(Connection db) { db_action_icons = db; }
+    protected Connection getActionIconsDb() { return db_action_icons; }
 
 
 

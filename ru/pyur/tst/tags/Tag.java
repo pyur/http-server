@@ -50,9 +50,9 @@ public abstract class Tag {
 
     // -------- Config -------- //
 
-    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
+//    private static final String CONFIG_URL = "jdbc:sqlite:config.db";
 
-    private Connection m_config;
+//    private Connection m_config;
 
 
     private boolean action_icons_fetched = false;
@@ -281,6 +281,8 @@ public abstract class Tag {
 
 
 
+    // ---- action icons ----------------------------------------------------------------
+
     // ---- Sprite ---- //
 
     protected Coordinate getActionCoord(String icon_name) {
@@ -299,25 +301,28 @@ public abstract class Tag {
 
 
 
+    protected Connection getActionIconsDb() { return null; }
 
-    // ---- action icons ----------------------------------------------------------------
 
     private void fetchActionIcons() {
-        if (m_config == null) {
-            try {
-                m_config = DriverManager.getConnection(CONFIG_URL);
-                //todo: use 'DataSource' class
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-        }
+//        if (m_config == null) {
+//            try {
+//                m_config = DriverManager.getConnection(CONFIG_URL);
+//                //todo: use 'DataSource' class
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return;
+//            }
+//        }
+
+        Connection conn = getActionIconsDb();
+        if (conn == null)  return;
 
 
         String query = "SELECT `name`, `position` FROM `action_icon`";  // ORDER BY `position`";
 
         try {
-            Statement st = m_config.createStatement();
+            Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {

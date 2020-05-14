@@ -2,8 +2,6 @@ package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.*;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -115,12 +113,26 @@ public class DbAdminHost extends ModularHost {
             module_info = new ru.pyur.tst.dbedit.auth.Info();
         }
 
-        else if (module_name.equals("db")) {
-            module_info = new ru.pyur.tst.dbedit.dbedit.Info();
-        }
-
         else if (module_name.equals("res")) {
             module_info = new ru.pyur.tst.dbedit.resources.Info();
+        }
+
+        // ----------------------------------------------------------------
+
+        else if (module_name.equals("host")) {
+            module_info = new ru.pyur.tst.dbedit.host.Info();
+        }
+
+        else if (module_name.equals("db")) {
+            module_info = new ru.pyur.tst.dbedit.db.Info();
+        }
+
+        else if (module_name.equals("table")) {
+            module_info = new ru.pyur.tst.dbedit.table.Info();
+        }
+
+        else if (module_name.equals("col")) {
+//            module_info = new ru.pyur.tst.dbedit.col.Info();
         }
 
         // todo: 'setup' for create 'config.db' and create default admin

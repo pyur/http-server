@@ -1,15 +1,15 @@
-package ru.pyur.tst.dbedit.dbedit;
+package ru.pyur.tst.dbedit.host;
 
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.tags.*;
 
 import java.sql.Connection;
 
-import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_ACTION_DB_LIST;
-import static ru.pyur.tst.dbedit.dbedit.Info.DBEDIT_PARAM_HOST;
+import static ru.pyur.tst.dbedit.host.Info.DBEDIT_ACTION_HOST_LIST;
+import static ru.pyur.tst.dbedit.host.Info.DBEDIT_PARAM_HOST;
 
 
-public class Md_HostList extends HtmlContent {
+public class Html_HostList extends HtmlContent {
 
 
     @Override
@@ -18,7 +18,7 @@ public class Md_HostList extends HtmlContent {
         {
             ModuleUrl url = new ModuleUrl();
             url.setModule(getModule());
-            url.setAction("host_edit");
+            url.setAction("add");
             //add params
             addActionLink("Добавить хост", url, "plus-button");
         }
@@ -73,8 +73,8 @@ public class Md_HostList extends HtmlContent {
             A link = new A();
 
             ModuleUrl href = new ModuleUrl();
-            href.setModule(getModule());
-            href.setAction(DBEDIT_ACTION_DB_LIST);
+            href.setModule("db");
+            //href.setAction(DBEDIT_ACTION_HOST_LIST);
             href.addParameter(DBEDIT_PARAM_HOST, getRowId());
 
             link.setHref(href);
