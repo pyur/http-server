@@ -1,12 +1,11 @@
 package ru.pyur.tst.dbedit.table;
 
 import ru.pyur.tst.HtmlContent;
+import ru.pyur.tst.db.DbFetch;
 import ru.pyur.tst.dbedit.DbEditCommon;
 import ru.pyur.tst.tags.*;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 
 public class Html_TableView extends HtmlContent {
@@ -45,7 +44,7 @@ public class Html_TableView extends HtmlContent {
 
         heading("Колонки таблицы – " + table_name);
 
-
+/*
         Table table = new Table("lmt");  // todo: lst
         add(table);
 
@@ -105,6 +104,86 @@ public class Html_TableView extends HtmlContent {
         }
 
         stmt.close();
+*/
+
+        DbFetch set_db = new DbFetch(conn);
+        set_db.fetchQuery("USE `" + db_name + "`");
+
+        TableFetcher columns_table = new ColumnsTable(conn, table_name);
+        add(columns_table.make());
+
+    }
+
+
+
+
+    private class ColumnsTable extends TableFetcher {
+
+        private String table_name;
+
+        public ColumnsTable(Connection conn, String table_name) {
+            setConnection(conn);
+            this.table_name = table_name;
+        }
+
+
+        @Override
+        public Tag make() {
+
+            //table("db");
+            //col(new String[]{"id", "host", "port", "login"});
+            //where("`id` = 2");
+            query("SHOW COLUMNS FROM `" + table_name + "`");
+            //query("SHOW COLUMNS FROM `?`");
+            //wa(table_name);
+            //query("SELECT * FROM `fence` WHERE `id` = ?");
+            //wa("100");
+
+            setIdColumn(1);
+
+            fetchTable();
+
+            return tag;
+        }
+
+
+
+        @Override
+        protected void onTableFetch() {
+            addColumn("Имя", 150);
+            addColumn("Тип", 200);
+            addColumn("NULL", 50);
+            addColumn("Key", 60);
+            addColumn("Default", 180);
+            addColumn("Extra", 250);
+
+            table.setActionIconsDb(getConfigDb());
+
+            addAbLocation("pencil-button", "Редактировать", getModule(), "edit_table");  // edit
+            addAbLocation("rainbow", "Радуга", getModule(), "rnbw");  // some action 2
+            addAbLocation("holly", "Ягодка", getModule(), "hly");  // some action 3
+        }
+
+
+
+//        @Override
+//        public Tag onTableColumnTag(int column_num, String value) {
+//            if (column_num != 2)  return null;
+//
+//            A link = new A();
+//
+//            ModuleUrl href = new ModuleUrl();
+//            href.setModule("db");
+//            //href.setAction(DBEDIT_ACTION_HOST_LIST);
+//            href.addParameter(DBEDIT_PARAM_HOST, getRowId());
+//
+//            link.setHref(href);
+//
+//            link.add(value);
+//
+//            return link;
+//        }
+
     }
 
 }

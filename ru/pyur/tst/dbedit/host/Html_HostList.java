@@ -49,6 +49,8 @@ public class Html_HostList extends HtmlContent {
             col(new String[]{"id", "host", "port", "login"});
             //where("`id` = 2");
 
+            setIdColumn(1); // or in onTableFetch()
+
             fetchTable();
 
             return tag;
@@ -62,6 +64,8 @@ public class Html_HostList extends HtmlContent {
             addColumn("Хост", 120);
             addColumn("Порт", 60);
             addColumn("Логин", 100);
+
+            //setIdColumn(1);
         }
 
 

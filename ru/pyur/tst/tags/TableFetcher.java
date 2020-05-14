@@ -65,6 +65,13 @@ public abstract class TableFetcher extends DbFetcher {
     }
 
 
+    public void addAbLocation(String icon, String description, String module, String action) {
+        table.addAbLocation(icon, description, module, action);
+    }
+
+
+
+
 
     protected void fetchTable() {
         try {
@@ -108,12 +115,23 @@ public abstract class TableFetcher extends DbFetcher {
 
 
     @Override
-    public void onRow() {
+    public void onRow(String row_id) {
         tr = new Tr();
         table.add(tr);
 
+        if (row_id != null) {
+            //tr.addAttribute("data-id", getRowId());
+            tr.addAttribute("data-id", row_id);
+        }
+
         onTableRow();
     }
+
+
+//    @Override
+//    public void onRowId(String row_id) {
+//        tr.addAttribute("data-id", row_id);
+//    }
 
 
     @Override

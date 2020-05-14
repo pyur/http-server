@@ -46,14 +46,8 @@ public class Table extends Tag {
     }
 
 
-    public Table(String id, Connection db) {
-        tag_name = "table";
-        setId(id);
-        setActionIconsDb(db);
-    }
 
-
-    Connection db_action_icons;
+    private Connection db_action_icons;
     public void setActionIconsDb(Connection db) { db_action_icons = db; }
     protected Connection getActionIconsDb() { return db_action_icons; }
 

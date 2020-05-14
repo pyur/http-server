@@ -316,7 +316,10 @@ public abstract class Tag {
 //        }
 
         Connection conn = getActionIconsDb();
-        if (conn == null)  return;
+        if (conn == null)  {
+            System.err.println("getActionIconsDb() failed.");
+            return;
+        }
 
 
         String query = "SELECT `name`, `position` FROM `action_icon`";  // ORDER BY `position`";

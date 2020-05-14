@@ -5,6 +5,7 @@ import ru.pyur.tst.util.Util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import static ru.pyur.tst.db.Var.VAR_TYPE_INT;
@@ -19,6 +20,8 @@ public class DbFetch {
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<String> where = new ArrayList<>();
     private ArrayList<Var> where_args = new ArrayList<>();
+
+    private String m_query;
 
 
 
@@ -90,31 +93,42 @@ public class DbFetch {
     public void wa(String wa) { this.where_args.add(new Var(wa)); }
 
 
+    public void query(String query) { m_query = query; }
+
+
 
 
     protected ResultSet getResultSet() throws Exception {
-        if (tables.size() == 0) throw new Exception("table is not specified.");
+        if (tables.size() == 0 && m_query == null) throw new Exception("table is not specified.");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ");
-        if (columns.size() != 0) {
-            sb.append(Util.implode(", ", columns));
-        } else {
-            sb.append("COUNT(*)");
+        String query;
+
+        if (m_query == null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("SELECT ");
+            if (columns.size() != 0) {
+                sb.append(Util.implode(", ", columns));
+            } else {
+                sb.append("COUNT(*)");
+            }
+
+            sb.append(" FROM ");
+
+            sb.append(Util.implode(", ", tables));
+
+            if (where.size() != 0) {
+                sb.append(" WHERE ");
+                sb.append(Util.implode(" AND ", where));
+            }
+
+            // todo: order, limit, group by
+
+            query = sb.toString();
         }
 
-        sb.append(" FROM ");
-
-        sb.append(Util.implode(", ", tables));
-
-        if (where.size() != 0) {
-            sb.append(" WHERE ");
-            sb.append(Util.implode(" AND ", where));
+        else {
+            query = m_query;
         }
-
-        // todo: order, limit, group by
-
-        String query = sb.toString();
         //System.out.println("query: [" + query + "]");
 
 
@@ -122,27 +136,24 @@ public class DbFetch {
 
         int i = 1;
         for (Var wa : where_args) {
-//            switch (wa.getType()) {
-//                case VAR_TYPE_INT:
-//                    ps.setInt(i, wa.getInt());
-//                    break;
-//
-//                case VAR_TYPE_STRING:
-//                    ps.setString(i, wa.getString());
-//                    break;
-//            }
             wa.applyToPreparedStatement(ps, i);
             i++;
         }
 
         ResultSet result_set = ps.executeQuery();
 
-        //if (rs.next()) {
-        //    value = rs.getString(1);
-        //}
-
         return result_set;
     }
+
+
+
+
+    public void fetchQuery(String query) throws Exception {
+        Statement stmt = connection.createStatement();
+        stmt.executeQuery(query);
+        stmt.close();
+    }
+
 
 
 
