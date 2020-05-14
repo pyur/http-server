@@ -71,8 +71,9 @@ public class Html_HostList extends HtmlContent {
 
 
         @Override
-        public Tag onTableColumnTag(int column_num, String value) {
-            if (column_num != 2)  return null;
+        public String onTableColumn(int column_num, String value) {
+            //if (column_num == 1)  return null;  // skip id
+            if (column_num != 2)  return value;
 
             A link = new A();
 
@@ -85,7 +86,7 @@ public class Html_HostList extends HtmlContent {
 
             link.add(value);
 
-            return link;
+            return link.toString();
         }
 
     }

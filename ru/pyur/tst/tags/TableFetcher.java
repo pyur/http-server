@@ -46,9 +46,10 @@ public abstract class TableFetcher extends DbFetcher {
 
     protected void onTableRow() {}
 
-    protected String onTableColumnString(int column_num, String value) { return null; }
+//    protected String onTableColumnString(int column_num, String value) { return null; }
 
-    protected Tag onTableColumnTag(int column_num, String value) { return null; }
+    //protected Tag onTableColumn(int column_num, String value) { return null; }
+    protected String onTableColumn(int column_num, String value) { return value; }
 
     protected void onTableFooter() {}
 
@@ -136,22 +137,30 @@ public abstract class TableFetcher extends DbFetcher {
 
     @Override
     public void onColumn(ResultSet rs, int column_num) {
-        Td cell = new Td();
-        tr.add(cell);
 
         String value;
         try {
             value = rs.getString(column_num);
         } catch (Exception e) { e.printStackTrace(); return; }
 
+        if (value == null)  value = "<span style=\"color: red;\">[NULL]</span>";
 
-        String inner_str = onTableColumnString(column_num, value);
-        if (inner_str != null)  cell.add(inner_str);
+//        String inner_str = onTableColumnString(column_num, value);
+//        if (inner_str != null)  cell.add(inner_str);
 
-        Tag inner_tag = onTableColumnTag(column_num, value);
-        if (inner_tag != null)  cell.add(inner_tag);
+        //Tag inner_tag = onTableColumn(column_num, value);
+        String inner_tag = onTableColumn(column_num, value);
+        if (inner_tag == null) {
+            System.out.println("skip TD");
+            return;
+        }
+        System.out.println("add TD");
 
-        if (inner_str == null && inner_tag == null) { cell.add(value); }
+        Td cell = new Td();
+        cell.add(inner_tag);
+
+//        if (inner_str == null && inner_tag == null) { cell.add(value); }
+        tr.add(cell);
     }
 
 
