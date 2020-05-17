@@ -1,17 +1,17 @@
-package ru.pyur.tst.json;
+package ru.pyur.tst.util;
 
 import java.util.ArrayList;
 
 
 public class Json {
 
-    public static final int JSON_TYPE_OBJECT = 1;
-    public static final int JSON_TYPE_ARRAY = 2;
-    public static final int JSON_TYPE_INTEGER = 3;
-    public static final int JSON_TYPE_DOUBLE = 4;
-    public static final int JSON_TYPE_STRING = 5;
-    public static final int JSON_TYPE_BOOLEAN = 6;
-    public static final int JSON_TYPE_NULL = 7;
+    private static final int JSON_TYPE_OBJECT = 1;
+    private static final int JSON_TYPE_ARRAY = 2;
+    private static final int JSON_TYPE_INTEGER = 3;
+    private static final int JSON_TYPE_DOUBLE = 4;
+    private static final int JSON_TYPE_STRING = 5;
+    private static final int JSON_TYPE_BOOLEAN = 6;
+    private static final int JSON_TYPE_NULL = 7;
 
 
     private int type;

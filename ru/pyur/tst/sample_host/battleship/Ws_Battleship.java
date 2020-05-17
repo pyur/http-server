@@ -1,7 +1,7 @@
 package ru.pyur.tst.sample_host.battleship;
 
 import ru.pyur.tst.WebsocketDispatcher;
-import ru.pyur.tst.json.Json;
+import ru.pyur.tst.util.Json;
 
 
 public class Ws_Battleship extends WebsocketDispatcher {

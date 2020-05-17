@@ -1,11 +1,9 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.DbFetcher;
 import ru.pyur.tst.db.FetchArray;
-import ru.pyur.tst.json.Json;
+import ru.pyur.tst.util.Json;
 import ru.pyur.tst.tags.*;
-import ru.pyur.tst.util.PStr;
 import ru.pyur.tst.util.Util;
 
 import java.io.File;

@@ -1,7 +1,7 @@
 package ru.pyur.tst.dbedit.resources;
 
 import ru.pyur.tst.ApiContent;
-import ru.pyur.tst.json.Json;
+import ru.pyur.tst.util.Json;
 import ru.pyur.tst.util.Util;
 
 import java.util.Base64;

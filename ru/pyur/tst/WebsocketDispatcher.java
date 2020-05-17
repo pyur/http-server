@@ -1,6 +1,6 @@
 package ru.pyur.tst;
 
-import ru.pyur.tst.json.Json;
+import ru.pyur.tst.util.Json;
 
 import java.sql.*;
 
