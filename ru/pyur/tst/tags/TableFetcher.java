@@ -106,7 +106,7 @@ public abstract class TableFetcher extends DbFetcher {
 
 
     @Override
-    public void onFetch() {
+    public void onFetched() {
         table = new Table();
         tag = table;
 
@@ -151,10 +151,10 @@ public abstract class TableFetcher extends DbFetcher {
         //Tag inner_tag = onTableColumn(column_num, value);
         String inner_tag = onTableColumn(column_num, value);
         if (inner_tag == null) {
-            System.out.println("skip TD");
+            //System.out.println("skip TD");
             return;
         }
-        System.out.println("add TD");
+        //System.out.println("add TD");
 
         Td cell = new Td();
         cell.add(inner_tag);

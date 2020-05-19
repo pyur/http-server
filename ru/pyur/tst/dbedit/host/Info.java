@@ -47,9 +47,9 @@ public class Info extends ModuleInfo {
             html_content = new Html_HostList();
         }
 
-//        else if (action.equals(DBEDIT_ACTION_HOST_LIST)) {
-//            html_content = new Md_DbList();
-//        }
+        else if (action.equals("edit")) {
+            html_content = new HtmlEdit_Host();
+        }
 
         //else if (action.equals(DBEDIT_ACTION_DB_VIEW)) {
         //    md = new Md_DbView();

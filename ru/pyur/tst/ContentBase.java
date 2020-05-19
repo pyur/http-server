@@ -72,16 +72,34 @@ public abstract class ContentBase {
     // -------- get parameter --------------------------------
 
     // todo getFilteredQuery for numbers, only_alphabet, etc. for screening malicious data
-    protected String getParam(String key) {  // throws Exception {
+    protected String getOptionalParam(String key) {
         ArrayList<PStr> lsQuery = host_session.getQuery();
 
         for (PStr pair : lsQuery) {
             if (pair.key.equals(key))  return pair.value;
         }
 
-        //throw new Exception("parameter \'" + key + "\' absent.");
         return null;
     }
+
+
+
+    protected String getParam(String key) throws Exception {
+        ArrayList<PStr> lsQuery = host_session.getQuery();
+
+        for (PStr pair : lsQuery) {
+            if (pair.key.equals(key))  return pair.value;
+        }
+
+        throw new Exception("parameter \'" + key + "\' absent.");
+    }
+
+
+
+//    protected int getParamInt(String key) throws Exception {
+//        String param = getParam(key);
+//        return Integer.parseInt(param);
+//    }
 
 
 

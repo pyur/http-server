@@ -1,8 +1,6 @@
 package ru.pyur.tst.db;
 
 
-import ru.pyur.tst.tags.Table;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
@@ -22,7 +20,7 @@ public abstract class DbFetcher extends DbFetch {
 
     protected void onEmpty() {}
 
-    protected void onFetch() {}
+    protected void onFetched() {}
 
     protected void onRow(String row_id) {}
 
@@ -36,7 +34,7 @@ public abstract class DbFetcher extends DbFetch {
     protected void setIdColumn(int idx) { id_column_idx = idx; }
 
 
-    protected void fetchResults() throws Exception {
+    public void fetchResults() throws Exception {
         ResultSet rs = getResultSet();
 
 
@@ -48,7 +46,7 @@ public abstract class DbFetcher extends DbFetch {
         }
 
 
-        onFetch();
+        onFetched();
 
 
         ResultSetMetaData rsmd = rs.getMetaData();

@@ -149,9 +149,6 @@ public class DateTime {
     // ---- components datetime ---- //
 
     public void assign(int year, int month, int day, int hour, int minute, int second) {
-//        this.year = year;
-//        this.month = month;
-//        this.day = day;
         assign(year, month, day);
 
         this.hour = hour;
@@ -218,22 +215,14 @@ public class DateTime {
     public String toSqlDate() {
         StringBuilder sb = new StringBuilder();
 
-//s        if (year < 10)       sb.append("000");
-//s        else if (year < 100)  sb.append("00");
-//s        else if (year < 1000)  sb.append("0");
-//s        sb.append(year);
         sb.append(pad4(year));
 
         sb.append("-");
 
-//s        if (month < 10)  sb.append("0");
-//s        sb.append(month);
         sb.append(pad2(month));
 
         sb.append("-");
 
-//s        if (day < 10)  sb.append("0");
-//s        sb.append(day);
         sb.append(pad2(day));
 
         return sb.toString();
@@ -246,8 +235,6 @@ public class DateTime {
     public String toSqlTime() {
         StringBuilder sb = new StringBuilder();
 
-//s        if (hour < 10)  sb.append("0");
-//s        sb.append(hour);
         sb.append(pad2(hour));
 
         sb.append(":");
@@ -258,8 +245,6 @@ public class DateTime {
 
         sb.append(":");
 
-//s        if (second < 10)  sb.append("0");
-//s        sb.append(second);
         sb.append(pad2(second));
 
         return sb.toString();
@@ -284,9 +269,6 @@ public class DateTime {
 
         sb.append(".");
 
-//s        if (millisecond < 10)  sb.append("00");
-//s        else if (millisecond < 100)  sb.append("0");
-//s        sb.append(millisecond);
         sb.append(pad3(millisecond));
 
         return sb.toString();
@@ -302,22 +284,14 @@ public class DateTime {
     public String toStringDate() {
         StringBuilder sb = new StringBuilder();
 
-//s        if (day < 10)  sb.append("0");
-//s        sb.append(day);
         sb.append(pad2(day));
 
         sb.append(".");
 
-//s        if (month < 10)  sb.append("0");
-//s        sb.append(month);
         sb.append(pad2(month));
 
         sb.append(".");
 
-//s        if (year < 10)       sb.append("000");
-//s        else if (year < 100)  sb.append("00");
-//s        else if (year < 1000)  sb.append("0");
-//s        sb.append(year);
         sb.append(pad4(year));
 
         return sb.toString();
@@ -342,26 +316,18 @@ public class DateTime {
         StringBuilder sb = new StringBuilder();
 
         if (day != 0) {
-//s            if (day < 10)  sb.append("0");
-//s            sb.append(day);
             sb.append(pad2(day));
 
             sb.append(".");
         }
 
         if (month != 0) {
-//s            if (month < 10)  sb.append("0");
-//s            sb.append(month);
             sb.append(pad2(month));
 
             sb.append(".");
         }
 
         if (year != 0) {
-//s            if (year < 10)       sb.append("000");
-//s            else if (year < 100)  sb.append("00");
-//s            else if (year < 1000)  sb.append("0");
-//s            sb.append(year);
             sb.append(pad4(year));
 
             if (need_year_letter)  sb.append(" г");
