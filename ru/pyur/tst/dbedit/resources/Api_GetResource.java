@@ -31,6 +31,10 @@ public class Api_GetResource extends ApiContent {
                 res.add("sprite_modules_2", getPng(getHostDir() + "/sprite_modules_2.png"));
             }
 
+            else if (name.toString().equals("style")) {
+                res.add("style", new String(Util.fetchFile(getHostDir() + "/style.css")));
+            }
+
             else if (name.toString().equals("script")) {
                 res.add("script", new String(Util.fetchFile(getHostDir() + "/script.js")));
             }

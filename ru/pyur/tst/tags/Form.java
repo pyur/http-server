@@ -19,9 +19,13 @@ public class Form extends Tag {
         addAttribute("action", url);
     }
 
+    public void setOnSubmit(String script) {
+        addAttribute("onsubmit", script);
+    }
 
 
 
+/*
     @Override
     public String renderAfterTag() {
         StringBuilder sb = new StringBuilder();
@@ -55,6 +59,6 @@ public class Form extends Tag {
 
         return sb.toString();
     }
-
+*/
 
 }

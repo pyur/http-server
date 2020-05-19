@@ -179,14 +179,14 @@ public abstract class HtmlContent extends ContentBase {
         }
         addHead("<meta charset=\"UTF-8\">");
 
-        addHead("\r\n<style>\r\n");
-
-        try {
-            byte[] style = Util.fetchFile(getHostDir() + "/inline_style.css");
-            addHead(new String(style));
-        } catch (Exception e) { e.printStackTrace(); }
-
-        addHead("\r\n</style>\r\n");
+//        addHead("\r\n<style>\r\n");
+//
+//        try {
+//            byte[] style = Util.fetchFile(getHostDir() + "/inline_style.css");
+//            addHead(new String(style));
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        addHead("\r\n</style>\r\n");
 
 
         DbFetch cache_ts = new DbFetch(getConfigDb());
@@ -202,6 +202,11 @@ public abstract class HtmlContent extends ContentBase {
                 String name = fetch_array.getString("name");
                 int ts = fetch_array.getInt("ts");
                 res_ts.add(name, ts);
+            }
+
+            File file_style = new File(getHostDir() + "/style.css");
+            if (file_style.exists()) {
+                res_ts.add("style", (int)(file_style.lastModified() / 1000) );
             }
 
             File file_script = new File(getHostDir() + "/script.js");

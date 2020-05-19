@@ -7,6 +7,19 @@ public class ApiUpdate_Host extends ApiUpdateContent {
 
     @Override
     protected void initInsert() throws Exception {
+        update_conn = getConfigDb();
+        if (update_conn == null) throw new Exception("get db failed.");
+
+        update_table = "db";
+
+        id_field = "id";
+
+        addColumnText("host");
+        addColumnNum("port");
+        addColumnText("login");
+        addColumnText("password");
+
+        retLocation("/host/");
     }
 
 
@@ -20,19 +33,22 @@ public class ApiUpdate_Host extends ApiUpdateContent {
 
         id_field = "id";
 
-        addUpdateColumnText("host");
-        addUpdateColumnNum("port");
-        addUpdateColumnText("login");
-        addUpdateColumnText("password");
+        addColumnText("host");
+        addColumnNum("port");
+        addColumnText("login");
+        addColumnText("password");
 
-//        addInsertColumn("new");
-
+        retLocation("/host/");
     }
 
 
 
     @Override
     protected void initDelete() throws Exception {
+
+
+
+        retLocation("/host/");
     }
 
 

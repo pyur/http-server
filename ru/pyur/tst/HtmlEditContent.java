@@ -126,7 +126,15 @@ public abstract class HtmlEditContent extends HtmlContent {
         Form form = new Form("edit");
         form.addClass("edit");
         form.setUrl("/a/" + getModule() + "/update/");
+        form.setOnSubmit("return FormSend(this," + (mode_edit?"\'update\'":"\'insert\'") + ");");
         add(form);
+
+        if (mode_edit) {
+            InputHidden ihid = new InputHidden();
+            form.add(ihid);
+            ihid.setName("id");
+            ihid.setValue("" + edit_id);
+        }
 
         for (EditColumn ec : edit_columns) {
             Div row_container = new Div();

@@ -24,20 +24,26 @@ public abstract class ApiUpdateContent extends ApiContent {
 //    private boolean has_id;
 //    private boolean no_values = false;
 
+    private String location;
 
 
-    protected void addUpdateColumnNum(String column) {
+
+    protected void addColumnNum(String column) {
         EditColumn ec = new EditColumn(column, null);
 //        ec.setNumber(number);
         update_columns.add(ec);
     }
 
 
-    protected void addUpdateColumnText(String column) {
+    protected void addColumnText(String column) {
         EditColumn ec = new EditColumn(column, null);
 //        ec.setText(text);
         update_columns.add(ec);
     }
+
+
+
+    protected void retLocation(String location) { this.location = location; }
 
 
 
@@ -121,8 +127,11 @@ public abstract class ApiUpdateContent extends ApiContent {
         Json json_insert = getObject("insert");
 
         DbInsert ins = new DbInsert(update_conn);
+        ins.table("db");
 
+//x        System.out.println("columns:");
         for (EditColumn ec : update_columns) {
+//x            System.out.println("  " + ec.column);
             String got = json_insert.getString(ec.column);
             ins.set(ec.column, got);
         }
@@ -131,6 +140,7 @@ public abstract class ApiUpdateContent extends ApiContent {
 
         put("result", "inserted");
         put("id", ins_id);
+        if (location != null)  put("location", location);
     }
 
 
@@ -142,6 +152,7 @@ public abstract class ApiUpdateContent extends ApiContent {
         Json json_update = getObject("update");
 
         DbUpdate upd = new DbUpdate(update_conn);
+        upd.table("db");
 
         for (EditColumn ec : update_columns) {
             String got = json_update.getString(ec.column);
@@ -155,6 +166,7 @@ public abstract class ApiUpdateContent extends ApiContent {
 
         put("result", "updated");
         put("count", upd_count);
+        if (location != null)  put("location", location);
     }
 
 
@@ -166,6 +178,7 @@ public abstract class ApiUpdateContent extends ApiContent {
         Json json_delete = getObject("delete");
 
         DbDelete del = new DbDelete(update_conn);
+        del.table("db");
 
         del.where("`id` = ?");
         del.wa(json_delete.getString(id_field));
@@ -174,6 +187,7 @@ public abstract class ApiUpdateContent extends ApiContent {
 
         put("result", "deleted");
         put("count", del_count);
+        if (location != null)  put("location", location);
     }
 
 
