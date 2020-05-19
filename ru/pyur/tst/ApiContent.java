@@ -28,6 +28,10 @@ public abstract class ApiContent extends ContentBase {
 
     // ---------------- get from json request ---------------- //
 
+    protected boolean has(String key) {
+        return request.has(key);
+    }
+
     protected Json getObject(String key) throws Exception {
         return request.getNode(key);
     }
@@ -70,6 +74,13 @@ public abstract class ApiContent extends ContentBase {
 //        } catch (Exception e) { e.printStackTrace(); }
 //    }
 
+
+
+    protected void put(String key, int value) {
+        try {
+            answer.add(key, value);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
 
 
     protected void put(String key, String value) {

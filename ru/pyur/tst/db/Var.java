@@ -6,6 +6,9 @@ public class Var {
     public static final int VAR_TYPE_INT = 0;
     public static final int VAR_TYPE_STRING = 1;
     public static final int VAR_TYPE_BYTE_ARRAY = 2;
+    public static final int VAR_TYPE_DATE = 3;
+    public static final int VAR_TYPE_TIME = 4;
+    public static final int VAR_TYPE_DATETIME = 5;
 
     private int type;
 

@@ -1,16 +1,16 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.DbFetcher;
-import ru.pyur.tst.db.Var;
-import ru.pyur.tst.tags.Div;
-import ru.pyur.tst.tags.Form;
-import ru.pyur.tst.tags.InputText;
+import ru.pyur.tst.tags.*;
+import ru.pyur.tst.util.DateTime;
+import ru.pyur.tst.util.SqlDate;
+import ru.pyur.tst.util.SqlTime;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+
+import static ru.pyur.tst.EditColumn.*;
 
 
 public abstract class HtmlEditContent extends HtmlContent {
@@ -27,55 +27,61 @@ public abstract class HtmlEditContent extends HtmlContent {
 
     protected ArrayList<EditColumn> edit_columns;
 
-    private boolean mode_edit;  // = false;
-
-
-    protected static final int EDIT_COLUMN_TYPE_INT = 1;
-    protected static final int EDIT_COLUMN_TYPE_STRING = 2;
-    protected static final int EDIT_COLUMN_TYPE_DATE = 3;
-    protected static final int EDIT_COLUMN_TYPE_TIME = 4;
-    protected static final int EDIT_COLUMN_TYPE_DATETIME = 5;
+    private boolean mode_edit;
 
 
 
-//x    protected void editDb(Connection conn) { edit_conn = conn; }
-
-//x    protected void editTable(String table_name) { edit_table = table_name; }
-
-//x    protected void editIdParam(String id_param) { this.id_param = id_param; }
-
-//x    protected void editString(String name_a, String name_b) {
-//x        this.name_a = name_a;
-//x        this.name_b = name_b;
-//x    }
 
 
 
-    protected void addEditColumn(EditColumn ec) {
+//    protected void addEditColumn(EditColumn ec) {
+//        edit_columns.add(ec);
+//    }
+
+
+    protected void addEditColumn(String column, int number, String desc) {
+        EditColumn ec = new EditColumn(column, desc);
+        ec.setNumber(number);
         edit_columns.add(ec);
     }
 
 
-    protected void addEditColumn(String column, int default_value) {
-        edit_columns.add(new EditColumn(column, default_value));
+    protected void addEditColumn(String column, String text, String desc) {
+        EditColumn ec = new EditColumn(column, desc);
+        ec.setText(text);
+        edit_columns.add(ec);
     }
 
 
-    protected void addEditColumn(String column, String default_value) {
-        edit_columns.add(new EditColumn(column, default_value));
+    //protected void addEditColumn(String column, String default_value, boolean large) {
+    //    edit_columns.add(new EditColumn(column, default_value, large));
+    //}
+
+
+    protected void addEditColumn(String column, SqlDate date, String desc) {
+        EditColumn ec = new EditColumn(column, desc);
+        ec.setDate(date);
+        edit_columns.add(ec);
     }
 
 
-    protected void addEditColumn(String column, int type, String default_value) {
-        edit_columns.add(new EditColumn(column, type, default_value));
+    protected void addEditColumn(String column, SqlTime time, String desc) {
+        EditColumn ec = new EditColumn(column, desc);
+        ec.setTime(time);
+        edit_columns.add(ec);
+    }
+
+
+    protected void addEditColumn(String column, DateTime dt, String desc) {
+        EditColumn ec = new EditColumn(column, desc);
+        ec.setDateTime(dt);
+        edit_columns.add(ec);
     }
 
 
 
 
     abstract protected void initEdit() throws Exception;
-
-//    abstract protected void editColumn();
 
 
 
@@ -119,50 +125,77 @@ public abstract class HtmlEditContent extends HtmlContent {
 
         Form form = new Form("edit");
         form.addClass("edit");
-        form.setUrl("/a/" + getModule() + "/edit/");
+        form.setUrl("/a/" + getModule() + "/update/");
         add(form);
 
         for (EditColumn ec : edit_columns) {
             Div row_container = new Div();
-            add(row_container);
+            form.add(row_container);
 
             Div desc = new Div();
             row_container.add(desc);
-            desc.add(ec.column);
+            desc.add(ec.desc);
 
             Div input_container = new Div();
             row_container.add(input_container);
 
             switch (ec.type) {
-                case EDIT_COLUMN_TYPE_INT: {
-                    InputText it = new InputText();
-                    it.setName(ec.column);
-                    it.setValue(ec.value.getString());  // "" + getInt()
-                    input_container.add(it);
+                case EDIT_COLUMN_TYPE_NUMERIC: {
+                    InputNumber inum = new InputNumber();
+                    inum.setName(ec.column);
+                    inum.setValue(ec.toString());
+                    input_container.add(inum);
                     }
                     break;
 
-                case EDIT_COLUMN_TYPE_STRING: {
-                    InputText it = new InputText();
-                    it.setName(ec.column);
-                    it.setValue(ec.value.getString());
-                    input_container.add(it);
+                case EDIT_COLUMN_TYPE_TEXT: {
+                    InputText itxt = new InputText();
+                    itxt.setName(ec.column);
+                    itxt.setValue(ec.toString());
+                    input_container.add(itxt);
                     }
                     break;
 
-                case EDIT_COLUMN_TYPE_DATE:
-                    //input_container.add();
+                case EDIT_COLUMN_TYPE_DATE: {
+                    InputDate idate = new InputDate();
+                    idate.setName(ec.column);
+                    idate.setValue(ec.toString());
+                    input_container.add(idate);
+                    }
                     break;
+
+                case EDIT_COLUMN_TYPE_TIME: {
+                    InputTime itime = new InputTime();
+                    itime.setName(ec.column);
+                    itime.setValue(ec.toString());
+                    input_container.add(itime);
+                }
+                break;
+
+                case EDIT_COLUMN_TYPE_DATETIME: {
+                    InputDateTime idt = new InputDateTime();
+                    idt.setName(ec.column);
+                    idt.setValue(ec.toString());
+                    input_container.add(idt);
+                }
+                break;
             }
         }
 
+
+        SubmitButton but_submit = new SubmitButton();
+        but_submit.setName("submit");
+        but_submit.setValue("Сохранить");
+        //but_submit.addStyle("display", "block");
+        //but_submit.addStyle("margin", "20px auto 0");
+        form.add(but_submit);
 
     }
 
 
 
 
-    //
+    // ---- db fetcher ----------------------------------------------------------------
 
     private class EditColumnsFetcher extends DbFetch {
 
@@ -186,96 +219,18 @@ public abstract class HtmlEditContent extends HtmlContent {
         public boolean fetchResults() throws Exception {
             ResultSet rs = getResultSet();
 
+            if (!rs.next())  return false;
 
-            boolean is_empty = rs.isAfterLast();
-
-//            if (is_empty) {
-//?                onEmpty();
-//                return false;
-//            }
-
-
-//x            onFetched();
-
-
-//            ResultSetMetaData rsmd = rs.getMetaData();
-            //String name = rsmd.getColumnName(1);
-//            int column_count = rsmd.getColumnCount();
-
-            if (rs.next()) {
-//x                if (id_column_idx != -1) {
-//x                    row_id = rs.getString(id_column_idx);
-//x                    //onRowId(row_id);
-//x                }
-//x                onRow(row_id);
-
-//x                for (int i = 1; i <= column_count; i++) {
-//x                    onColumn(rs, i);
-//x                }
-
-                int i = 1;
-                for (EditColumn ec : edit_columns) {
-                    String val = rs.getString(i);
-                    ec.setValue(val);
-                    i++;
-                }
-
+            int i = 1;
+            for (EditColumn ec : edit_columns) {
+                //String val = rs.getString(i);
+                ec.setFromResultSet(rs, i);
+                i++;
             }
-
-            else {
-                return false;
-            }
-
-//x            onDone();
 
             rs.close();
 
             return true;
-        }
-
-    }
-
-
-
-
-    // ---- nested class ----------------------------------------------------------------
-
-    protected class EditColumn {
-
-        public String column;
-        public int type;
-        //private int default_value_int;
-        //private String default_value_string;
-        public Var value;
-
-
-        public EditColumn() {}
-
-
-        public EditColumn(String column, int default_value) {
-            this.column = column;
-            this.type = EDIT_COLUMN_TYPE_INT;
-            this.value = new Var(default_value);
-        }
-
-
-        public EditColumn(String column, String default_value) {
-            this.column = column;
-            this.type = EDIT_COLUMN_TYPE_STRING;
-            this.value = new Var(default_value);
-        }
-
-
-        public EditColumn(String column, int type, String default_value) {
-            this.column = column;
-            this.type = type;
-            this.value = new Var(default_value);
-        }
-
-
-        public void setValue(String value) {
-            //?? conevert type
-            this.value = new Var(value);
         }
 
     }

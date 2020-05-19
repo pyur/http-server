@@ -1,5 +1,6 @@
 package ru.pyur.tst.dbedit.host;
 
+import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.HtmlContent;
 import ru.pyur.tst.ModuleInfo;
 
@@ -69,6 +70,24 @@ public class Info extends ModuleInfo {
         }
 
         return html_content;
+    }
+
+
+
+
+    @Override
+    public ApiContent getApi(String action) {
+        ApiContent api_content = null;
+
+//        if (action.isEmpty()) {
+//            api_content = new ApiEdit_Host();
+//        }
+
+        if (action.equals("update")) {
+            api_content = new ApiUpdate_Host();
+        }
+
+        return api_content;
     }
 
 }

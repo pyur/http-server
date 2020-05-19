@@ -2,40 +2,39 @@ package ru.pyur.tst.dbedit.host;
 
 import ru.pyur.tst.HtmlEditContent;
 import ru.pyur.tst.db.Var;
+import ru.pyur.tst.util.SqlDate;
+import ru.pyur.tst.util.SqlTime;
 
 public class HtmlEdit_Host extends HtmlEditContent {
 
 
     @Override
     protected void initEdit() throws Exception {
-//x        editDb(getHostDb());
         edit_conn = getConfigDb();
         if (edit_conn == null)  throw new Exception("get db failed.");
 
-//x        editTable("db");  // rename to 'host'
         edit_table = "db";
 
-//x        editIdParam("host");
         id_param = "host";
 
-//x        editString("хост", "хоста");
         name_a = "хост";
         name_b = "хоста";
 
 
-//        addEditColumn("host", "");
-//        addEditColumn("port", 0);
-//        addEditColumn("login", "");
-//        addEditColumn("password", "");
+//        EditColumn ec = new EditColumn();
+//        ec.column = "host";
+//        ec.type = EDIT_COLUMN_TYPE_STRING;
+//        ec.value = new Var("");
+//
+//        addEditColumn(ec);
 
-        EditColumn ec = new EditColumn();
-        ec.column = "host";
-        ec.type = EDIT_COLUMN_TYPE_STRING;
-        ec.value = new Var("");
+        addEditColumn("host", "123", "Хост");
+        addEditColumn("port", 3306, "Порт");
+        addEditColumn("login", "", "Логин");
+        addEditColumn("password", "", "Пароль");
 
-
-
-        addEditColumn(ec);
+//        addEditColumn("date", new SqlDate(), "Дата");
+//        addEditColumn("time", new SqlTime(), "Время");
 
     }
 
