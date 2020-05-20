@@ -14,6 +14,7 @@ public abstract class ModularHost extends Host {
     private Connection db_adm_user;
 
     protected Auth auth;
+    protected Permissions permissions;
 
     protected String prefix;  // a - api, i - image, e - embed, etc
     protected String module;
@@ -181,6 +182,21 @@ public abstract class ModularHost extends Host {
 
         //modules = auth.getModules();
 
+
+
+        // -------- permissions -------- //
+
+        int user_id = auth.getUserId();
+
+        if (user_id >= 65505) {
+            permissions = new SuperPermissions();
+        }
+        else if (user_id > 0) {
+            permissions = new UserPermissions(user_id);
+        }
+        else {
+            permissions = new DefaultPermissions();
+        }
 
 
         // -------- receive payload -------- //
