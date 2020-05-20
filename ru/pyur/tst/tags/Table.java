@@ -35,14 +35,20 @@ public class Table extends Tag {
 
 
     public Table() {
-        tag_name = "table";
         setId("lst");
+        commonTableConstructor();
     }
 
 
     public Table(String id) {
-        tag_name = "table";
         setId(id);
+        commonTableConstructor();
+    }
+
+
+    private void commonTableConstructor() {
+        tag_name = "table";
+
     }
 
 
@@ -89,6 +95,8 @@ public class Table extends Tag {
         // ---- append actions column ---- //
 
         if (actions.size() != 0) {
+            useDefaultActionsProcessor();
+
             String actions_desc = null;
             if (hasHeader) {
                 switch(actions.size()) {
@@ -218,7 +226,7 @@ public class Table extends Tag {
 
 
     // ---- after tag ------------------------------------------------
-
+/*
     @Override
     public String renderAfterTag() {
         StringBuilder sb = new StringBuilder();
@@ -250,7 +258,7 @@ public class Table extends Tag {
 
         return sb.toString();
     }
-
+*/
 
 
 
@@ -297,6 +305,32 @@ public class Table extends Tag {
         }
 
         return sb.toString();
+    }
+
+
+
+
+    // ---- default javascript action buttons processor --------------------------------
+
+    private void useDefaultActionsProcessor() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("TableActions(event, this, [");
+
+        // -- callback functions -- //
+        boolean first = true;
+        for (ActionButton ab : actions) {
+            if (!first)  sb.append(", ");
+            sb.append("function (row_id) { ");
+            //sb.append("alert(\"func " + ab.icon + " : \" + row_id);}");
+            sb.append(ab.getFunction());
+            sb.append(" }");
+            if (first)  first = false;
+        }
+
+        sb.append("])");
+
+        addAttribute("onclick", sb.toString());
     }
 
 

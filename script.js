@@ -1,5 +1,5 @@
   // ---------------- table actions ---------------- //
-
+/*
 function TableActions(table_id, cb_functions) {
   //console.log("TableActions(). table_id: " + table_id);
   //console.log(cb_functions);
@@ -51,6 +51,62 @@ function TableActions(table_id, cb_functions) {
 
 
   table.addEventListener("click", table_actions_clicked, false);
+  }
+*/
+
+function TableActions(e, table, cb_functions) {
+  //console.log("TableActions(). table_id: " + table_id);
+  //console.log(cb_functions);
+  //console.log(table);
+  //console.log(e);
+
+
+//  var table_actions_clicked = function(e) {
+  //e.stopPropagation();
+  //e.preventDefault();
+
+  var t = e.target;
+
+  while (t.tagName != "HR") {
+    if (t.parentNode === undefined || t.parentNode === null)  return;
+    t = t.parentNode;
+    }
+
+
+    // ---- left mouse button ---- //
+  if (e.button == 0) {
+    if (t.parentNode === undefined || t.parentNode === null)  return;
+    var td = t.parentNode;
+    //console.log(td.tagName);
+    if (td.tagName != "TD")  return;
+    if (td.parentNode === undefined || td.parentNode === null)  return;
+    var tr = td.parentNode;
+    //console.log(tr.tagName);
+    if (tr.tagName != "TR")  return;
+
+    var row_id = tr.getAttribute("data-id");
+    //console.log(row_id);
+
+    if (row_id == undefined)  return;
+
+    //alert("row_id: " + row_id);
+    //console.log(cb_functions);
+
+
+    //console.log(td.childNodes);
+    for (var i = 0; i < td.childNodes.length; i++) {
+      //if (td.childNodes[i] == t)  console.log(i);
+      if (td.childNodes[i] == t)  cb_functions[i](row_id);
+      }
+
+
+
+    }
+
+//    }
+
+
+//  table.addEventListener("click", table_actions_clicked, false);
   }
 
 
@@ -166,7 +222,7 @@ function FormSend(form_id, cb_ok, cb_failed) {
 
 
 function FormSend(form, wrap) {
-  console.log("FormSend()");
+  //console.log("FormSend()");
   var submit_button;
 
   for (var i = 0; i < form.elements.length; i++) {
@@ -178,7 +234,6 @@ function FormSend(form, wrap) {
   var enable_submit_button = function() { submit_button.disabled = false; }
 
 
-  console.log("FormSend. onsubmit()");
   submit_button.disabled = true;
   var timeout_handle = setTimeout(enable_submit_button, 3000);
   //clearTimeout(timeout_handle);  // on failed response

@@ -12,7 +12,7 @@ function checkCache() {
       if (localStorage['ts_'+key] != undefined) {
         if (localStorage['ts_'+key] >= cached_ts[key]) {
           //setCached(key);
-          if (key == 'script')  OnScriptLoadedRun();
+          //if (key == 'script')  OnScriptLoadedRun();
           continue;
           }
         }
@@ -108,7 +108,7 @@ function cachedLoaded(r) {
 
         // ---- re-set resource to page ---- //
       setCached(key);
-      if (key == 'script')  OnScriptLoadedRun();
+      //if (key == 'script')  OnScriptLoadedRun();
       }
 
     }
@@ -171,7 +171,7 @@ function ajaxPost(url, data, cb_success, cb_failed) {
 
 
 
-
+/*
 function OnScriptLoaded(deffered_function) {
   //console.log("script_loaded: " + script_loaded);
 
@@ -194,4 +194,4 @@ function OnScriptLoadedRun() {
     deffered_functions[i]();
     }
   }
-
+*/
