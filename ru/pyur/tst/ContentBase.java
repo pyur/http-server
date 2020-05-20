@@ -45,6 +45,8 @@ public abstract class ContentBase {
 
     // ---- setters, getters ------------------------------------------------
 
+    protected Permissions getPermissions() { return host_session.getPermissions(); }
+
     protected String getHostDir() { return host_dir; }
 
 //    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager

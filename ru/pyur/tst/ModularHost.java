@@ -52,6 +52,8 @@ public abstract class ModularHost extends Host {
 
     protected ModuleInfo getModuleInfo(String module_name) { return null; }
 
+    public Permissions getPermissions() { return permissions; }
+
     // ---- db ----
     protected Connection connectHostDb() { return null; }
 
@@ -187,12 +189,14 @@ public abstract class ModularHost extends Host {
         // -------- permissions -------- //
 
         int user_id = auth.getUserId();
+        //System.out.println("user_id: " + user_id);
 
         if (user_id >= 65505) {
-            permissions = new SuperPermissions();
+            permissions = new SuperPermissions(getConfigDb());
         }
         else if (user_id > 0) {
-            permissions = new UserPermissions(user_id);
+//            permissions = new UserPermissions(user_id);
+            permissions = new SuperPermissions(getConfigDb());
         }
         else {
             permissions = new DefaultPermissions();

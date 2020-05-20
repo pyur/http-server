@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public abstract class Permissions {
 
-    protected ArrayList<String> modules;  // example
+    protected ArrayList<ModulePerm> modules;  // rename to 'ModulePerm'
 
 
 
@@ -13,7 +13,10 @@ public abstract class Permissions {
 
     public abstract boolean hasPermission(String module_name, String permission_name);
 
-    public abstract String[] getModulesList();
+    public ArrayList<ModulePerm> getModules() { return modules; }
+
+
+
 
 
 }

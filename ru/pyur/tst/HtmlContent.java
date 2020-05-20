@@ -243,9 +243,10 @@ public abstract class HtmlContent extends ContentBase {
         div_modules_bar.addClass("modules_bar");
 
         // ---- todo: menu = auth->get_menu()
-        ModuleBar module_bar = new ModuleBar();
+//        ModuleBar module_bar = new ModuleBar();
 
-        for (ModuleBarItem mbi : module_bar.getModules()) {
+//        for (ModulePerm mbi : module_bar.getModules()) {
+        for (ModulePerm mbi : getPermissions().getModules()) {
             A mod = new A();
             div_modules_bar.add(mod);
             ModuleUrl link = new ModuleUrl();
@@ -271,57 +272,16 @@ public abstract class HtmlContent extends ContentBase {
     }
 
 
-    private class ModuleBarItem {
-        public int id;
-        public String name;
-        public String perm;
-        public String desc;
-        public String descb;
-        public int pos;
-        public int noauth;
-        public int auth;
-
-        public ModuleBarItem(int id, String name, String perm, String desc, String descb, int pos, int noauth, int auth) {
-            this.id = id;
-            this.name = name;
-            this.perm = perm;
-            this.desc = desc;
-            this.descb = (descb == null) ? "" : descb;
-            this.pos = pos;
-            this.noauth = noauth;
-            this.auth = auth;
-        }
-    }
 
 
-    private class ModuleBar {
-        public ArrayList<ModuleBarItem> modules = new ArrayList<>();
-
-        public ModuleBar() {
-            Statement stmt = getConfigStatement();
-
-            String query = "SELECT `id`, `name`, `perm`, `desc`, `descb`, `pos`, `noauth`, `auth` FROM `module` ORDER BY `pos`, `desc`";
-
-            try {
-                ResultSet rs = stmt.executeQuery(query);
-
-                while (rs.next()) {
-                    int id = rs.getInt(1);
-                    String name = rs.getString(2);
-                    String perm = rs.getString(3);
-                    String desc = rs.getString(4);
-                    String descb = rs.getString(5);
-                    int pos = rs.getInt(6);
-                    int noauth = rs.getInt(7);
-                    int auth = rs.getInt(8);
-
-                    modules.add(new ModuleBarItem(id, name, perm, desc, descb, pos, noauth, auth));
-                }
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-
-        public ArrayList<ModuleBarItem> getModules() { return modules; }
-    }
+//    private class ModuleBar {
+//        public ArrayList<ModulePerm> modules = new ArrayList<>();
+//
+//        public ModuleBar() {
+//        }
+//
+//        public ArrayList<ModulePerm> getModules() { return modules; }
+//    }
 
 
 
