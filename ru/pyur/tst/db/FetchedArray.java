@@ -3,14 +3,14 @@ package ru.pyur.tst.db;
 import java.sql.ResultSet;
 
 
-public class FetchArray extends Fetch {
+public class FetchedArray extends Fetched {
 
 //b    private ResultSet result_set;
 
     //boolean is_empty;
 
 
-    public FetchArray(ResultSet result_set) {
+    public FetchedArray(ResultSet result_set) {
         this.result_set = result_set;
         //try {
         //    is_empty = result_set.isAfterLast();

@@ -1,10 +1,9 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.FetchArray;
+import ru.pyur.tst.db.FetchedArray;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 
 
@@ -55,7 +54,7 @@ public class ActionIconManager {
         db_ai.table("action_icon");
         db_ai.col(new String[]{"name", "position"});
 
-        FetchArray fetch = db_ai.fetchArray();
+        FetchedArray fetch = db_ai.fetchArray();
 
         while (fetch.available()) {
             String name = fetch.getString("name");

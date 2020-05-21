@@ -19,8 +19,9 @@ public class Html_Auth extends HtmlContent {
         container.addStyle("margin", "50px auto 0");
         add(container);
 
-        Form form = new Form("form");
+        Form form = new Form("auth");
         form.setUrl("/a/" + getModule() + "/");
+        form.setOnSubmit("return FormSend(this);");
         container.add(form);
 
 

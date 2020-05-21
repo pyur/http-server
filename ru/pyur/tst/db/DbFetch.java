@@ -8,18 +8,17 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import static ru.pyur.tst.db.Var.VAR_TYPE_INT;
-import static ru.pyur.tst.db.Var.VAR_TYPE_STRING;
-
 public class DbFetch {
 
     private Connection connection;
+    private PreparedStatement ps;
     private ResultSet result_set;
 
     private ArrayList<String> tables = new ArrayList<>();
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<String> where = new ArrayList<>();
     private ArrayList<Var> where_args = new ArrayList<>();
+    private ArrayList<String> orders = new ArrayList<>();
 
     private String m_query;
 
@@ -93,6 +92,17 @@ public class DbFetch {
     public void wa(String wa) { this.where_args.add(new Var(wa)); }
 
 
+    public void order(String[] orders) {
+        for (String order : orders) {
+            this.orders.add("`" + order + "`");
+        }
+    }
+
+    public void order(String order) { orders.add("`" + order + "`"); }
+
+    public void rawOrder(String order) { orders.add(order); }
+
+
     public void query(String query) { m_query = query; }
 
 
@@ -121,7 +131,12 @@ public class DbFetch {
                 sb.append(Util.implode(" AND ", where));
             }
 
-            // todo: order, limit, group by
+            if (orders.size() != 0) {
+                sb.append(" ORDER BY ");
+                sb.append(Util.implode(", ", orders));
+            }
+
+            // todo: limit, group by
 
             query = sb.toString();
         }
@@ -129,10 +144,11 @@ public class DbFetch {
         else {
             query = m_query;
         }
-        //System.out.println("query: [" + query + "]");
+        System.out.println("query: [" + query + "]");
 
 
-        PreparedStatement ps = connection.prepareStatement(query);
+//        PreparedStatement
+        ps = connection.prepareStatement(query);
 
         int i = 1;
         for (Var wa : where_args) {
@@ -157,27 +173,34 @@ public class DbFetch {
 
 
 
-    public FetchArray fetchArray() throws Exception {
+    public FetchedArray fetchArray() throws Exception {
         result_set = getResultSet();
-        return new FetchArray(result_set);
+        return new FetchedArray(result_set);
 //        return new FetchArray(getResultSet());
     }
 
 
 
 
-    public FetchSingle fetchSingle() throws Exception {
+    public FetchedSingle fetchSingle() throws Exception {
         result_set = getResultSet();
-        return new FetchSingle(result_set);
+        return new FetchedSingle(result_set);
 //        return new FetchSingle(getResultSet());
     }
 
 
 
     public void finish() {
-        if (result_set != null) {
+//        if (result_set != null) {
+//            System.out.println("ResultSet closed.");
+//            try {
+//                result_set.close();
+//            } catch (Exception e) { e.printStackTrace(); }
+//        }
+        if (ps != null) {
+            System.out.println("PreparedStatement closed.");
             try {
-                result_set.close();
+                ps.close();
             } catch (Exception e) { e.printStackTrace(); }
         }
     }

@@ -96,6 +96,8 @@ public class DbDelete {
 
         int delete_result = ps.executeUpdate();
 
+        ps.close();
+
         return delete_result;
     }
 

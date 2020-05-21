@@ -1,7 +1,7 @@
 package ru.pyur.tst.dbedit;
 
 import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.FetchSingle;
+import ru.pyur.tst.db.FetchedSingle;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +15,7 @@ public class DbEditCommon {
         db_host.where("`id` = ?");
         db_host.wa(host_id);
 
-        FetchSingle fetch = db_host.fetchSingle();
+        FetchedSingle fetch = db_host.fetchSingle();
 
         String host = fetch.getString("host");
         int port = fetch.getInt("port");

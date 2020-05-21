@@ -3,7 +3,7 @@ package ru.pyur.tst.db;
 import java.sql.ResultSet;
 
 
-public abstract class Fetch {
+public abstract class Fetched {
 
     protected ResultSet result_set;
 

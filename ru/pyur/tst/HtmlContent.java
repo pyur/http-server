@@ -1,13 +1,12 @@
 package ru.pyur.tst;
 
 import ru.pyur.tst.db.DbFetch;
-import ru.pyur.tst.db.FetchArray;
+import ru.pyur.tst.db.FetchedArray;
 import ru.pyur.tst.util.Json;
 import ru.pyur.tst.tags.*;
 import ru.pyur.tst.util.Util;
 
 import java.io.File;
-import java.sql.*;
 import java.util.ArrayList;
 
 
@@ -196,7 +195,7 @@ public abstract class HtmlContent extends ContentBase {
         Json res_ts = new Json();
 
         try {
-            FetchArray fetch_array = cache_ts.fetchArray();
+            FetchedArray fetch_array = cache_ts.fetchArray();
 
             while (fetch_array.available()) {
                 String name = fetch_array.getString("name");

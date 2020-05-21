@@ -131,6 +131,8 @@ public class DbUpdate {
 
         int update_result = ps.executeUpdate();
 
+        ps.close();
+
         return update_result;
     }
 

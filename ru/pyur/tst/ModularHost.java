@@ -195,11 +195,12 @@ public abstract class ModularHost extends Host {
             permissions = new SuperPermissions(getConfigDb());
         }
         else if (user_id > 0) {
-//            permissions = new UserPermissions(user_id);
-            permissions = new SuperPermissions(getConfigDb());
+            permissions = new UserPermissions(getConfigDb(), user_id);
+            //permissions = new UserPermissions(getConfigDb(), auth.getUserCategory());
+            //permissions = new SuperPermissions(getConfigDb());
         }
         else {
-            permissions = new DefaultPermissions();
+            permissions = new NoauthPermissions(getConfigDb());
         }
 
 

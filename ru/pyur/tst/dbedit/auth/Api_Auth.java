@@ -4,7 +4,7 @@ import ru.pyur.tst.ApiContent;
 import ru.pyur.tst.Auth;
 import ru.pyur.tst.db.DbFetch;
 import ru.pyur.tst.db.DbUpdate;
-import ru.pyur.tst.db.FetchSingle;
+import ru.pyur.tst.db.FetchedSingle;
 import ru.pyur.tst.util.Util;
 
 import java.util.Arrays;
@@ -50,18 +50,21 @@ public class Api_Auth extends ApiContent {
         db_user.where("`login` = ?");
         db_user.wa(login);
 
-        FetchSingle fs = db_user.fetchSingle();
+        FetchedSingle fs = db_user.fetchSingle();
 
         if (fs.isEmpty()) {
             // -- user not found -- //
             put("result", "failed");
-            put("error", "wrong user not found");
+            put("error", "user not found");
             setCode(401);
             return;
             // or fetch another table
         }
 
         byte[] fetched_password_hash = fs.getBytes("password");
+        user_id = fs.getInt("id");
+        db_user.finish();  // because locking
+
 
         byte[] password_hash = Util.SHA512(password);
 
@@ -73,15 +76,11 @@ public class Api_Auth extends ApiContent {
         }
 
 
-        user_id = fs.getInt("id");
-
-        db_user.finish();  // because locking
-
-
         if (user_id != -1) {
             Auth auth = new Auth(getSessDb(), getUserDb(), getAdmUserDb(), host_session.getResponseHeader());
             auth.newAuth(user_id);
             put("result", "ok");
+            put("location", "/");
         }
 
         else {

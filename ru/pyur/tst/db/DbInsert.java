@@ -97,6 +97,8 @@ public class DbInsert {
             last_inserted_id = rs.getInt(1);
         }
 
+        ps.close();
+
         return last_inserted_id;
     }
 

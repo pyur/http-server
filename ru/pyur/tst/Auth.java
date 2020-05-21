@@ -37,7 +37,7 @@ public class Auth {
     private String user_desc;
     private int session_id;
     private int user_id;
-    private int user_category;
+//    private int user_category;  // can be stored in claim
 
     private boolean super_user = false;
 
@@ -89,6 +89,8 @@ public class Auth {
     public int getSessionId() { return session_id; }
 
     public int getUserId() { return user_id; }
+
+//    public int getUserCategory()  { return user_category; }
 
     public ArrayList<String> getModules() { return modules; }
 
@@ -244,7 +246,7 @@ public class Auth {
         db_sess.where("`id` = ?");  // `stat` = 0 . todo: make second table for archived sessions
         db_sess.wa(session_id);
 
-        FetchSingle fetch = db_sess.fetchSingle();
+        FetchedSingle fetch = db_sess.fetchSingle();
 
         if (fetch.isEmpty())  throw new Exception("refresh token. session not found.");
 

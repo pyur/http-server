@@ -3,12 +3,12 @@ package ru.pyur.tst.db;
 import java.sql.ResultSet;
 
 
-public class FetchSingle extends Fetch {
+public class FetchedSingle extends Fetched {
 
     private boolean is_empty;
 
 
-    public FetchSingle(ResultSet result_set) {
+    public FetchedSingle(ResultSet result_set) {
         this.result_set = result_set;
 
         try {
