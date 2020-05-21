@@ -47,6 +47,10 @@ public abstract class ContentBase {
 
     protected Permissions getPermissions() { return host_session.getPermissions(); }
 
+    protected boolean perm(String permission_name) { return host_session.hasPermission(permission_name); }
+
+    protected boolean perm(String module_name, String permission_name) { return host_session.hasPermission(module_name, permission_name); }
+
     protected String getHostDir() { return host_dir; }
 
 //    protected DbManager getDbManager() { return session.getDbManager(); }  // db_manager

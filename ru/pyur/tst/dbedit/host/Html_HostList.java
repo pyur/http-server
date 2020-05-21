@@ -26,6 +26,24 @@ public class Html_HostList extends HtmlContent {
 
         heading("Хосты баз данных");
 
+//        if (perm("edit")) {
+//            add("edit granted.");
+//        } else {
+//            add("edit not granted.");
+//        }
+//
+//        if (perm("add")) {
+//            add("add granted.");
+//        } else {
+//            add("add not granted.");
+//        }
+//
+//        if (perm("delete")) {
+//            add("delete granted.");
+//        } else {
+//            add("delete not granted.");
+//        }
+
         TableFetcher host_fetcher = new HostTable(getConfigDb());
         Tag table = host_fetcher.make();
         add(table);

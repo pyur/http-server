@@ -54,6 +54,10 @@ public abstract class ModularHost extends Host {
 
     public Permissions getPermissions() { return permissions; }
 
+    public boolean hasPermission(String permission_name) { return permissions.hasPermission(module, permission_name); }
+
+    public boolean hasPermission(String module_name, String permission_name) { return permissions.hasPermission(module_name, permission_name); }
+
     // ---- db ----
     protected Connection connectHostDb() { return null; }
 

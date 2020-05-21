@@ -30,6 +30,7 @@ public abstract class Permissions {
 
         ModulePerm module = getModule(module_name);
         if (module == null)  return false;
+        if (module.perms == null)  return false;
 
         for (String perm : module.perms) {
             if (perm.equals(permission_name))  return true;

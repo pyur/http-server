@@ -41,6 +41,8 @@ public class Util {
 
 
     public static String[] explode(String separator, String string) {
+        if (string == null)  return null;
+
         ArrayList<String> list = new ArrayList<>();
         int pos = 0;
         int pos_found = 0;
