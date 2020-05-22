@@ -55,7 +55,7 @@ public class DbAdminHost extends ModularHost {
 
 
     @Override
-    protected Connection connectHostConfig() {
+    protected Connection connectHostConfig() {  // todo: throws Exception
         Connection conn = null;
 
         try {

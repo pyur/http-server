@@ -7,19 +7,25 @@ import ru.pyur.tst.client.HtmlClient;
 import ru.pyur.tst.tags.ModuleUrl;
 import ru.pyur.tst.test.SampleHtmlClient;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 public class Main {
 
     public static void main(String[] args) {
 
         // -- Register JDBC driver
-        try {
-            Class.forName("org.mariadb.jdbc.Driver");
-        } catch (Exception e) { e.printStackTrace(); }
+//        try {
+//            Class.forName("org.mariadb.jdbc.Driver");
+//        } catch (Exception e) { e.printStackTrace(); }
 
 //        try {
 //            Class.forName("org.sqlite.jdbc.Driver");
 //        } catch (Exception e) { e.printStackTrace(); }
-
+//        try {
+//            Connection conn = DriverManager.getConnection("jdbc:sqlite:dbedit/config.db");
+//            System.out.println("connected.");
+//        } catch (Exception e) { e.printStackTrace(); }
 
 //        TestClient client = new TestClient();
 //        client.run();

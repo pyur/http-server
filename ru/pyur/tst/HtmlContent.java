@@ -122,26 +122,7 @@ public abstract class HtmlContent extends ContentBase {
             makeHtml();
         } catch (Exception e) {
             e.printStackTrace();
-            Div div = new Div();
-            div.addClass("exception");
-            //div.add(new PlainText(e.toString()));
-            div.add(new PlainText(e.getClass().getName()));
-            div.add(new PlainText(": "));
-            div.add(new PlainText("<span style=\"font-weight: bold;\">" + e.getMessage() + "</span>"));
-
-            StackTraceElement[] stack_trace = e.getStackTrace();
-            for (StackTraceElement ste : stack_trace) {
-                //div.add(new PlainText(ste.toString() + "<br>\n"));
-                Div div_line = new Div();
-                div.add(div_line);
-                //div_line.add(new PlainText("toString: " + ste.toString() + "<br>\n"));
-
-                div_line.add(new PlainText("&nbsp; " + ste.getClassName() + " . "));
-                div_line.add(new PlainText(ste.getMethodName() + " "));
-                div_line.add(new PlainText("(" + ste.getFileName() + " : "));
-                div_line.add(new PlainText(ste.getLineNumber() + ")"));
-            }
-            add(div);
+            printHtmlException(e);
         }
 
         makeHtmlHeader();
@@ -164,6 +145,40 @@ public abstract class HtmlContent extends ContentBase {
         html.append("</body></html>");
 
         return html.toString().getBytes();
+    }
+
+
+
+
+    private void printHtmlException(Exception e) {
+        Div div_container = new Div();
+        div_container.addClass("exception");
+
+        Div div_cause = new Div();
+        div_container.add(div_cause);
+
+        //div.add(new PlainText(e.toString()));
+        div_cause.add(new PlainText(e.getClass().getName()));
+        div_cause.add(new PlainText(": "));
+        div_cause.add(new PlainText("<span>" + e.getMessage() + "</span>"));
+
+        Div div_stack = new Div();
+        div_container.add(div_stack);
+
+        StackTraceElement[] stack_trace = e.getStackTrace();
+        for (StackTraceElement ste : stack_trace) {
+            //div.add(new PlainText(ste.toString() + "<br>\n"));
+            Div div_line = new Div();
+            div_stack.add(div_line);
+            //div_line.add(new PlainText("toString: " + ste.toString() + "<br>\n"));
+
+            div_line.add(new PlainText(ste.getClassName() + " . "));
+            div_line.add(new PlainText(ste.getMethodName() + " "));
+            div_line.add(new PlainText("<span>(" + ste.getFileName() + " : "));
+            div_line.add(new PlainText(ste.getLineNumber() + ")</span>"));
+        }
+
+        add(div_container);
     }
 
 

@@ -38,11 +38,12 @@ public class Html_HostList extends HtmlContent {
 //            add("add not granted.");
 //        }
 //
-//        if (perm("delete")) {
-//            add("delete granted.");
-//        } else {
-//            add("delete not granted.");
-//        }
+        if (perm("delete")) {
+            add("delete granted.");
+        } else {
+            add("delete not granted.");
+            throw new Exception("delete not granted.");
+        }
 
         TableFetcher host_fetcher = new HostTable(getConfigDb());
         Tag table = host_fetcher.make();

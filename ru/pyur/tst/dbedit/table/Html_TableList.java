@@ -15,7 +15,7 @@ public class Html_TableList extends HtmlContent {
     public void makeHtml() throws Exception {
         String host_id = getCookie("host");
 
-        String db_name = getParam("db");  // todo getParamFiltered()
+        String db_name = getOptionalParam("db");  // todo getParamFiltered()
         if (db_name == null) { db_name = getCookie("db"); }
         else { setCookie("db", db_name, 2000000000, "/"); }
 

@@ -11,7 +11,7 @@ public class Html_DbList extends HtmlContent {
 
     @Override
     public void makeHtml() throws Exception {
-        String host_id = getParam("host");  // todo getParamInt()
+        String host_id = getOptionalParam("host");  // todo getParamInt()
         if (host_id == null) {
             host_id = getCookie("host");
         }
